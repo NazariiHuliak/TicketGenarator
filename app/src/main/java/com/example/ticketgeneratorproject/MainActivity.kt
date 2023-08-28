@@ -4,11 +4,37 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.ticketgeneratorproject.Entities.Currency
+import com.example.ticketgeneratorproject.Entities.DateTime
+import com.example.ticketgeneratorproject.Entities.TicketModel
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var ticketsArrayList: ArrayList<TicketModel>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        recyclerView = findViewById(R.id.recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.setHasFixedSize(true)
+        recyclerView.adapter = RecyclerViewAdapter(
+            arrayListOf(TicketModel(
+                1,
+                "Full name",
+                "Trip number",
+                "destinationAddresses",
+                "DepartureAddresses",
+                DateTime("date", "Time"),
+                DateTime("date", "Time"),
+                "1",
+                Currency.UAH,
+                DateTime("date", "Time")
+            )))
 
         val addBtn = findViewById<Button>(R.id.create_new_ticket)
 
