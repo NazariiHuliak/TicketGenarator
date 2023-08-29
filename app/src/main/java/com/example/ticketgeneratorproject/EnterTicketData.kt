@@ -25,26 +25,14 @@ class EnterTicketData : AppCompatActivity() {
         val adapter = ArrayAdapter(this, R.layout.currency_item, items)
         autoComplete.setAdapter(adapter)
 
-        val rootLayout = findViewById<View>(R.id.rootView)
-
         findViewById<LinearLayout>(R.id.back_to_main_menu).setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
+            finish()
+        }
+
+        findViewById<Button>(R.id.next_page).setOnClickListener {
+            val intent = Intent(this, EnterTicketDataTime::class.java)
             startActivity(intent)
         }
 
-        findViewById<Button>(R.id.generate_new_ticket).setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
-
-    }
-    override fun onBackPressed() {
-        val currentTime = System.currentTimeMillis()
-        if (currentTime - lastBackPressTime < BACK_PRESS_INTERVAL) {
-            finishAffinity()
-        } else {
-            lastBackPressTime = currentTime
-            Toast.makeText(this, "Натисніть ще раз для виходу", Toast.LENGTH_SHORT).show()
-        }
     }
 }
