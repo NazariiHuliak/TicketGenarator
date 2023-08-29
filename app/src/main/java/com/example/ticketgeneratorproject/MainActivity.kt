@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ticketgeneratorproject.Entities.Currency
@@ -11,6 +12,9 @@ import com.example.ticketgeneratorproject.Entities.DateTime
 import com.example.ticketgeneratorproject.Entities.TicketModel
 
 class MainActivity : AppCompatActivity() {
+
+    private var lastBackPressTime: Long = 0
+    private val BACK_PRESS_INTERVAL = 2000
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var ticketsArrayList: ArrayList<TicketModel>
@@ -41,6 +45,15 @@ class MainActivity : AppCompatActivity() {
         addBtn.setOnClickListener {
             val intent = Intent(this, EnterTicketData::class.java)
             startActivity(intent)
+        }
+    }
+    override fun onBackPressed() {
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastBackPressTime < BACK_PRESS_INTERVAL) {
+            finishAffinity()
+        } else {
+            lastBackPressTime = currentTime
+            Toast.makeText(this, "Натисніть ще раз для виходу", Toast.LENGTH_SHORT).show()
         }
     }
 }
