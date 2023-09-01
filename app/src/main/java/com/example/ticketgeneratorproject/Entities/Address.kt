@@ -5,7 +5,7 @@ data class Address(
     val city: String,
     val street: String,
     val number: String
-){
+): java.io.Serializable{
     companion object{
         fun parseAddress(address: String): Address{
             val components = address.split(", ")

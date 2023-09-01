@@ -8,17 +8,20 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.DocumentsContract.Root
 import android.sax.RootElement
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
+import com.example.ticketgeneratorproject.Entities.Address
+import com.example.ticketgeneratorproject.Entities.Currency
+import com.example.ticketgeneratorproject.Entities.DateTime
+import com.example.ticketgeneratorproject.Entities.TicketModel
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
 class EnterTicketData : AppCompatActivity() {
-/*    private var lastBackPressTime: Long = 0
-    private val BACK_PRESS_INTERVAL = 2000*/
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -138,9 +141,21 @@ class EnterTicketData : AppCompatActivity() {
             }
             if(flag){
                 val intent = Intent(this, EnterTicketDataTime::class.java)
+                intent.putExtra("Object", TicketModel(
+                    0,
+                    fullnameText,
+                    tripNumberText,
+                    Address.parseAddress(departureText),
+                    Address.parseAddress(destinationText),
+                    DateTime.parseDateTime("01-01-1991 00:00"),
+                    DateTime.parseDateTime("01-01-1991 00:00"),
+                    seatText.toInt(),
+                    Currency.parseCurrency(currencyText),
+                    DateTime.parseDateTime("01-01-1991 00:00"),
+                ))
                 startActivity(intent)
             }
         }
-
     }
 }
+

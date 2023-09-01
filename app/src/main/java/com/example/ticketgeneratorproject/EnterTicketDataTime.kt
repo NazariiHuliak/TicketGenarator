@@ -11,11 +11,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.*
+import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
+import com.example.ticketgeneratorproject.Entities.DateTime
+import com.example.ticketgeneratorproject.Entities.TicketModel
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import java.util.*
 
-class EnterTicketDataTime : AppCompatActivity() {
+class EnterTicketDataTime: AppCompatActivity() {
     private lateinit var departureDateText: TextView
     private lateinit var departureTimeText: TextView
     private lateinit var destinationDateText: TextView
@@ -55,6 +58,8 @@ class EnterTicketDataTime : AppCompatActivity() {
         val myCalendar = Calendar.getInstance()
 
         var flag = true
+
+        var dbAdapter = DataBaseAdapter(this)
 
         val datePicker = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
             myCalendar.set(Calendar.YEAR, year)
@@ -109,6 +114,8 @@ class EnterTicketDataTime : AppCompatActivity() {
             }
         }
 
+        val ticket = intent.getSerializableExtra("Object") as TicketModel
+
         findViewById<RelativeLayout>(R.id.btn_departure_date).setOnClickListener {
             DatePickerDialog( this, R.style.CustomDatePickerDialogTheme, datePicker, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                 myCalendar.get(Calendar.DAY_OF_MONTH)).show()
@@ -161,6 +168,13 @@ class EnterTicketDataTime : AppCompatActivity() {
             if(flag){
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
+
+                ticket.departureTime = DateTime.parseDateTime("${departureDateText.text} ${departureTimeText.text}")
+                ticket.destinationTime = DateTime.parseDateTime("${destinationDateText.text} ${destinationTimeText.text}")
+                ticket.purchaseTime = DateTime.parseDateTime(getCurrentDateTime())
+
+                Log.d("Ticket: ", "${ticket.currency}")
+                dbAdapter.addTicket(ticket)
                 Toast.makeText(applicationContext, "Квиток був успішно створений", Toast.LENGTH_SHORT).show()
             }
         }
@@ -173,5 +187,10 @@ class EnterTicketDataTime : AppCompatActivity() {
     private fun updateTimeText (myCalendar: Calendar, view: TextView) {
         val formattedTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(myCalendar.time)
         view.setText(formattedTime.format(myCalendar.time))
+    }
+
+    fun getCurrentDateTime(): String {
+        val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault())
+        return dateFormat.format(Date())
     }
 }
