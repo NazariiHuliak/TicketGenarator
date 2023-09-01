@@ -41,6 +41,7 @@
             android:layout_marginLeft="10dp"
             android:textColor="@color/black"/>
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/fullName_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:boxCornerRadiusBottomEnd="12dp"
@@ -50,10 +51,13 @@
             app:boxBackgroundColor="@color/white"
             app:boxStrokeColor="@color/black"
             app:hintTextColor="@color/black"
-            android:layout_marginBottom="15dp"
-            app:prefixTextColor="@color/black">
+            app:prefixTextColor="@color/black"
+            app:errorEnabled="true"
+            app:boxStrokeErrorColor="@color/errorColor"
+            app:errorTextColor="@color/errorColor"
+            app:errorIconTint="@color/errorColor">
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/search_input"
+                android:id="@+id/fullname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/rubik"
@@ -80,6 +84,7 @@
                     android:layout_marginLeft="10dp"
                     android:textColor="@color/black"/>
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/trip_number_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:boxCornerRadiusBottomEnd="12dp"
@@ -88,8 +93,11 @@
                     app:boxCornerRadiusTopStart="12dp"
                     app:boxBackgroundColor="@color/white"
                     app:boxStrokeColor="@color/black"
-                    android:layout_marginBottom="15dp"
-                    app:hintTextColor="@color/black">
+                    app:hintTextColor="@color/black"
+                    app:errorEnabled="true"
+                    app:boxStrokeErrorColor="@color/errorColor"
+                    app:errorTextColor="@color/errorColor"
+                    app:errorIconTint="@color/errorColor">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/trip_number"
                         android:layout_width="match_parent"
@@ -114,6 +122,7 @@
                     android:layout_marginLeft="10dp"
                     android:textColor="@color/black"/>
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/seat_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:boxCornerRadiusBottomEnd="12dp"
@@ -122,8 +131,11 @@
                     app:boxCornerRadiusTopStart="12dp"
                     app:boxBackgroundColor="@color/white"
                     app:boxStrokeColor="@color/black"
-                    android:layout_marginBottom="15dp"
-                    app:hintTextColor="@color/black">
+                    app:hintTextColor="@color/black"
+                    app:errorEnabled="true"
+                    app:boxStrokeErrorColor="@color/errorColor"
+                    app:errorTextColor="@color/errorColor"
+                    app:errorIconTint="@color/errorColor">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/seat"
                         android:layout_width="match_parent"
@@ -145,6 +157,7 @@
             android:layout_marginLeft="10dp"
             android:textColor="@color/black"/>
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/departure_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:boxCornerRadiusBottomEnd="12dp"
@@ -153,8 +166,11 @@
             app:boxCornerRadiusTopStart="12dp"
             app:boxBackgroundColor="@color/white"
             app:boxStrokeColor="@color/black"
-            android:layout_marginBottom="15dp"
-            app:hintTextColor="@color/black">
+            app:hintTextColor="@color/black"
+            app:errorEnabled="true"
+            app:boxStrokeErrorColor="@color/errorColor"
+            app:errorTextColor="@color/errorColor"
+            app:errorIconTint="@color/errorColor">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/departure"
                 android:layout_width="match_parent"
@@ -173,6 +189,7 @@
             android:layout_marginLeft="10dp"
             android:textColor="@color/black"/>
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/destination_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:boxCornerRadiusBottomEnd="12dp"
@@ -181,8 +198,11 @@
             app:boxCornerRadiusTopStart="12dp"
             app:boxBackgroundColor="@color/white"
             app:boxStrokeColor="@color/black"
-            android:layout_marginBottom="15dp"
-            app:hintTextColor="@color/black">
+            app:hintTextColor="@color/black"
+            app:errorEnabled="true"
+            app:boxStrokeErrorColor="@color/errorColor"
+            app:errorTextColor="@color/errorColor"
+            app:errorIconTint="@color/errorColor">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/destination"
                 android:layout_width="match_parent"
@@ -212,6 +232,7 @@
                     android:layout_marginLeft="10dp"
                     android:textColor="@color/black"/>
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/price_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:boxCornerRadiusBottomEnd="12dp"
@@ -220,8 +241,11 @@
                     app:boxCornerRadiusTopStart="12dp"
                     app:boxBackgroundColor="@color/white"
                     app:boxStrokeColor="@color/black"
-                    android:layout_marginBottom="15dp"
-                    app:hintTextColor="@color/black">
+                    app:hintTextColor="@color/black"
+                    app:errorEnabled="true"
+                    app:boxStrokeErrorColor="@color/errorColor"
+                    app:errorTextColor="@color/errorColor"
+                    app:errorIconTint="@color/errorColor">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/price"
                         android:layout_width="match_parent"
@@ -247,6 +271,7 @@
                     android:layout_marginLeft="10dp"
                     android:textColor="@color/black"/>
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/currency_layout"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -256,9 +281,11 @@
                     app:boxCornerRadiusTopStart="12dp"
                     app:boxBackgroundColor="@color/white"
                     app:boxStrokeColor="@color/black"
-                    android:layout_marginBottom="15dp"
-                    app:hintTextColor="@color/black">
-
+                    app:hintTextColor="@color/black"
+                    app:errorEnabled="true"
+                    app:boxStrokeErrorColor="@color/errorColor"
+                    app:errorTextColor="@color/errorColor"
+                    app:errorIconTint="@color/errorColor">
                     <AutoCompleteTextView
                         android:id="@+id/auto_complete"
                         android:layout_width="match_parent"

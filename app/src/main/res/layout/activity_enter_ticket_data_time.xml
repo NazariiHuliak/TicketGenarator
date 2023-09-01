@@ -69,6 +69,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginTop="4dp"
                         android:gravity="center">
+
                         <ImageView
                             android:layout_width="200dp"
                             android:layout_height="55dp"
@@ -83,7 +84,25 @@
                             android:text=""
                             android:textColor="@color/black"
                             android:textSize="20dp" />
+                        <ImageView
+                            android:id="@+id/error_icon_1"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginRight="12dp"
+                            android:src="@drawable/error_icon"
+                            android:visibility="invisible"/>
                     </RelativeLayout>
+                    <TextView
+                        android:id="@+id/errorText1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Введіть дані"
+                        android:layout_marginLeft="15dp"
+                        android:textColor="@color/errorColor"
+                        android:fontFamily="@font/rubik"
+                        android:visibility="invisible"/>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="0dp"
@@ -120,7 +139,25 @@
                             android:text=""
                             android:textColor="@color/black"
                             android:textSize="20dp" />
+                        <ImageView
+                            android:id="@+id/error_icon_2"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginRight="12dp"
+                            android:src="@drawable/error_icon"
+                            android:visibility="invisible"/>
                     </RelativeLayout>
+                    <TextView
+                        android:id="@+id/errorText2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Введіть дані"
+                        android:layout_marginLeft="15dp"
+                        android:textColor="@color/errorColor"
+                        android:fontFamily="@font/rubik"
+                        android:visibility="invisible"/>
                 </LinearLayout>
             </LinearLayout>
             <TextView
@@ -172,7 +209,25 @@
                             android:text=""
                             android:textColor="@color/black"
                             android:textSize="20dp" />
+                        <ImageView
+                            android:id="@+id/error_icon_3"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginRight="12dp"
+                            android:src="@drawable/error_icon"
+                            android:visibility="invisible"/>
                     </RelativeLayout>
+                    <TextView
+                        android:id="@+id/errorText3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Введіть дані"
+                        android:layout_marginLeft="15dp"
+                        android:textColor="@color/errorColor"
+                        android:fontFamily="@font/rubik"
+                        android:visibility="invisible"/>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="0dp"
@@ -194,6 +249,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginTop="4dp"
                         android:gravity="center">
+
                         <ImageView
                             android:layout_width="200dp"
                             android:layout_height="55dp"
@@ -208,7 +264,25 @@
                             android:text=""
                             android:textColor="@color/black"
                             android:textSize="20dp" />
+                        <ImageView
+                            android:id="@+id/error_icon_4"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginRight="12dp"
+                            android:src="@drawable/error_icon"
+                            android:visibility="invisible"/>
                     </RelativeLayout>
+                    <TextView
+                        android:id="@+id/errorText4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Введіть дані"
+                        android:layout_marginLeft="15dp"
+                        android:textColor="@color/errorColor"
+                        android:fontFamily="@font/rubik"
+                        android:visibility="invisible"/>
                 </LinearLayout>
             </LinearLayout>
             <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton

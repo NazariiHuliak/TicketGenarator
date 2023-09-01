@@ -23,7 +23,7 @@ class RecyclerViewAdapter(private val ticketsList: MutableList<TicketModel>): Re
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = ticketsList[position]
         holder.fullName.text = currentItem.fullName
-        holder.tripDepartureDestination.text = java.lang.StringBuilder(currentItem.DepartureAddresses + " - " + currentItem.destinationAddresses)
+        holder.tripDepartureDestination.text = java.lang.StringBuilder(currentItem.departureAddress.city + " - " + currentItem.destinationAddress.city)
     }
 
     class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){

@@ -4,11 +4,11 @@ data class TicketModel(
     val id: Int,
     val fullName: String,
     val tripNumber: String,
-    val destinationAddresses: String,
-    val DepartureAddresses: String,
+    val departureAddress: Address,
+    val destinationAddress: Address,
+    val departureTime: DateTime,
     val destinationTime: DateTime,
-    val DepartureTime: DateTime,
-    val seat: String,
+    val seat: Int,
     val currency: Currency,
-    val purchaseDate: DateTime
+    val purchaseTime: DateTime
 )

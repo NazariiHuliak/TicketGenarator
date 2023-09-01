@@ -12,11 +12,13 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">#00FFFFFF</item>
         <!-- Customize your theme here. -->
+
+        <item name="colorError">@color/errorColor</item>
+        <item name="colorControlNormal">@color/errorColor</item>
     </style>
 
     <style name="CustomDatePickerDialogTheme" parent="Theme.AppCompat.Light.Dialog">
-        <item name="colorAccent">@color/dark_green</item> <!-- Зміна кольору акценту -->
-        <!-- Додайте інші атрибути стилів, які ви хочете змінити -->
+        <item name="colorAccent">@color/dark_green</item>
     </style>
 
 </resources>

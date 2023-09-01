@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.ticketgeneratorproject.Entities.Address
 import com.example.ticketgeneratorproject.Entities.Currency
 import com.example.ticketgeneratorproject.Entities.DateTime
 import com.example.ticketgeneratorproject.Entities.TicketModel
@@ -31,11 +32,11 @@ class MainActivity : AppCompatActivity() {
                 1,
                 "Full name",
                 "Trip number",
-                "destinationAddresses",
-                "DepartureAddresses",
+                Address.parseAddress("Україна, Львів, Січових стрільців, 26"),
+                Address.parseAddress("Україна, Львів, Січових стрільців, 26"),
                 DateTime("date", "Time"),
                 DateTime("date", "Time"),
-                "1",
+                1,
                 Currency.UAH,
                 DateTime("date", "Time")
             )))
