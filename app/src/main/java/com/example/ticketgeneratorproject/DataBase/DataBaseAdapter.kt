@@ -27,6 +27,7 @@ class DataBaseAdapter(private val context: Context) {
             put(DataBaseHelper.DEPARTURE_TIME, ticket.departureTime.Date + " " + ticket.departureTime.Time)
             put(DataBaseHelper.DESTINATION_TIME, ticket.destinationTime.Date + " " + ticket.destinationTime.Time)
             put(DataBaseHelper.SEAT, ticket.seat)
+            put(DataBaseHelper.PRICE, ticket.price)
             put(DataBaseHelper.CURRENCY, ticket.currency.name)
             put(DataBaseHelper.PURCHASE_TIME, ticket.purchaseTime.Date + " " + ticket.purchaseTime.Time)
         }
@@ -47,6 +48,7 @@ class DataBaseAdapter(private val context: Context) {
                 val departureTime = cursor.getString(cursor.getColumnIndex(DataBaseHelper.DEPARTURE_TIME))
                 val destinationTime = cursor.getString(cursor.getColumnIndex(DataBaseHelper.DESTINATION_TIME))
                 val seat = cursor.getInt(cursor.getColumnIndex(DataBaseHelper.SEAT))
+                val price = cursor.getDouble(cursor.getColumnIndex(DataBaseHelper.PRICE))
                 val currency = cursor.getString(cursor.getColumnIndex(DataBaseHelper.CURRENCY))
                 val purchaseTime = cursor.getString(cursor.getColumnIndex(DataBaseHelper.PURCHASE_TIME))
 
@@ -60,6 +62,7 @@ class DataBaseAdapter(private val context: Context) {
                         DateTime.parseDateTime(departureTime),
                         DateTime.parseDateTime(destinationTime),
                         seat,
+                        price,
                         Currency.parseCurrency(currency),
                         DateTime.parseDateTime(purchaseTime)
                     )

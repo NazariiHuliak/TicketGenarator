@@ -8,6 +8,7 @@ data class TicketModel(
     var departureTime: DateTime,
     var destinationTime: DateTime,
     val seat: Int,
+    val price: Double,
     val currency: Currency,
     var purchaseTime: DateTime
 ): java.io.Serializable{

@@ -1,11 +1,24 @@
 package com.example.ticketgeneratorproject
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.pdf.PdfDocument
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
+import android.util.DisplayMetrics
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
 import android.widget.Button
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
@@ -13,6 +26,9 @@ import com.example.ticketgeneratorproject.Entities.Address
 import com.example.ticketgeneratorproject.Entities.Currency
 import com.example.ticketgeneratorproject.Entities.DateTime
 import com.example.ticketgeneratorproject.Entities.TicketModel
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
 

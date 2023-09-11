@@ -1,22 +1,37 @@
 package com.example.ticketgeneratorproject
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.pdf.PdfDocument
+import android.graphics.pdf.PdfDocument.PageInfo
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
-import android.media.Image
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.util.DisplayMetrics
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
 import com.example.ticketgeneratorproject.Entities.DateTime
 import com.example.ticketgeneratorproject.Entities.TicketModel
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
+import org.w3c.dom.Text
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.util.*
+
 
 class EnterTicketDataTime: AppCompatActivity() {
     private lateinit var departureDateText: TextView
@@ -166,16 +181,17 @@ class EnterTicketDataTime: AppCompatActivity() {
                 flag = false
             }
             if(flag){
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-
                 ticket.departureTime = DateTime.parseDateTime("${departureDateText.text} ${departureTimeText.text}")
                 ticket.destinationTime = DateTime.parseDateTime("${destinationDateText.text} ${destinationTimeText.text}")
                 ticket.purchaseTime = DateTime.parseDateTime(getCurrentDateTime())
 
-                Log.d("Ticket: ", "${ticket.currency}")
+                askPermissions()
+                convertXmlToPdf(ticket)
+
                 dbAdapter.addTicket(ticket)
-                Toast.makeText(applicationContext, "Квиток був успішно створений", Toast.LENGTH_SHORT).show()
+
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
             }
         }
     }
@@ -188,9 +204,138 @@ class EnterTicketDataTime: AppCompatActivity() {
         val formattedTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(myCalendar.time)
         view.setText(formattedTime.format(myCalendar.time))
     }
-
     fun getCurrentDateTime(): String {
         val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault())
         return dateFormat.format(Date())
+    }
+    private fun askPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                1
+            )
+        }
+    }
+    @SuppressLint("MissingInflatedId", "SetTextI18n")
+    fun convertXmlToPdf(ticket: TicketModel) {
+        val view: View = LayoutInflater.from(this).inflate(R.layout.to_generate_pdf, null)
+
+        view.findViewById<TextView>(R.id.ticket_fullName).text = ticket.fullName
+        view.findViewById<TextView>(R.id.ticket_tripNumber).text = ticket.tripNumber
+        view.findViewById<TextView>(R.id.ticket_departureCity).text = ticket.departureAddress.city
+        view.findViewById<TextView>(R.id.ticket_departureAddress).text = ticket.departureAddress.street + " " +
+                ticket.departureAddress.number
+        view.findViewById<TextView>(R.id.ticket_departureDate).text = ticket.departureTime.Date
+        view.findViewById<TextView>(R.id.ticket_departureTime).text = ticket.departureTime.Time
+        view.findViewById<TextView>(R.id.ticket_destinationCity).text = ticket.destinationAddress.city
+        view.findViewById<TextView>(R.id.ticket_destinationAddress).text = ticket.destinationAddress.street + " " +
+                ticket.destinationAddress.number
+        view.findViewById<TextView>(R.id.ticket_destinationDate).text = ticket.destinationTime.Date
+        view.findViewById<TextView>(R.id.ticket_destinationTime).text = ticket.destinationTime.Time
+        view.findViewById<TextView>(R.id.ticket_price).text = ticket.price.toString()
+        view.findViewById<TextView>(R.id.ticket_currency).text = ticket.currency.toString()
+        view.findViewById<TextView>(R.id.ticket_seat).text = ticket.seat.toString()
+        view.findViewById<TextView>(R.id.ticket_purchaseDate).text = ticket.purchaseTime.Time + " " +
+                ticket.purchaseTime.Date
+
+        val displayMetrics = DisplayMetrics()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            this.display!!.getRealMetrics(displayMetrics)
+        } else this.windowManager.defaultDisplay.getMetrics(displayMetrics)
+        view.measure(
+            View.MeasureSpec.makeMeasureSpec(displayMetrics.widthPixels, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(displayMetrics.heightPixels, View.MeasureSpec.EXACTLY)
+        )
+
+        view.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels)
+        // Create a new PdfDocument instance
+        val document = PdfDocument()
+
+        val viewWidth = 1080
+        val viewHeight = 1920
+
+        // Create a PageInfo object specifying the page attributes
+        val pageInfo = PageInfo.Builder(viewWidth, viewHeight, 1).create()
+
+        // Start a new page
+        val page = document.startPage(pageInfo)
+
+        // Get the Canvas object to draw on the page
+        val canvas = page.canvas
+
+        // Create a Paint object for styling the view
+        val paint = Paint()
+        paint.color = Color.WHITE
+
+        // Draw the view on the canvas
+        view.draw(canvas)
+
+        // Finish the page
+        document.finishPage(page)
+
+        // Specify the path and filename of the output PDF file
+        val downloadsDir =
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+
+        var parts_time = ticket.purchaseTime.Time.replace(":", " ").split(" ")
+        var parts_date = ticket.purchaseTime.Date.replace("-", " ").split(" ")
+        var uniqueId = ((parts_time[0].toInt() + parts_time[1].toInt() +
+                parts_date[0].toInt() + parts_date[1].toInt() + parts_date[2].toInt()))
+
+        val fileName = transliterateToEnglish(ticket.fullName).split(" ")[0] + " " +
+                transliterateToEnglish(ticket.fullName).split(" ")[1] + " " +
+                transliterateToEnglish(ticket.departureAddress.city) + "-" +
+                transliterateToEnglish(ticket.destinationAddress.city) + " " +
+                ticket.purchaseTime.Date + " " + uniqueId.toString() +
+                ".pdf"
+
+        val filePath = File(downloadsDir, fileName)
+        try {
+            // Save the document to a file
+            val fos = FileOutputStream(filePath)
+            document.writeTo(fos)
+            document.close()
+            fos.close()
+            // PDF conversion successful
+            Toast.makeText(this, "Квиток був успішно створений", Toast.LENGTH_LONG).show()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            // Error occurred while converting to PDF
+        }
+    }
+    fun transliterateToEnglish(input: String): String {
+        val ukrainianCharacters = arrayOf(
+            "а", "б", "в", "г", "д", "е", "є", "ж", "з", "и", "і", "ї", "й", "к",
+            "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф", "х", "ц", "ч", "ш",
+            "щ", "ь", "ю", "я",
+            "А", "Б", "В", "Г", "Д", "Е", "Є", "Ж", "З", "И", "І", "Ї", "Й", "К",
+            "Л", "М", "Н", "О", "П", "Р", "С", "Т", "У", "Ф", "Х", "Ц", "Ч", "Ш",
+            "Щ", "Ь", "Ю", "Я"
+        )
+
+        val latinTransliteration = arrayOf(
+            "a", "b", "v", "h", "d", "e", "ie", "zh", "z", "y", "i", "i", "i", "k",
+            "l", "m", "n", "o", "p", "r", "s", "t", "u", "f", "kh", "ts", "ch", "sh",
+            "shch", "", "iu", "ia",
+            "A", "B", "V", "H", "D", "E", "Ye", "Zh", "Z", "Y", "I", "I", "I", "K",
+            "L", "M", "N", "O", "P", "R", "S", "T", "U", "F", "Kh", "Ts", "Ch", "Sh",
+            "Shch", "", "Yu", "Ya"
+        )
+
+        val stringBuilder = StringBuilder()
+        val inputChars = input.toCharArray()
+
+        for (char in inputChars) {
+            val index = ukrainianCharacters.indexOf(char.toString())
+            if (index != -1) {
+                stringBuilder.append(latinTransliteration[index])
+            } else {
+                stringBuilder.append(char)
+            }
+        }
+        return stringBuilder.toString()
     }
 }

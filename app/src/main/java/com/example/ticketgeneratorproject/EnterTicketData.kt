@@ -150,8 +150,9 @@ class EnterTicketData : AppCompatActivity() {
                     DateTime.parseDateTime("01-01-1991 00:00"),
                     DateTime.parseDateTime("01-01-1991 00:00"),
                     seatText.toInt(),
+                    priceText.toDouble(),
                     Currency.parseCurrency(currencyText),
-                    DateTime.parseDateTime("01-01-1991 00:00"),
+                    DateTime.parseDateTime("01-01-1991 00:00")
                 ))
                 startActivity(intent)
             }

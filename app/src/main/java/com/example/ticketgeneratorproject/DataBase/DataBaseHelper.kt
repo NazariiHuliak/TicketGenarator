@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class DataBaseHelper(context: Context): SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
     companion object {
         private const val DB_NAME = "TicketsDataBase.db"
-        private const val DB_VERSION = 1
+        private const val DB_VERSION = 2
 
         const val TABLE_NAME = "ticketsTable"
         const val TICKET_ID = "ticketID"
@@ -18,6 +18,7 @@ class DataBaseHelper(context: Context): SQLiteOpenHelper(context, DB_NAME, null,
         const val DEPARTURE_TIME = "departureTime"
         const val DESTINATION_TIME = "destinationTime"
         const val SEAT = "seat"
+        const val PRICE = "price"
         const val CURRENCY = "currency"
         const val PURCHASE_TIME = "purchaseTime"
     }
@@ -32,6 +33,7 @@ class DataBaseHelper(context: Context): SQLiteOpenHelper(context, DB_NAME, null,
                 "$DEPARTURE_TIME TEXT, " +
                 "$DESTINATION_TIME TEXT, " +
                 "$SEAT INTEGER, " +
+                "$PRICE REAL," +
                 "$CURRENCY TEXT, " +
                 "$PURCHASE_TIME TEXT)"
         db?.execSQL(createTableTickets)
