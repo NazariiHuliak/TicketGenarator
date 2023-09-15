@@ -1,34 +1,20 @@
 package com.example.ticketgeneratorproject
 
-import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.pdf.PdfDocument
-import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
-import android.util.DisplayMetrics
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
-import com.example.ticketgeneratorproject.Entities.Address
-import com.example.ticketgeneratorproject.Entities.Currency
-import com.example.ticketgeneratorproject.Entities.DateTime
 import com.example.ticketgeneratorproject.Entities.TicketModel
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
+import java.lang.Character.toLowerCase
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,22 +22,42 @@ class MainActivity : AppCompatActivity() {
     private val BACK_PRESS_INTERVAL = 2000
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var ticketsArrayList: ArrayList<TicketModel>
+    private lateinit var ticketsArrayList: MutableList<TicketModel>
+    private lateinit var searchField: EditText
+    private lateinit var layoutManager: LinearLayoutManager
+    private lateinit var recyclerViewAdapter: RecyclerViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val dbAdapter = DataBaseAdapter(this)
+        searchField = findViewById(R.id.search_input)
 
-        recyclerView = findViewById(R.id.recycler_view)
-        val layoutManager = LinearLayoutManager(this)
+
+        layoutManager = LinearLayoutManager(this)
         layoutManager.reverseLayout = true
         layoutManager.stackFromEnd = true
-        recyclerView.layoutManager = layoutManager
 
+        recyclerView = findViewById(R.id.recycler_view)
+        recyclerView.layoutManager = layoutManager
         recyclerView.setHasFixedSize(true)
-        recyclerView.adapter = RecyclerViewAdapter(dbAdapter.getTickets())
+
+        ticketsArrayList = dbAdapter.getTickets()
+        recyclerViewAdapter = RecyclerViewAdapter(ticketsArrayList)
+        recyclerView.adapter = recyclerViewAdapter
+
+        searchField.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filterRecyclerView(s.toString(), recyclerViewAdapter, ticketsArrayList, layoutManager)
+            }
+            override fun afterTextChanged(s: Editable) {
+                layoutManager.reverseLayout = true
+                layoutManager.stackFromEnd = true
+                layoutManager.scrollToPosition(recyclerViewAdapter.itemCount-1)
+            }
+        })
 
         val addBtn = findViewById<Button>(R.id.create_new_ticket)
 
@@ -69,5 +75,22 @@ class MainActivity : AppCompatActivity() {
             lastBackPressTime = currentTime
             Toast.makeText(this, "Натисніть ще раз для виходу", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun filterRecyclerView(searchText: String,
+                                   recyclerViewAdapter: RecyclerViewAdapter,
+                                   ticketsArrayList:MutableList<TicketModel>,
+                                   layoutManager: LinearLayoutManager) {
+
+        val filteredList = ticketsArrayList.filter { item ->
+            item.fullName.lowercase().contains(searchText.lowercase())
+        }
+
+        recyclerViewAdapter.setYourDataList(filteredList as MutableList<TicketModel>)
+        recyclerViewAdapter.notifyDataSetChanged()
+
+        layoutManager.reverseLayout = false
+        layoutManager.stackFromEnd = false
     }
 }

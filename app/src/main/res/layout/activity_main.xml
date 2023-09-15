@@ -67,6 +67,15 @@
             android:text="Історія"
             android:textColor="@color/black"
             android:textSize="25dp" />
+        <!--<androidx.appcompat.widget.SearchView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:queryHint="Введіть текст пошуку..."
+            android:hint="Введіть текст пошуку..."
+            app:queryHint="sefsef"
+            app:searchIcon="@drawable/search_icon"/>-->
+
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
