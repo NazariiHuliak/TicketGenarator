@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
 import com.example.ticketgeneratorproject.Entities.TicketModel
-import java.lang.Character.toLowerCase
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -82,12 +81,10 @@ class MainActivity : AppCompatActivity() {
                                    recyclerViewAdapter: RecyclerViewAdapter,
                                    ticketsArrayList:MutableList<TicketModel>,
                                    layoutManager: LinearLayoutManager) {
-
         val filteredList = ticketsArrayList.filter { item ->
             item.fullName.lowercase().contains(searchText.lowercase())
         }
-
-        recyclerViewAdapter.setYourDataList(filteredList as MutableList<TicketModel>)
+        recyclerViewAdapter.setFilteredList(filteredList as MutableList<TicketModel>)
         recyclerViewAdapter.notifyDataSetChanged()
 
         layoutManager.reverseLayout = false

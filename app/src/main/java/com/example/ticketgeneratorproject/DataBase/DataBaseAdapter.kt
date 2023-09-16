@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
-import android.util.Log
 import com.example.ticketgeneratorproject.Entities.Address
 import com.example.ticketgeneratorproject.Entities.Currency
 import com.example.ticketgeneratorproject.Entities.DateTime
@@ -24,8 +23,8 @@ class DataBaseAdapter(private val context: Context) {
             put(DataBaseHelper.DESTINATION_ADDRESS, ticket.destinationAddress.country + ", " +
                     ticket.destinationAddress.city + ", " + ticket.destinationAddress.street + ", " +
                     ticket.destinationAddress.number)
-            put(DataBaseHelper.DEPARTURE_TIME, ticket.departureTime.Date + " " + ticket.departureTime.Time)
-            put(DataBaseHelper.DESTINATION_TIME, ticket.destinationTime.Date + " " + ticket.destinationTime.Time)
+            put(DataBaseHelper.DEPARTURE_TIME, ticket.departureDateTime.Date + " " + ticket.departureDateTime.Time)
+            put(DataBaseHelper.DESTINATION_TIME, ticket.destinationDateTime.Date + " " + ticket.destinationDateTime.Time)
             put(DataBaseHelper.SEAT, ticket.seat)
             put(DataBaseHelper.PRICE, ticket.price)
             put(DataBaseHelper.CURRENCY, ticket.currency.name)
@@ -33,6 +32,31 @@ class DataBaseAdapter(private val context: Context) {
         }
         return database.insert(DataBaseHelper.TABLE_NAME, null, values)
     }
+
+    fun updateTicket(ticket: TicketModel): Int {
+        val values = ContentValues().apply {
+            put(DataBaseHelper.FULL_NAME, ticket.fullName)
+            put(DataBaseHelper.TRIP_NUMBER, ticket.tripNumber)
+            put(DataBaseHelper.DEPARTURE_ADDRESS, ticket.departureAddress.country + ", " +
+                    ticket.departureAddress.city + ", " + ticket.departureAddress.street + ", " +
+                    ticket.departureAddress.number)
+            put(DataBaseHelper.DESTINATION_ADDRESS, ticket.destinationAddress.country + ", " +
+                    ticket.destinationAddress.city + ", " + ticket.destinationAddress.street + ", " +
+                    ticket.destinationAddress.number)
+            put(DataBaseHelper.DEPARTURE_TIME, ticket.departureDateTime.Date + " " + ticket.departureDateTime.Time)
+            put(DataBaseHelper.DESTINATION_TIME, ticket.destinationDateTime.Date + " " + ticket.destinationDateTime.Time)
+            put(DataBaseHelper.SEAT, ticket.seat)
+            put(DataBaseHelper.PRICE, ticket.price)
+            put(DataBaseHelper.CURRENCY, ticket.currency.name)
+            put(DataBaseHelper.PURCHASE_TIME, ticket.purchaseTime.Date + " " + ticket.purchaseTime.Time)
+        }
+
+        val whereClause = "${DataBaseHelper.TICKET_ID} = ?"
+        val whereArgs = arrayOf(ticket.id.toString())
+
+        return database.update(DataBaseHelper.TABLE_NAME, values, whereClause, whereArgs)
+    }
+
     @SuppressLint("Range")
     fun getTickets(): MutableList<TicketModel>{
         var tickets: MutableList<TicketModel> = mutableListOf()

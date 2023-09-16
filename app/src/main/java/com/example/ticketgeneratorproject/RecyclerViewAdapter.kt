@@ -1,6 +1,7 @@
 package com.example.ticketgeneratorproject
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -9,9 +10,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ticketgeneratorproject.Entities.TicketModel
 
-class RecyclerViewAdapter(private var ticketsList: MutableList<TicketModel>): RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>(){
-    /*private var filteredList = ticketsList.toMutableList()*/
 
+class RecyclerViewAdapter(private var ticketsList: MutableList<TicketModel>): RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>(){
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.ticket_item, parent, false)
         return ViewHolder(itemView)
@@ -24,8 +24,15 @@ class RecyclerViewAdapter(private var ticketsList: MutableList<TicketModel>): Re
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = ticketsList[position]
+        val context = holder.fullName.context
         holder.fullName.text = currentItem.fullName
         holder.tripDepartureDestination.text = java.lang.StringBuilder(currentItem.departureAddress.city + " - " + currentItem.destinationAddress.city)
+
+        holder.itemView.setOnClickListener {
+            val intent = Intent(context, DetailedInformationAboutTicket::class.java)
+            intent.putExtra("recyclerViewAdapter_TO_DetailedInformationAboutTicket_ticketData", currentItem)
+            context.startActivity(intent)
+        }
     }
 
     class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
@@ -33,23 +40,7 @@ class RecyclerViewAdapter(private var ticketsList: MutableList<TicketModel>): Re
         val tripDepartureDestination = itemView.findViewById<TextView>(R.id.trip)
     }
 
-    /*fun filter(query: String) {
-        *//*Log.d("Filter", "Started")*//*
-        filteredList.clear()
-        *//*val filteredItems = ticketsList.filter { it.fullName.contains(query, true) }
-        Log.d("myLog", "${filteredList}")
-        filteredList.addAll(filteredItems)
-        Log.d("myLog", "${filteredList}")*//*
-        if (query.isEmpty()) {
-            filteredList.addAll(ticketsList)
-        } else {
-            val filteredItems = ticketsList.filter { it.fullName.contains(query, true) }
-            filteredList.addAll(filteredItems)
-        }
-
-        notifyDataSetChanged()
-    }*/
-    fun setYourDataList(newTicketsList: MutableList<TicketModel>) {
+    fun setFilteredList(newTicketsList: MutableList<TicketModel>) {
         ticketsList = newTicketsList
     }
 }

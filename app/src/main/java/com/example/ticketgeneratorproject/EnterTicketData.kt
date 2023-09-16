@@ -3,16 +3,11 @@ package com.example.ticketgeneratorproject
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.res.ColorStateList
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.DocumentsContract.Root
-import android.sax.RootElement
 import android.util.Log
-import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import com.example.ticketgeneratorproject.Entities.Address
 import com.example.ticketgeneratorproject.Entities.Currency
@@ -22,8 +17,8 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
 class EnterTicketData : AppCompatActivity() {
-
-    @SuppressLint("MissingInflatedId")
+    private lateinit var ticket: TicketModel
+    @SuppressLint("MissingInflatedId", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_enter_ticket_data)
@@ -44,11 +39,27 @@ class EnterTicketData : AppCompatActivity() {
         val price_layout = findViewById<TextInputLayout>(R.id.price_layout)
         val currency_layout = findViewById<TextInputLayout>(R.id.currency_layout)
 
-        var flag: Boolean = true
+        var intentHasExtraToUpdate = intent.hasExtra("DetailedInformationTicket_TO_EnterTicketData_TicketData_Update")
 
+        var flag: Boolean = true
         val items = listOf("₴ Гривня", "\$ Долар", "€ Євро")
         val adapter = ArrayAdapter(this, R.layout.currency_item, items)
         currency.setAdapter(adapter)
+
+        if(intentHasExtraToUpdate){
+            ticket = intent.getSerializableExtra("DetailedInformationTicket_TO_EnterTicketData_TicketData_Update")
+                    as TicketModel
+
+            fullname.setText(ticket.fullName)
+            tripNumber.setText(ticket.tripNumber)
+            seat.setText(ticket.seat.toString())
+            departure.setText(ticket.departureAddress.country + ", " + ticket.departureAddress.city + ", " +
+                    ticket.departureAddress.street + ", " + ticket.departureAddress.number)
+            destination.setText(ticket.destinationAddress.country + ", " + ticket.destinationAddress.city + ", " +
+                    ticket.destinationAddress.street + ", " + ticket.destinationAddress.number)
+            price.setText(ticket.price.toString())
+            currency.setText(ticket.currency.toString())
+        }
 
         fullname.addTextChangedListener {
             if(it!!.count()>0){
@@ -141,19 +152,36 @@ class EnterTicketData : AppCompatActivity() {
             }
             if(flag){
                 val intent = Intent(this, EnterTicketDataTime::class.java)
-                intent.putExtra("Object", TicketModel(
-                    0,
-                    fullnameText,
-                    tripNumberText,
-                    Address.parseAddress(departureText),
-                    Address.parseAddress(destinationText),
-                    DateTime.parseDateTime("01-01-1991 00:00"),
-                    DateTime.parseDateTime("01-01-1991 00:00"),
-                    seatText.toInt(),
-                    priceText.toDouble(),
-                    Currency.parseCurrency(currencyText),
-                    DateTime.parseDateTime("01-01-1991 00:00")
-                ))
+                if(intentHasExtraToUpdate){
+                    intent.putExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update", TicketModel(
+                        ticket.id,
+                        fullnameText,
+                        tripNumberText,
+                        Address.parseAddress(departureText),
+                        Address.parseAddress(destinationText),
+                        DateTime.parseDateTime(ticket.departureDateTime.Date+ " " + ticket.departureDateTime.Time),
+                        DateTime.parseDateTime(ticket.destinationDateTime.Date+ " " + ticket.destinationDateTime.Time),
+                        seatText.toInt(),
+                        priceText.toDouble(),
+                        Currency.parseCurrency(currencyText),
+                        DateTime.parseDateTime("01-01-1991 00:00")
+                    ))
+                } else {
+                    intent.putExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Complete", TicketModel(
+                        0,
+                        fullnameText,
+                        tripNumberText,
+                        Address.parseAddress(departureText),
+                        Address.parseAddress(destinationText),
+
+                        DateTime.parseDateTime("01-01-1991 00:00"),
+                        DateTime.parseDateTime("01-01-1991 00:00"),
+                        seatText.toInt(),
+                        priceText.toDouble(),
+                        Currency.parseCurrency(currencyText),
+                        DateTime.parseDateTime("01-01-1991 00:00")
+                    ))
+                }
                 startActivity(intent)
             }
         }
