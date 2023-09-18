@@ -473,10 +473,25 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
             <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                android:id="@+id/edit_btn"
+                android:id="@+id/create_similar"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:layout_marginTop="30dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_gravity="bottom|center"
+                android:text="Створити схожий"
+                app:icon="@drawable/copy_icon"
+                android:backgroundTint="@color/dark_green"
+                android:textColor="@color/white"
+                android:textSize="20dp"
+                app:iconSize="33dp"
+                app:iconTint="@color/white"/>
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:id="@+id/edit_btn"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginTop="15dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_gravity="bottom|center"

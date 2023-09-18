@@ -1,6 +1,6 @@
 package com.example.ticketgeneratorproject.Entities
 data class TicketModel(
-    val id: Int,
+    var id: Int,
     val fullName: String,
     val tripNumber: String,
     val departureAddress: Address,
@@ -10,7 +10,19 @@ data class TicketModel(
     val seat: Int,
     val price: Double,
     val currency: Currency,
-    var purchaseTime: DateTime
+    var purchaseDateTime: DateTime
 ): java.io.Serializable{
-
+    fun setId(id: Int): TicketModel{
+        this.id = id
+        return this
+    }
+    fun setDepartureDestinationDateTime(departureDateTime: DateTime, destinationDateTime: DateTime):TicketModel{
+        this.departureDateTime = departureDateTime
+        this.destinationDateTime = destinationDateTime
+        return this
+    }
+    fun setPurchaseDateTime(purchaseDateTime: DateTime): TicketModel{
+        this.purchaseDateTime = purchaseDateTime
+        return this
+    }
 }

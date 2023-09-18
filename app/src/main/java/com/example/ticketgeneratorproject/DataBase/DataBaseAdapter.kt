@@ -28,7 +28,7 @@ class DataBaseAdapter(private val context: Context) {
             put(DataBaseHelper.SEAT, ticket.seat)
             put(DataBaseHelper.PRICE, ticket.price)
             put(DataBaseHelper.CURRENCY, ticket.currency.name)
-            put(DataBaseHelper.PURCHASE_TIME, ticket.purchaseTime.Date + " " + ticket.purchaseTime.Time)
+            put(DataBaseHelper.PURCHASE_TIME, ticket.purchaseDateTime.Date + " " + ticket.purchaseDateTime.Time)
         }
         return database.insert(DataBaseHelper.TABLE_NAME, null, values)
     }
@@ -48,7 +48,7 @@ class DataBaseAdapter(private val context: Context) {
             put(DataBaseHelper.SEAT, ticket.seat)
             put(DataBaseHelper.PRICE, ticket.price)
             put(DataBaseHelper.CURRENCY, ticket.currency.name)
-            put(DataBaseHelper.PURCHASE_TIME, ticket.purchaseTime.Date + " " + ticket.purchaseTime.Time)
+            put(DataBaseHelper.PURCHASE_TIME, ticket.purchaseDateTime.Date + " " + ticket.purchaseDateTime.Time)
         }
 
         val whereClause = "${DataBaseHelper.TICKET_ID} = ?"
@@ -94,5 +94,8 @@ class DataBaseAdapter(private val context: Context) {
             }while(cursor.moveToNext())
         }
         return tickets
+    }
+    fun closeDB(){
+        database.close()
     }
 }

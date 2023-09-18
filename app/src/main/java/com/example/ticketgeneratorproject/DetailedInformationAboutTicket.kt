@@ -14,6 +14,7 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
     private lateinit var backToMainButton: LinearLayout
     private lateinit var editButton: Button
     private lateinit var downloadButton: Button
+    private lateinit var createSimilarButton: Button
 
     @SuppressLint("MissingInflatedId", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,6 +24,7 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
         backToMainButton = findViewById(R.id.back_to_main_menu)
         editButton = findViewById(R.id.edit_btn)
         downloadButton = findViewById(R.id.download_btn)
+        createSimilarButton = findViewById(R.id.create_similar)
 
         var ticket = intent.getSerializableExtra("recyclerViewAdapter_TO_DetailedInformationAboutTicket_ticketData")
                 as TicketModel
@@ -42,11 +44,16 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
         findViewById<TextView>(R.id.ticket_price).text = ticket.price.toString()
         findViewById<TextView>(R.id.ticket_currency).text = ticket.currency.toString()
         findViewById<TextView>(R.id.ticket_seat).text = ticket.seat.toString()
-        findViewById<TextView>(R.id.ticket_purchaseDate).text = ticket.purchaseTime.Time + " " +
-                ticket.purchaseTime.Date
+        findViewById<TextView>(R.id.ticket_purchaseDate).text = ticket.purchaseDateTime.Time + " " +
+                ticket.purchaseDateTime.Date
 
         backToMainButton.setOnClickListener {
             finish()
+        }
+        createSimilarButton.setOnClickListener {
+            val intent = Intent(this, EnterTicketData::class.java)
+            intent.putExtra("DetailedInformationTicket_TO_EnterTicketData_TicketData_CreateSimilar", ticket)
+            startActivity(intent)
         }
         editButton.setOnClickListener {
             val intent = Intent(this, EnterTicketData::class.java)

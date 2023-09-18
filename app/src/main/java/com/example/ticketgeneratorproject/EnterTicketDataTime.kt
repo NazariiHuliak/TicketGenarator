@@ -54,6 +54,9 @@ class EnterTicketDataTime: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_enter_ticket_data_time)
 
+        val intentHasExtraToUpdate = intent.hasExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update")
+        val intentHasExtraToCreateSimilar = intent.hasExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_CreateSimilar")
+
         departureDateText = findViewById(R.id.departure_date)
         destinationDateText = findViewById(R.id.destination_date)
         departureTimeText = findViewById(R.id.departure_time)
@@ -70,7 +73,7 @@ class EnterTicketDataTime: AppCompatActivity() {
         error_icon_4 = findViewById(R.id.error_icon_4)
 
         var noError = true
-        var intentHasExtraToUpdate = intent.hasExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update")
+
         var dbAdapter = DataBaseAdapter(this)
 
         var datePickerState = -1
@@ -130,17 +133,22 @@ class EnterTicketDataTime: AppCompatActivity() {
             }
         }
 
-        if(intentHasExtraToUpdate){
+        if(intentHasExtraToUpdate)
             ticket = intent.getSerializableExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update")
                     as TicketModel
+        else if(intentHasExtraToCreateSimilar)
+            ticket = intent.getSerializableExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_CreateSimilar")
+                    as TicketModel
+        else
+            ticket = intent.getSerializableExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Complete")
+                    as TicketModel
+
+        if(intentHasExtraToUpdate || intentHasExtraToCreateSimilar) {
             departureDateText.text = ticket.departureDateTime.Date
             departureTimeText.text = ticket.departureDateTime.Time
 
             destinationDateText.text = ticket.destinationDateTime.Date
             destinationTimeText.text = ticket.destinationDateTime.Time
-        } else {
-            ticket = intent.getSerializableExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Complete")
-                    as TicketModel
         }
 
         findViewById<RelativeLayout>(R.id.btn_departure_date).setOnClickListener {
@@ -171,6 +179,47 @@ class EnterTicketDataTime: AppCompatActivity() {
             finish()
         }
 
+        findViewById<Button>(R.id.save_ticket).setOnClickListener {
+            if (departureDateText.text.isEmpty()) {
+                errorText1.visibility = View.VISIBLE
+                error_icon_1.visibility = View.VISIBLE
+                noError = false
+            }
+            if (departureTimeText.text.isEmpty()) {
+                errorText2.visibility = View.VISIBLE
+                error_icon_2.visibility = View.VISIBLE
+                noError = false
+            }
+            if (destinationDateText.text.isEmpty()) {
+                errorText3.visibility = View.VISIBLE
+                error_icon_3.visibility = View.VISIBLE
+                noError = false
+            }
+            if (destinationTimeText.text.isEmpty()) {
+                errorText4.visibility = View.VISIBLE
+                error_icon_4.visibility = View.VISIBLE
+                noError = false
+            }
+            if (noError) {
+                ticket.departureDateTime =
+                    DateTime.parseDateTime("${departureDateText.text} ${departureTimeText.text}")
+                ticket.destinationDateTime =
+                    DateTime.parseDateTime("${destinationDateText.text} ${destinationTimeText.text}")
+
+                if (intentHasExtraToUpdate) {
+                    dbAdapter.updateTicket(ticket)
+                } else {
+                    ticket.purchaseDateTime = DateTime.parseDateTime(getCurrentDateTime())
+                    dbAdapter.addTicket(ticket)
+                }
+
+                Toast.makeText(this, "Квиток був успішно збережений", Toast.LENGTH_LONG).show()
+
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+            }
+        }
+
         findViewById<Button>(R.id.generate_ticket).setOnClickListener {
             if(departureDateText.text.isEmpty()){
                 errorText1.visibility = View.VISIBLE
@@ -195,11 +244,11 @@ class EnterTicketDataTime: AppCompatActivity() {
             if(noError){
                 ticket.departureDateTime = DateTime.parseDateTime("${departureDateText.text} ${departureTimeText.text}")
                 ticket.destinationDateTime = DateTime.parseDateTime("${destinationDateText.text} ${destinationTimeText.text}")
-                ticket.purchaseTime = DateTime.parseDateTime(getCurrentDateTime())
 
                 if (intentHasExtraToUpdate){
                     dbAdapter.updateTicket(ticket)
-                } else{
+                } else {
+                    ticket.purchaseDateTime = DateTime.parseDateTime(getCurrentDateTime())
                     dbAdapter.addTicket(ticket)
                 }
 
@@ -210,6 +259,8 @@ class EnterTicketDataTime: AppCompatActivity() {
                 startActivity(intent)
             }
         }
+
+        dbAdapter.closeDB()
     }
 
     private fun updateDateText (myCalendar: Calendar, view: TextView) {
@@ -251,8 +302,8 @@ class EnterTicketDataTime: AppCompatActivity() {
             view.findViewById<TextView>(R.id.ticket_price).text = ticket.price.toString()
             view.findViewById<TextView>(R.id.ticket_currency).text = ticket.currency.toString()
             view.findViewById<TextView>(R.id.ticket_seat).text = ticket.seat.toString()
-            view.findViewById<TextView>(R.id.ticket_purchaseDate).text = ticket.purchaseTime.Time + " " +
-                    ticket.purchaseTime.Date
+            view.findViewById<TextView>(R.id.ticket_purchaseDate).text = ticket.purchaseDateTime.Time + " " +
+                    ticket.purchaseDateTime.Date
 
             val displayMetrics = DisplayMetrics()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -293,8 +344,8 @@ class EnterTicketDataTime: AppCompatActivity() {
             val downloadsDir =
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
 
-            var parts_time = ticket.purchaseTime.Time.replace(":", " ").split(" ")
-            var parts_date = ticket.purchaseTime.Date.replace("-", " ").split(" ")
+            var parts_time = ticket.purchaseDateTime.Time.replace(":", " ").split(" ")
+            var parts_date = ticket.purchaseDateTime.Date.replace("-", " ").split(" ")
             var uniqueId = ((parts_time[0].toInt() + parts_time[1].toInt() +
                     parts_date[0].toInt() + parts_date[1].toInt() + parts_date[2].toInt()))
 
@@ -302,7 +353,7 @@ class EnterTicketDataTime: AppCompatActivity() {
                     transliterateToEnglish(ticket.fullName).split(" ")[1] + " " +
                     transliterateToEnglish(ticket.departureAddress.city) + "-" +
                     transliterateToEnglish(ticket.destinationAddress.city) + " " +
-                    ticket.purchaseTime.Date + " " + System.currentTimeMillis().toString() +
+                    ticket.purchaseDateTime.Date + " " + System.currentTimeMillis().toString() +
                     ".pdf"
 
             val filePath = File(downloadsDir, fileName)

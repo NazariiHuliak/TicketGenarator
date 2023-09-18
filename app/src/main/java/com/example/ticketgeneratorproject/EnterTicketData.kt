@@ -23,6 +23,9 @@ class EnterTicketData : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_enter_ticket_data)
 
+        val intentHasExtraToUpdate = intent.hasExtra("DetailedInformationTicket_TO_EnterTicketData_TicketData_Update")
+        val intentHasExtraToCreateSimilar = intent.hasExtra("DetailedInformationTicket_TO_EnterTicketData_TicketData_CreateSimilar")
+
         val fullname = findViewById<TextInputEditText>(R.id.fullname)
         val tripNumber = findViewById<TextInputEditText>(R.id.trip_number)
         val seat = findViewById<TextInputEditText>(R.id.seat)
@@ -39,8 +42,6 @@ class EnterTicketData : AppCompatActivity() {
         val price_layout = findViewById<TextInputLayout>(R.id.price_layout)
         val currency_layout = findViewById<TextInputLayout>(R.id.currency_layout)
 
-        var intentHasExtraToUpdate = intent.hasExtra("DetailedInformationTicket_TO_EnterTicketData_TicketData_Update")
-
         var flag: Boolean = true
         val items = listOf("₴ Гривня", "\$ Долар", "€ Євро")
         val adapter = ArrayAdapter(this, R.layout.currency_item, items)
@@ -49,7 +50,11 @@ class EnterTicketData : AppCompatActivity() {
         if(intentHasExtraToUpdate){
             ticket = intent.getSerializableExtra("DetailedInformationTicket_TO_EnterTicketData_TicketData_Update")
                     as TicketModel
-
+        } else if(intentHasExtraToCreateSimilar){
+            ticket = intent.getSerializableExtra("DetailedInformationTicket_TO_EnterTicketData_TicketData_CreateSimilar")
+                    as TicketModel
+        }
+        if(intentHasExtraToUpdate || intentHasExtraToCreateSimilar){
             fullname.setText(ticket.fullName)
             tripNumber.setText(ticket.tripNumber)
             seat.setText(ticket.seat.toString())
@@ -152,35 +157,31 @@ class EnterTicketData : AppCompatActivity() {
             }
             if(flag){
                 val intent = Intent(this, EnterTicketDataTime::class.java)
+                val ticketToPass = TicketModel(
+                    0,
+                    fullnameText,
+                    tripNumberText,
+                    Address.parseAddress(departureText),
+                    Address.parseAddress(destinationText),
+                    DateTime.parseDateTime("01-01-1991 00:00"),
+                    DateTime.parseDateTime("01-01-1991 00:00"),
+                    seatText.toInt(),
+                    priceText.toDouble(),
+                    Currency.parseCurrency(currencyText),
+                    DateTime.parseDateTime("01-01-1991 00:00")
+                )
                 if(intentHasExtraToUpdate){
-                    intent.putExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update", TicketModel(
-                        ticket.id,
-                        fullnameText,
-                        tripNumberText,
-                        Address.parseAddress(departureText),
-                        Address.parseAddress(destinationText),
-                        DateTime.parseDateTime(ticket.departureDateTime.Date+ " " + ticket.departureDateTime.Time),
-                        DateTime.parseDateTime(ticket.destinationDateTime.Date+ " " + ticket.destinationDateTime.Time),
-                        seatText.toInt(),
-                        priceText.toDouble(),
-                        Currency.parseCurrency(currencyText),
-                        DateTime.parseDateTime("01-01-1991 00:00")
-                    ))
+                    intent.putExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update", ticketToPass.
+                    setId(ticket.id).
+                    setDepartureDestinationDateTime(DateTime.parseDateTime(ticket.departureDateTime.Date+ " " + ticket.departureDateTime.Time),
+                        DateTime.parseDateTime(ticket.destinationDateTime.Date+ " " + ticket.destinationDateTime.Time)).
+                    setPurchaseDateTime(ticket.purchaseDateTime))
+                } else if(intentHasExtraToCreateSimilar) {
+                    intent.putExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_CreateSimilar", ticketToPass.
+                    setDepartureDestinationDateTime(DateTime.parseDateTime(ticket.departureDateTime.Date+ " " + ticket.departureDateTime.Time),
+                        DateTime.parseDateTime(ticket.destinationDateTime.Date+ " " + ticket.destinationDateTime.Time)))
                 } else {
-                    intent.putExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Complete", TicketModel(
-                        0,
-                        fullnameText,
-                        tripNumberText,
-                        Address.parseAddress(departureText),
-                        Address.parseAddress(destinationText),
-
-                        DateTime.parseDateTime("01-01-1991 00:00"),
-                        DateTime.parseDateTime("01-01-1991 00:00"),
-                        seatText.toInt(),
-                        priceText.toDouble(),
-                        Currency.parseCurrency(currencyText),
-                        DateTime.parseDateTime("01-01-1991 00:00")
-                    ))
+                    intent.putExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Complete", ticketToPass)
                 }
                 startActivity(intent)
             }

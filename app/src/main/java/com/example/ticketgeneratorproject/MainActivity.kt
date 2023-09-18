@@ -64,6 +64,8 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, EnterTicketData::class.java)
             startActivity(intent)
         }
+
+        dbAdapter.closeDB()
     }
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
