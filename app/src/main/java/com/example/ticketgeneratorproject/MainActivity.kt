@@ -65,7 +65,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        dbAdapter.closeDB()
     }
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {

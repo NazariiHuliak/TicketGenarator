@@ -260,7 +260,7 @@ class EnterTicketDataTime: AppCompatActivity() {
             }
         }
 
-        dbAdapter.closeDB()
+
     }
 
     private fun updateDateText (myCalendar: Calendar, view: TextView) {
