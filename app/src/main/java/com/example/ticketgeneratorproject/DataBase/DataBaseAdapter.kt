@@ -95,7 +95,4 @@ class DataBaseAdapter(private val context: Context) {
         }
         return tickets
     }
-    fun closeDB(){
-        database.close()
-    }
 }

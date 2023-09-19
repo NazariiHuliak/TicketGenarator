@@ -260,7 +260,6 @@ class EnterTicketDataTime: AppCompatActivity() {
             }
         }
 
-
     }
 
     private fun updateDateText (myCalendar: Calendar, view: TextView) {
