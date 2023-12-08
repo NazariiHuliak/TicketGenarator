@@ -28,7 +28,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
 import com.example.ticketgeneratorproject.Entities.Currency
-import com.example.ticketgeneratorproject.Entities.Currency.Companion.parseToString
 import com.example.ticketgeneratorproject.Entities.DateTime
 import com.example.ticketgeneratorproject.Entities.TicketModel
 import com.google.android.material.textfield.TextInputEditText
@@ -40,6 +39,16 @@ import java.util.*
 
 
 class EnterTicketDataTime: AppCompatActivity() {
+    private lateinit var currencyDropDownMenu: AutoCompleteTextView
+    private lateinit var price: TextView
+    private lateinit var priceLayout: TextInputLayout
+    private lateinit var currencyLayout: TextInputLayout
+
+    private lateinit var departureLayoutTime: RelativeLayout
+    private lateinit var departureLayoutDate: RelativeLayout
+    private lateinit var destinationLayoutTime: RelativeLayout
+    private lateinit var destinationLayoutDate: RelativeLayout
+
     private lateinit var departureDateText: TextView
     private lateinit var departureTimeText: TextView
     private lateinit var destinationDateText: TextView
@@ -61,17 +70,20 @@ class EnterTicketDataTime: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_enter_ticket_data_time)
 
-        var currency = findViewById<AutoCompleteTextView>(R.id.auto_complete1)
+        //setting list of items for auto complete text view
+        currencyDropDownMenu = findViewById<AutoCompleteTextView>(R.id.auto_complete1)
         val items = listOf("₴ Гривня", "\$ Долар", "€ Євро")
         val adapter = ArrayAdapter(this, R.layout.currency_item, items)
-        currency.setAdapter(adapter)
+        currencyDropDownMenu.setAdapter(adapter)
 
-        val price = findViewById<TextInputEditText>(R.id.price)
-        val price_layout = findViewById<TextInputLayout>(R.id.price_layout)
-        val currency_layout = findViewById<TextInputLayout>(R.id.currency_layout)
+        price = findViewById<TextInputEditText>(R.id.price)
+        priceLayout = findViewById<TextInputLayout>(R.id.price_layout)
+        currencyLayout = findViewById<TextInputLayout>(R.id.currency_layout)
 
-        val intentHasExtraToUpdate = intent.hasExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update")
-        val intentHasExtraToCreateSimilar = intent.hasExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_CreateSimilar")
+        departureLayoutTime = findViewById(R.id.btn_departure_time)
+        departureLayoutDate = findViewById(R.id.btn_departure_date)
+        destinationLayoutTime = findViewById(R.id.btn_destination_time)
+        destinationLayoutDate = findViewById(R.id.btn_destination_date)
 
         departureDateText = findViewById(R.id.departure_date)
         destinationDateText = findViewById(R.id.destination_date)
@@ -88,10 +100,30 @@ class EnterTicketDataTime: AppCompatActivity() {
         error_icon_3 = findViewById(R.id.error_icon_3)
         error_icon_4 = findViewById(R.id.error_icon_4)
 
-        var hasErrors = false
+        //find intent Extra and set proper data
+        val intentHasExtraToUpdate = intent.hasExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update")
+        val intentHasExtraToCreateSimilar = intent.hasExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_CreateSimilar")
+        ticket = if (intentHasExtraToUpdate) {
+            intent.getSerializableExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update")
+                    as TicketModel
+        } else if (intentHasExtraToCreateSimilar) {
+            intent.getSerializableExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_CreateSimilar")
+                    as TicketModel
+        } else {
+            intent.getSerializableExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Complete")
+                    as TicketModel
+        }
+        if(intentHasExtraToUpdate || intentHasExtraToCreateSimilar) {
+            departureDateText.text = ticket.departureDateTime.Date
+            departureTimeText.text = ticket.departureDateTime.Time
+            destinationDateText.text = ticket.destinationDateTime.Date
+            destinationTimeText.text = ticket.destinationDateTime.Time
+            price.text = ticket.price.toString()
+            currencyDropDownMenu.setText(Currency.parseToString(ticket.currency), false)
+        }
 
-        var dbAdapter = DataBaseAdapter(this)
-
+        var hasInputtingErrors = false
+        val dbAdapter = DataBaseAdapter(this)
         var datePickerState = -1
         var timePickerState = -1
         val myCalendar = Calendar.getInstance()
@@ -106,24 +138,7 @@ class EnterTicketDataTime: AppCompatActivity() {
                 else -> Log.d("processing", "problem")
             }
         }
-
-        price.addTextChangedListener {
-            if(it!!.count()>0){
-                price_layout.error = null
-                hasErrors = false
-            }
-        }
-
-        currency.addTextChangedListener {
-            if(it!!.count()>0){
-                currency_layout.error = null
-                hasErrors = false
-            }
-        }
-
-
-
-        val timePickerListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+        val timePicker = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
             myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             myCalendar.set(Calendar.MINUTE, minute)
             when (timePickerState){
@@ -133,86 +148,70 @@ class EnterTicketDataTime: AppCompatActivity() {
             }
         }
 
+        price.addTextChangedListener {
+            if(it!!.count()>0){
+                priceLayout.error = null
+                hasInputtingErrors = false
+            }
+        }
+        currencyDropDownMenu.addTextChangedListener {
+            if(it!!.count()>0){
+                currencyLayout.error = null
+                hasInputtingErrors = false
+            }
+        }
         departureDateText.addOnLayoutChangeListener { view, i, i2, i3, i4, i5, i6, i7, i8 ->
             if(departureDateText.text!!.isNotEmpty()){
                 errorText1.visibility = View.INVISIBLE
                 error_icon_1.visibility = View.INVISIBLE
-                hasErrors = false
+                hasInputtingErrors = false
             }
         }
-
         departureTimeText.addOnLayoutChangeListener { view, i, i2, i3, i4, i5, i6, i7, i8 ->
             if(departureDateText.text!!.isNotEmpty()){
                 errorText2.visibility = View.INVISIBLE
                 error_icon_2.visibility = View.INVISIBLE
-                hasErrors = false
+                hasInputtingErrors = false
             }
         }
-
         destinationDateText.addOnLayoutChangeListener { view, i, i2, i3, i4, i5, i6, i7, i8 ->
             if(departureDateText.text!!.isNotEmpty()){
                 errorText3.visibility = View.INVISIBLE
                 error_icon_3.visibility = View.INVISIBLE
-                hasErrors = false
+                hasInputtingErrors = false
             }
         }
-
         destinationTimeText.addOnLayoutChangeListener { view, i, i2, i3, i4, i5, i6, i7, i8 ->
             if(departureDateText.text!!.isNotEmpty()){
                 errorText4.visibility = View.INVISIBLE
                 error_icon_4.visibility = View.INVISIBLE
-                hasErrors = false
+                hasInputtingErrors = false
             }
         }
 
-        if(intentHasExtraToUpdate)
-            ticket = intent.getSerializableExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update")
-                    as TicketModel
-        else if(intentHasExtraToCreateSimilar)
-            ticket = intent.getSerializableExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_CreateSimilar")
-                    as TicketModel
-        else
-            ticket = intent.getSerializableExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Complete")
-                    as TicketModel
-
-        if(intentHasExtraToUpdate || intentHasExtraToCreateSimilar) {
-            departureDateText.text = ticket.departureDateTime.Date
-            departureTimeText.text = ticket.departureDateTime.Time
-
-            destinationDateText.text = ticket.destinationDateTime.Date
-            destinationTimeText.text = ticket.destinationDateTime.Time
-
-            price.setText(ticket.price.toString())
-
-        }
-
-        findViewById<RelativeLayout>(R.id.btn_departure_date).setOnClickListener {
+        departureLayoutDate.setOnClickListener {
             DatePickerDialog( this, R.style.CustomDatePickerDialogTheme, datePicker, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                 myCalendar.get(Calendar.DAY_OF_MONTH)).show()
             datePickerState = 1
         }
-
-        findViewById<RelativeLayout>(R.id.btn_destination_date).setOnClickListener {
+        destinationLayoutDate.setOnClickListener {
             DatePickerDialog( this, R.style.CustomDatePickerDialogTheme, datePicker, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                 myCalendar.get(Calendar.DAY_OF_MONTH)).show()
             datePickerState = 2
         }
-
-        findViewById<RelativeLayout>(R.id.btn_departure_time).setOnClickListener {
-            TimePickerDialog(this, R.style.CustomDatePickerDialogTheme, timePickerListener, myCalendar.get(Calendar.HOUR_OF_DAY),
+        departureLayoutTime.setOnClickListener {
+            TimePickerDialog(this, R.style.CustomDatePickerDialogTheme, timePicker, myCalendar.get(Calendar.HOUR_OF_DAY),
                 myCalendar.get(Calendar.MINUTE), true).show()
             timePickerState = 1
         }
-
-        findViewById<RelativeLayout>(R.id.btn_destination_time).setOnClickListener {
-            TimePickerDialog(this, R.style.CustomDatePickerDialogTheme, timePickerListener, myCalendar.get(Calendar.HOUR_OF_DAY),
+        destinationLayoutTime.setOnClickListener {
+            TimePickerDialog(this, R.style.CustomDatePickerDialogTheme, timePicker, myCalendar.get(Calendar.HOUR_OF_DAY),
                 myCalendar.get(Calendar.MINUTE), true).show()
             timePickerState = 2
         }
-
-        currency.setOnClickListener {
+        currencyDropDownMenu.setOnClickListener {
             val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.hideSoftInputFromWindow(currency.windowToken, 0)
+            inputMethodManager.hideSoftInputFromWindow(currencyDropDownMenu.windowToken, 0)
         }
 
         findViewById<LinearLayout>(R.id.back_to_previous_page).setOnClickListener{
@@ -221,40 +220,41 @@ class EnterTicketDataTime: AppCompatActivity() {
 
         findViewById<Button>(R.id.save_ticket).setOnClickListener {
             val priceText = price.text.toString()
-            val currencyText = currency.text.toString()
+            val currencyText = currencyDropDownMenu.text.toString()
 
             if(priceText.isEmpty()){
-                price_layout.error = "Введіть дані"
-                hasErrors = true
+                priceLayout.error = "Введіть дані"
+                hasInputtingErrors = true
             }
             if(currencyText.isEmpty()){
-                currency_layout.error = "Введіть дані"
-                hasErrors = true
+                currencyLayout.error = "Введіть дані"
+                hasInputtingErrors = true
             }
-
             if (departureDateText.text.isEmpty()) {
                 errorText1.visibility = View.VISIBLE
                 error_icon_1.visibility = View.VISIBLE
-                hasErrors = true
+                hasInputtingErrors = true
             }
             if (departureTimeText.text.isEmpty()) {
                 errorText2.visibility = View.VISIBLE
                 error_icon_2.visibility = View.VISIBLE
-                hasErrors = true
+                hasInputtingErrors = true
             }
             if (destinationDateText.text.isEmpty()) {
                 errorText3.visibility = View.VISIBLE
                 error_icon_3.visibility = View.VISIBLE
-                hasErrors = true
+                hasInputtingErrors = true
             }
             if (destinationTimeText.text.isEmpty()) {
                 errorText4.visibility = View.VISIBLE
                 error_icon_4.visibility = View.VISIBLE
-                hasErrors = true
+                hasInputtingErrors = true
             }
-            if (!hasErrors) {
+
+            if (!hasInputtingErrors) {
                 ticket.price = priceText.toDouble()
                 ticket.currency = Currency.parseToCurrency(currencyText)
+
                 ticket.departureDateTime =
                     DateTime.parseDateTime("${departureDateText.text} ${departureTimeText.text}")
                 ticket.destinationDateTime =
@@ -273,41 +273,40 @@ class EnterTicketDataTime: AppCompatActivity() {
                 startActivity(intent)
             }
         }
-
         findViewById<Button>(R.id.generate_ticket).setOnClickListener {
             val priceText = price.text.toString()
-            val currencyText = currency.text.toString()
+            val currencyText = currencyDropDownMenu.text.toString()
             if(priceText.isEmpty()){
-                price_layout.error = "Введіть дані"
-                hasErrors = true
+                priceLayout.error = "Введіть дані"
+                hasInputtingErrors = true
             }
 
             if(currencyText.isEmpty()){
-                currency_layout.error = "Введіть дані"
-                hasErrors = true
+                currencyLayout.error = "Введіть дані"
+                hasInputtingErrors = true
             }
 
             if(departureDateText.text.isEmpty()){
                 errorText1.visibility = View.VISIBLE
                 error_icon_1.visibility = View.VISIBLE
-                hasErrors = false
+                hasInputtingErrors = false
             }
             if(departureTimeText.text.isEmpty()){
                 errorText2.visibility = View.VISIBLE
                 error_icon_2.visibility = View.VISIBLE
-                hasErrors = false
+                hasInputtingErrors = false
             }
             if(destinationDateText.text.isEmpty()){
                 errorText3.visibility = View.VISIBLE
                 error_icon_3.visibility = View.VISIBLE
-                hasErrors = false
+                hasInputtingErrors = false
             }
             if(destinationTimeText.text.isEmpty()){
                 errorText4.visibility = View.VISIBLE
                 error_icon_4.visibility = View.VISIBLE
-                hasErrors = false
+                hasInputtingErrors = false
             }
-            if(hasErrors){
+            if(hasInputtingErrors){
                 ticket.departureDateTime = DateTime.parseDateTime("${departureDateText.text} ${departureTimeText.text}")
                 ticket.destinationDateTime = DateTime.parseDateTime("${destinationDateText.text} ${destinationTimeText.text}")
 

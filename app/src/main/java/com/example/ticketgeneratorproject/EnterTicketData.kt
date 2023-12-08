@@ -52,6 +52,7 @@ class EnterTicketData : AppCompatActivity() {
                     ticket.departureAddress.street + ", " + ticket.departureAddress.number)
             destination.setText(ticket.destinationAddress.country + ", " + ticket.destinationAddress.city + ", " +
                     ticket.destinationAddress.street + ", " + ticket.destinationAddress.number)
+
         }
 
         fullname.addTextChangedListener {

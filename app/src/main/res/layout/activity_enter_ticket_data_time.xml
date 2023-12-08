@@ -110,7 +110,7 @@
                         <AutoCompleteTextView
                             android:id="@+id/auto_complete1"
                             android:layout_width="match_parent"
-                            android:layout_height="60dp"
+                            android:layout_height="54sp"
                             android:hint="$/€/₴"
                             android:textSize="18dp"
                             android:textColor="@color/black" />
@@ -122,6 +122,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Відправлення"
+                android:layout_marginTop="20sp"
                 android:gravity="center"
                 android:fontFamily="@font/rubik"
                 android:textSize="20dp"
