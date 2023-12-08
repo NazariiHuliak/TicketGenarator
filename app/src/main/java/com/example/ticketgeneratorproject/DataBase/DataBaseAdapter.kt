@@ -87,7 +87,7 @@ class DataBaseAdapter(private val context: Context) {
                         DateTime.parseDateTime(destinationTime),
                         seat,
                         price,
-                        Currency.parseCurrency(currency),
+                        Currency.parseToCurrency(currency),
                         DateTime.parseDateTime(purchaseTime)
                     )
                 )

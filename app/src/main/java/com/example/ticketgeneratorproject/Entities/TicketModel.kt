@@ -8,8 +8,8 @@ data class TicketModel(
     var departureDateTime: DateTime,
     var destinationDateTime: DateTime,
     val seat: Int,
-    val price: Double,
-    val currency: Currency,
+    var price: Double,
+    var currency: Currency,
     var purchaseDateTime: DateTime
 ): java.io.Serializable{
     fun setId(id: Int): TicketModel{
@@ -23,6 +23,14 @@ data class TicketModel(
     }
     fun setPurchaseDateTime(purchaseDateTime: DateTime): TicketModel{
         this.purchaseDateTime = purchaseDateTime
+        return this
+    }
+    fun setPrice(price: Double): TicketModel{
+        this.price = price
+        return this
+    }
+    fun setCurrency(currency: Currency): TicketModel{
+        this.currency = currency
         return this
     }
 }
