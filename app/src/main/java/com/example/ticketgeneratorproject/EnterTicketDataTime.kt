@@ -20,13 +20,19 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
+import com.example.ticketgeneratorproject.Entities.Currency
+import com.example.ticketgeneratorproject.Entities.Currency.Companion.parseToString
 import com.example.ticketgeneratorproject.Entities.DateTime
 import com.example.ticketgeneratorproject.Entities.TicketModel
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -50,9 +56,19 @@ class EnterTicketDataTime: AppCompatActivity() {
     private lateinit var error_icon_4: ImageView
 
     private lateinit var ticket: TicketModel
+    @SuppressLint("MissingInflatedId", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_enter_ticket_data_time)
+
+        var currency = findViewById<AutoCompleteTextView>(R.id.auto_complete1)
+        val items = listOf("₴ Гривня", "\$ Долар", "€ Євро")
+        val adapter = ArrayAdapter(this, R.layout.currency_item, items)
+        currency.setAdapter(adapter)
+
+        val price = findViewById<TextInputEditText>(R.id.price)
+        val price_layout = findViewById<TextInputLayout>(R.id.price_layout)
+        val currency_layout = findViewById<TextInputLayout>(R.id.currency_layout)
 
         val intentHasExtraToUpdate = intent.hasExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update")
         val intentHasExtraToCreateSimilar = intent.hasExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_CreateSimilar")
@@ -72,7 +88,7 @@ class EnterTicketDataTime: AppCompatActivity() {
         error_icon_3 = findViewById(R.id.error_icon_3)
         error_icon_4 = findViewById(R.id.error_icon_4)
 
-        var noError = true
+        var hasErrors = false
 
         var dbAdapter = DataBaseAdapter(this)
 
@@ -91,6 +107,22 @@ class EnterTicketDataTime: AppCompatActivity() {
             }
         }
 
+        price.addTextChangedListener {
+            if(it!!.count()>0){
+                price_layout.error = null
+                hasErrors = false
+            }
+        }
+
+        currency.addTextChangedListener {
+            if(it!!.count()>0){
+                currency_layout.error = null
+                hasErrors = false
+            }
+        }
+
+
+
         val timePickerListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
             myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             myCalendar.set(Calendar.MINUTE, minute)
@@ -105,7 +137,7 @@ class EnterTicketDataTime: AppCompatActivity() {
             if(departureDateText.text!!.isNotEmpty()){
                 errorText1.visibility = View.INVISIBLE
                 error_icon_1.visibility = View.INVISIBLE
-                noError = true
+                hasErrors = false
             }
         }
 
@@ -113,7 +145,7 @@ class EnterTicketDataTime: AppCompatActivity() {
             if(departureDateText.text!!.isNotEmpty()){
                 errorText2.visibility = View.INVISIBLE
                 error_icon_2.visibility = View.INVISIBLE
-                noError = true
+                hasErrors = false
             }
         }
 
@@ -121,7 +153,7 @@ class EnterTicketDataTime: AppCompatActivity() {
             if(departureDateText.text!!.isNotEmpty()){
                 errorText3.visibility = View.INVISIBLE
                 error_icon_3.visibility = View.INVISIBLE
-                noError = true
+                hasErrors = false
             }
         }
 
@@ -129,7 +161,7 @@ class EnterTicketDataTime: AppCompatActivity() {
             if(departureDateText.text!!.isNotEmpty()){
                 errorText4.visibility = View.INVISIBLE
                 error_icon_4.visibility = View.INVISIBLE
-                noError = true
+                hasErrors = false
             }
         }
 
@@ -149,6 +181,9 @@ class EnterTicketDataTime: AppCompatActivity() {
 
             destinationDateText.text = ticket.destinationDateTime.Date
             destinationTimeText.text = ticket.destinationDateTime.Time
+
+            price.setText(ticket.price.toString())
+
         }
 
         findViewById<RelativeLayout>(R.id.btn_departure_date).setOnClickListener {
@@ -175,32 +210,51 @@ class EnterTicketDataTime: AppCompatActivity() {
             timePickerState = 2
         }
 
+        currency.setOnClickListener {
+            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(currency.windowToken, 0)
+        }
+
         findViewById<LinearLayout>(R.id.back_to_previous_page).setOnClickListener{
             finish()
         }
 
         findViewById<Button>(R.id.save_ticket).setOnClickListener {
+            val priceText = price.text.toString()
+            val currencyText = currency.text.toString()
+
+            if(priceText.isEmpty()){
+                price_layout.error = "Введіть дані"
+                hasErrors = true
+            }
+            if(currencyText.isEmpty()){
+                currency_layout.error = "Введіть дані"
+                hasErrors = true
+            }
+
             if (departureDateText.text.isEmpty()) {
                 errorText1.visibility = View.VISIBLE
                 error_icon_1.visibility = View.VISIBLE
-                noError = false
+                hasErrors = true
             }
             if (departureTimeText.text.isEmpty()) {
                 errorText2.visibility = View.VISIBLE
                 error_icon_2.visibility = View.VISIBLE
-                noError = false
+                hasErrors = true
             }
             if (destinationDateText.text.isEmpty()) {
                 errorText3.visibility = View.VISIBLE
                 error_icon_3.visibility = View.VISIBLE
-                noError = false
+                hasErrors = true
             }
             if (destinationTimeText.text.isEmpty()) {
                 errorText4.visibility = View.VISIBLE
                 error_icon_4.visibility = View.VISIBLE
-                noError = false
+                hasErrors = true
             }
-            if (noError) {
+            if (!hasErrors) {
+                ticket.price = priceText.toDouble()
+                ticket.currency = Currency.parseToCurrency(currencyText)
                 ticket.departureDateTime =
                     DateTime.parseDateTime("${departureDateText.text} ${departureTimeText.text}")
                 ticket.destinationDateTime =
@@ -221,27 +275,39 @@ class EnterTicketDataTime: AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.generate_ticket).setOnClickListener {
+            val priceText = price.text.toString()
+            val currencyText = currency.text.toString()
+            if(priceText.isEmpty()){
+                price_layout.error = "Введіть дані"
+                hasErrors = true
+            }
+
+            if(currencyText.isEmpty()){
+                currency_layout.error = "Введіть дані"
+                hasErrors = true
+            }
+
             if(departureDateText.text.isEmpty()){
                 errorText1.visibility = View.VISIBLE
                 error_icon_1.visibility = View.VISIBLE
-                noError = false
+                hasErrors = false
             }
             if(departureTimeText.text.isEmpty()){
                 errorText2.visibility = View.VISIBLE
                 error_icon_2.visibility = View.VISIBLE
-                noError = false
+                hasErrors = false
             }
             if(destinationDateText.text.isEmpty()){
                 errorText3.visibility = View.VISIBLE
                 error_icon_3.visibility = View.VISIBLE
-                noError = false
+                hasErrors = false
             }
             if(destinationTimeText.text.isEmpty()){
                 errorText4.visibility = View.VISIBLE
                 error_icon_4.visibility = View.VISIBLE
-                noError = false
+                hasErrors = false
             }
-            if(noError){
+            if(hasErrors){
                 ticket.departureDateTime = DateTime.parseDateTime("${departureDateText.text} ${departureTimeText.text}")
                 ticket.destinationDateTime = DateTime.parseDateTime("${destinationDateText.text} ${destinationTimeText.text}")
 
@@ -259,7 +325,6 @@ class EnterTicketDataTime: AppCompatActivity() {
                 startActivity(intent)
             }
         }
-
     }
 
     private fun updateDateText (myCalendar: Calendar, view: TextView) {
