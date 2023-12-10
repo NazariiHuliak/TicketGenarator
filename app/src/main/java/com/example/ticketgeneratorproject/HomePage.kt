@@ -15,7 +15,7 @@ import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
 import com.example.ticketgeneratorproject.Entities.TicketModel
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class HomePage : AppCompatActivity() {
 
     private var lastBackPressTime: Long = 0
     private val BACK_PRESS_INTERVAL = 2000

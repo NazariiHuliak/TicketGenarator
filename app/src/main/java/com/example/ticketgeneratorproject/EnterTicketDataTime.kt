@@ -269,7 +269,7 @@ class EnterTicketDataTime: AppCompatActivity() {
 
                 Toast.makeText(this, "Квиток був успішно збережений", Toast.LENGTH_LONG).show()
 
-                val intent = Intent(this, MainActivity::class.java)
+                val intent = Intent(this, HomePage::class.java)
                 startActivity(intent)
             }
         }
@@ -320,7 +320,7 @@ class EnterTicketDataTime: AppCompatActivity() {
                 askPermissions()
                 convertXmlToPdf(ticket, this)
 
-                val intent = Intent(this, MainActivity::class.java)
+                val intent = Intent(this, HomePage::class.java)
                 startActivity(intent)
             }
         }
@@ -346,7 +346,7 @@ class EnterTicketDataTime: AppCompatActivity() {
         }
     }
     companion object{
-        @SuppressLint("MissingInflatedId", "SetTextI18n")
+        @SuppressLint("MissingInflatedId", "SetTextI18n", "InflateParams")
         fun convertXmlToPdf(ticket: TicketModel, context: Context) {
             val view: View = LayoutInflater.from(context).inflate(R.layout.to_generate_pdf, null)
 

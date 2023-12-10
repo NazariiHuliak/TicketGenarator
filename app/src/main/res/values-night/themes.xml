@@ -19,4 +19,9 @@
         <!-- Додайте інші атрибути стилів, які ви хочете змінити -->
     </style>
 
+    <style name="ThemeOverlay.TicketGeneratorProject.FullscreenContainer" parent="">
+        <item name="fullscreenBackgroundColor">@color/light_blue_900</item>
+        <item name="fullscreenTextColor">@color/light_blue_A400</item>
+    </style>
+
 </resources>
