@@ -11,6 +11,12 @@
     <color name="light_green">#E1E9D8</color>
     <color name="dark_green">#284E3D</color>
     <color name="green">#8BB49E</color>
+    <color name="light_blue_600">#4AB1FB</color>
+    <color name="light_blue_A200">#BD0500</color>
+    <color name="light_blue_900">#BD0500</color>
+    <color name="light_blue_A400">#BD0500</color>
     <color name="errorColor">#BD0500</color>
+    <color name="black_overlay">#BD0500</color>
+
 
 </resources>

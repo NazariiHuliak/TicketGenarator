@@ -1,10 +1,13 @@
 package com.example.ticketgeneratorproject
 
+
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -20,20 +23,34 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
 import com.example.ticketgeneratorproject.Entities.DateTime
 import com.example.ticketgeneratorproject.Entities.TicketModel
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
-
+import com.example.ticketgeneratorproject.Entities.Currency
 
 class EnterTicketDataTime: AppCompatActivity() {
+    private lateinit var currencyDropDownMenu: AutoCompleteTextView
+    private lateinit var price: TextView
+    private lateinit var priceLayout: TextInputLayout
+    private lateinit var currencyLayout: TextInputLayout
+
+    private lateinit var departureLayoutTime: RelativeLayout
+    private lateinit var departureLayoutDate: RelativeLayout
+    private lateinit var destinationLayoutTime: RelativeLayout
+    private lateinit var destinationLayoutDate: RelativeLayout
+
     private lateinit var departureDateText: TextView
     private lateinit var departureTimeText: TextView
     private lateinit var destinationDateText: TextView
@@ -50,12 +67,25 @@ class EnterTicketDataTime: AppCompatActivity() {
     private lateinit var error_icon_4: ImageView
 
     private lateinit var ticket: TicketModel
+    @SuppressLint("MissingInflatedId", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_enter_ticket_data_time)
 
-        val intentHasExtraToUpdate = intent.hasExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update")
-        val intentHasExtraToCreateSimilar = intent.hasExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_CreateSimilar")
+        //setting list of items for auto complete text view
+        currencyDropDownMenu = findViewById<AutoCompleteTextView>(R.id.auto_complete1)
+        val items = listOf("₴ Гривня", "\$ Долар", "€ Євро")
+        val adapter = ArrayAdapter(this, R.layout.currency_item, items)
+        currencyDropDownMenu.setAdapter(adapter)
+
+        price = findViewById<TextInputEditText>(R.id.price)
+        priceLayout = findViewById<TextInputLayout>(R.id.price_layout)
+        currencyLayout = findViewById<TextInputLayout>(R.id.currency_layout)
+
+        departureLayoutTime = findViewById(R.id.btn_departure_time)
+        departureLayoutDate = findViewById(R.id.btn_departure_date)
+        destinationLayoutTime = findViewById(R.id.btn_destination_time)
+        destinationLayoutDate = findViewById(R.id.btn_destination_date)
 
         departureDateText = findViewById(R.id.departure_date)
         destinationDateText = findViewById(R.id.destination_date)
@@ -72,10 +102,30 @@ class EnterTicketDataTime: AppCompatActivity() {
         error_icon_3 = findViewById(R.id.error_icon_3)
         error_icon_4 = findViewById(R.id.error_icon_4)
 
-        var noError = true
+        //find intent Extra and set proper data
+        val intentHasExtraToUpdate = intent.hasExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update")
+        val intentHasExtraToCreateSimilar = intent.hasExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_CreateSimilar")
+        ticket = if (intentHasExtraToUpdate) {
+            intent.getSerializableExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update")
+                    as TicketModel
+        } else if (intentHasExtraToCreateSimilar) {
+            intent.getSerializableExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_CreateSimilar")
+                    as TicketModel
+        } else {
+            intent.getSerializableExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Complete")
+                    as TicketModel
+        }
+        if(intentHasExtraToUpdate || intentHasExtraToCreateSimilar) {
+            departureDateText.text = ticket.departureDateTime.Date
+            departureTimeText.text = ticket.departureDateTime.Time
+            destinationDateText.text = ticket.destinationDateTime.Date
+            destinationTimeText.text = ticket.destinationDateTime.Time
+            price.text = ticket.price.toString()
+            currencyDropDownMenu.setText(Currency.parseToString(ticket.currency), false)
+        }
 
-        var dbAdapter = DataBaseAdapter(this)
-
+        var hasInputtingErrors = false
+        val dbAdapter = DataBaseAdapter(this)
         var datePickerState = -1
         var timePickerState = -1
         val myCalendar = Calendar.getInstance()
@@ -90,8 +140,7 @@ class EnterTicketDataTime: AppCompatActivity() {
                 else -> Log.d("processing", "problem")
             }
         }
-
-        val timePickerListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+        val timePicker = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
             myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             myCalendar.set(Calendar.MINUTE, minute)
             when (timePickerState){
@@ -101,78 +150,70 @@ class EnterTicketDataTime: AppCompatActivity() {
             }
         }
 
+        price.addTextChangedListener {
+            if(it!!.count()>0){
+                priceLayout.error = null
+                hasInputtingErrors = false
+            }
+        }
+        currencyDropDownMenu.addTextChangedListener {
+            if(it!!.count()>0){
+                currencyLayout.error = null
+                hasInputtingErrors = false
+            }
+        }
         departureDateText.addOnLayoutChangeListener { view, i, i2, i3, i4, i5, i6, i7, i8 ->
             if(departureDateText.text!!.isNotEmpty()){
                 errorText1.visibility = View.INVISIBLE
                 error_icon_1.visibility = View.INVISIBLE
-                noError = true
+                hasInputtingErrors = false
             }
         }
-
         departureTimeText.addOnLayoutChangeListener { view, i, i2, i3, i4, i5, i6, i7, i8 ->
             if(departureDateText.text!!.isNotEmpty()){
                 errorText2.visibility = View.INVISIBLE
                 error_icon_2.visibility = View.INVISIBLE
-                noError = true
+                hasInputtingErrors = false
             }
         }
-
         destinationDateText.addOnLayoutChangeListener { view, i, i2, i3, i4, i5, i6, i7, i8 ->
             if(departureDateText.text!!.isNotEmpty()){
                 errorText3.visibility = View.INVISIBLE
                 error_icon_3.visibility = View.INVISIBLE
-                noError = true
+                hasInputtingErrors = false
             }
         }
-
         destinationTimeText.addOnLayoutChangeListener { view, i, i2, i3, i4, i5, i6, i7, i8 ->
             if(departureDateText.text!!.isNotEmpty()){
                 errorText4.visibility = View.INVISIBLE
                 error_icon_4.visibility = View.INVISIBLE
-                noError = true
+                hasInputtingErrors = false
             }
         }
 
-        if(intentHasExtraToUpdate)
-            ticket = intent.getSerializableExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update")
-                    as TicketModel
-        else if(intentHasExtraToCreateSimilar)
-            ticket = intent.getSerializableExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_CreateSimilar")
-                    as TicketModel
-        else
-            ticket = intent.getSerializableExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Complete")
-                    as TicketModel
-
-        if(intentHasExtraToUpdate || intentHasExtraToCreateSimilar) {
-            departureDateText.text = ticket.departureDateTime.Date
-            departureTimeText.text = ticket.departureDateTime.Time
-
-            destinationDateText.text = ticket.destinationDateTime.Date
-            destinationTimeText.text = ticket.destinationDateTime.Time
-        }
-
-        findViewById<RelativeLayout>(R.id.btn_departure_date).setOnClickListener {
+        departureLayoutDate.setOnClickListener {
             DatePickerDialog( this, R.style.CustomDatePickerDialogTheme, datePicker, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                 myCalendar.get(Calendar.DAY_OF_MONTH)).show()
             datePickerState = 1
         }
-
-        findViewById<RelativeLayout>(R.id.btn_destination_date).setOnClickListener {
+        destinationLayoutDate.setOnClickListener {
             DatePickerDialog( this, R.style.CustomDatePickerDialogTheme, datePicker, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                 myCalendar.get(Calendar.DAY_OF_MONTH)).show()
             datePickerState = 2
         }
-
-        findViewById<RelativeLayout>(R.id.btn_departure_time).setOnClickListener {
-            TimePickerDialog(this, R.style.CustomDatePickerDialogTheme, timePickerListener, myCalendar.get(Calendar.HOUR_OF_DAY),
+        departureLayoutTime.setOnClickListener {
+            TimePickerDialog(this, R.style.CustomDatePickerDialogTheme, timePicker, myCalendar.get(Calendar.HOUR_OF_DAY),
                 myCalendar.get(Calendar.MINUTE), true).show()
             timePickerState = 1
         }
-
-        findViewById<RelativeLayout>(R.id.btn_destination_time).setOnClickListener {
-            TimePickerDialog(this, R.style.CustomDatePickerDialogTheme, timePickerListener, myCalendar.get(Calendar.HOUR_OF_DAY),
+        destinationLayoutTime.setOnClickListener {
+            TimePickerDialog(this, R.style.CustomDatePickerDialogTheme, timePicker, myCalendar.get(Calendar.HOUR_OF_DAY),
                 myCalendar.get(Calendar.MINUTE), true).show()
             timePickerState = 2
+        }
+        currencyDropDownMenu.setOnClickListener {
+            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(currencyDropDownMenu.windowToken, 0)
         }
 
         findViewById<LinearLayout>(R.id.back_to_previous_page).setOnClickListener{
@@ -180,27 +221,42 @@ class EnterTicketDataTime: AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.save_ticket).setOnClickListener {
+            val priceText = price.text.toString()
+            val currencyText = currencyDropDownMenu.text.toString()
+
+            if(priceText.isEmpty()){
+                priceLayout.error = "Введіть дані"
+                hasInputtingErrors = true
+            }
+            if(currencyText.isEmpty()){
+                currencyLayout.error = "Введіть дані"
+                hasInputtingErrors = true
+            }
             if (departureDateText.text.isEmpty()) {
                 errorText1.visibility = View.VISIBLE
                 error_icon_1.visibility = View.VISIBLE
-                noError = false
+                hasInputtingErrors = true
             }
             if (departureTimeText.text.isEmpty()) {
                 errorText2.visibility = View.VISIBLE
                 error_icon_2.visibility = View.VISIBLE
-                noError = false
+                hasInputtingErrors = true
             }
             if (destinationDateText.text.isEmpty()) {
                 errorText3.visibility = View.VISIBLE
                 error_icon_3.visibility = View.VISIBLE
-                noError = false
+                hasInputtingErrors = true
             }
             if (destinationTimeText.text.isEmpty()) {
                 errorText4.visibility = View.VISIBLE
                 error_icon_4.visibility = View.VISIBLE
-                noError = false
+                hasInputtingErrors = true
             }
-            if (noError) {
+
+            if (!hasInputtingErrors) {
+                ticket.price = priceText.toDouble()
+                ticket.currency = Currency.parseToCurrency(currencyText)
+
                 ticket.departureDateTime =
                     DateTime.parseDateTime("${departureDateText.text} ${departureTimeText.text}")
                 ticket.destinationDateTime =
@@ -219,158 +275,157 @@ class EnterTicketDataTime: AppCompatActivity() {
                 startActivity(intent)
             }
         }
-
         findViewById<Button>(R.id.generate_ticket).setOnClickListener {
+            val priceText = price.text.toString()
+            val currencyText = currencyDropDownMenu.text.toString()
+            if(priceText.isEmpty()){
+                priceLayout.error = "Введіть дані"
+                hasInputtingErrors = true
+            }
+
+            if(currencyText.isEmpty()){
+                currencyLayout.error = "Введіть дані"
+                hasInputtingErrors = true
+            }
+
             if(departureDateText.text.isEmpty()){
                 errorText1.visibility = View.VISIBLE
                 error_icon_1.visibility = View.VISIBLE
-                noError = false
+                hasInputtingErrors = true
             }
             if(departureTimeText.text.isEmpty()){
                 errorText2.visibility = View.VISIBLE
                 error_icon_2.visibility = View.VISIBLE
-                noError = false
+                hasInputtingErrors = true
             }
             if(destinationDateText.text.isEmpty()){
                 errorText3.visibility = View.VISIBLE
                 error_icon_3.visibility = View.VISIBLE
-                noError = false
+                hasInputtingErrors = true
             }
             if(destinationTimeText.text.isEmpty()){
                 errorText4.visibility = View.VISIBLE
                 error_icon_4.visibility = View.VISIBLE
-                noError = false
+                hasInputtingErrors = true
             }
-            if(noError){
+
+            if(!hasInputtingErrors){
                 ticket.departureDateTime = DateTime.parseDateTime("${departureDateText.text} ${departureTimeText.text}")
                 ticket.destinationDateTime = DateTime.parseDateTime("${destinationDateText.text} ${destinationTimeText.text}")
 
-                if (intentHasExtraToUpdate){
-                    dbAdapter.updateTicket(ticket)
-                } else {
-                    ticket.purchaseDateTime = DateTime.parseDateTime(getCurrentDateTime())
-                    dbAdapter.addTicket(ticket)
+                if(convertXmlToPdf(ticket, this)){
+                    val intent = Intent(this, HomePage::class.java)
+                    startActivity(intent)
                 }
-
-                if (askPermissions()){
-                    convertXmlToPdf(ticket, this)
-                }
-
-                val intent = Intent(this, HomePage::class.java)
-                startActivity(intent)
             }
         }
-
     }
 
     private fun updateDateText (myCalendar: Calendar, view: TextView) {
         val sdf = SimpleDateFormat ("dd-MM-yyyy", Locale.UK)
         view.setText(sdf.format(myCalendar.time))
     }
+
     private fun updateTimeText (myCalendar: Calendar, view: TextView) {
         val formattedTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(myCalendar.time)
         view.setText(formattedTime.format(myCalendar.time))
     }
-    private fun askPermissions(): Boolean {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                1
-            )
-        }
-        return (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED)
-    }
+
     companion object{
         @SuppressLint("MissingInflatedId", "SetTextI18n", "InflateParams")
-        fun convertXmlToPdf(ticket: TicketModel, context: Context) {
-            val view: View = LayoutInflater.from(context).inflate(R.layout.to_generate_pdf, null)
-
-            view.findViewById<TextView>(R.id.ticket_fullName).text = ticket.fullName
-            view.findViewById<TextView>(R.id.ticket_tripNumber).text = ticket.tripNumber
-            view.findViewById<TextView>(R.id.ticket_departureCity).text = ticket.departureAddress.city
-            view.findViewById<TextView>(R.id.ticket_departureAddress).text = ticket.departureAddress.street + " " +
-                    ticket.departureAddress.number
-            view.findViewById<TextView>(R.id.ticket_departureDate).text = ticket.departureDateTime.Date
-            view.findViewById<TextView>(R.id.ticket_departureTime).text = ticket.departureDateTime.Time
-            view.findViewById<TextView>(R.id.ticket_destinationCity).text = ticket.destinationAddress.city
-            view.findViewById<TextView>(R.id.ticket_destinationAddress).text = ticket.destinationAddress.street + " " +
-                    ticket.destinationAddress.number
-            view.findViewById<TextView>(R.id.ticket_destinationDate).text = ticket.destinationDateTime.Date
-            view.findViewById<TextView>(R.id.ticket_destinationTime).text = ticket.destinationDateTime.Time
-            view.findViewById<TextView>(R.id.ticket_price).text = ticket.price.toString()
-            view.findViewById<TextView>(R.id.ticket_currency).text = ticket.currency.toString()
-            view.findViewById<TextView>(R.id.ticket_seat).text = ticket.seat.toString()
-            view.findViewById<TextView>(R.id.ticket_purchaseDate).text = ticket.purchaseDateTime.Time + " " +
-                    ticket.purchaseDateTime.Date
-
-            val displayMetrics = DisplayMetrics()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                context.display!!.getRealMetrics(displayMetrics)
+        fun convertXmlToPdf(ticket: TicketModel, context: Context):Boolean {
+            fun askPermissions(): Boolean {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED
+                ) {
+                    ActivityCompat.requestPermissions(
+                        context as Activity,
+                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        1
+                    )
+                }
+                return (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED)
             }
-            view.measure(
-                View.MeasureSpec.makeMeasureSpec(displayMetrics.widthPixels, View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(displayMetrics.heightPixels, View.MeasureSpec.EXACTLY)
-            )
 
-            view.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels)
-            // Create a new PdfDocument instance
-            val document = PdfDocument()
+            if(askPermissions()){
+                val view: View = LayoutInflater.from(context).inflate(R.layout.to_generate_pdf, null)
 
-            val viewWidth = 1080
-            val viewHeight = 1920
+                view.findViewById<TextView>(R.id.ticket_fullName).text = ticket.fullName
+                view.findViewById<TextView>(R.id.ticket_tripNumber).text = ticket.tripNumber
+                view.findViewById<TextView>(R.id.ticket_departureCity).text = ticket.departureAddress.city
+                view.findViewById<TextView>(R.id.ticket_departureAddress).text = ticket.departureAddress.street + " " +
+                        ticket.departureAddress.number
+                view.findViewById<TextView>(R.id.ticket_departureDate).text = ticket.departureDateTime.Date
+                view.findViewById<TextView>(R.id.ticket_departureTime).text = ticket.departureDateTime.Time
+                view.findViewById<TextView>(R.id.ticket_destinationCity).text = ticket.destinationAddress.city
+                view.findViewById<TextView>(R.id.ticket_destinationAddress).text = ticket.destinationAddress.street + " " +
+                        ticket.destinationAddress.number
+                view.findViewById<TextView>(R.id.ticket_destinationDate).text = ticket.destinationDateTime.Date
+                view.findViewById<TextView>(R.id.ticket_destinationTime).text = ticket.destinationDateTime.Time
+                view.findViewById<TextView>(R.id.ticket_price).text = ticket.price.toString()
+                view.findViewById<TextView>(R.id.ticket_currency).text = ticket.currency.toString()
+                view.findViewById<TextView>(R.id.ticket_seat).text = if(ticket.seat == -1) "При посадці" else ticket.seat.toString()
+                view.findViewById<TextView>(R.id.ticket_purchaseDate).text = ticket.purchaseDateTime.Time + " " +
+                        ticket.purchaseDateTime.Date
 
-            // Create a PageInfo object specifying the page attributes
-            val pageInfo = PageInfo.Builder(viewWidth, viewHeight, 1).create()
+                val displayMetrics = DisplayMetrics()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    context.display!!.getRealMetrics(displayMetrics)
+                }
+                view.measure(
+                    View.MeasureSpec.makeMeasureSpec(displayMetrics.widthPixels, View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(displayMetrics.heightPixels, View.MeasureSpec.EXACTLY)
+                )
 
-            // Start a new page
-            val page = document.startPage(pageInfo)
+                view.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels)
 
-            // Get the Canvas object to draw on the page
-            val canvas = page.canvas
+                val document = PdfDocument()
 
-            // Create a Paint object for styling the view
-            val paint = Paint()
-            paint.color = Color.WHITE
+                val viewWidth = 1080
+                val viewHeight = 1920
 
-            // Draw the view on the canvas
-            view.draw(canvas)
+                val pageInfo = PageInfo.Builder(viewWidth, viewHeight, 1).create()
 
-            // Finish the page
-            document.finishPage(page)
+                val page = document.startPage(pageInfo)
 
-            // Specify the path and filename of the output PDF file
-            val downloadsDir =
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                val canvas = page.canvas
 
-            var parts_time = ticket.purchaseDateTime.Time.replace(":", " ").split(" ")
-            var parts_date = ticket.purchaseDateTime.Date.replace("-", " ").split(" ")
-            var uniqueId = ((parts_time[0].toInt() + parts_time[1].toInt() +
-                    parts_date[0].toInt() + parts_date[1].toInt() + parts_date[2].toInt()))
+                val paint = Paint()
+                paint.color = Color.WHITE
 
-            val fileName = transliterateToEnglish(ticket.fullName).split(" ")[0] + " " +
-                    transliterateToEnglish(ticket.fullName).split(" ")[1] + " " +
-                    transliterateToEnglish(ticket.departureAddress.city) + "-" +
-                    transliterateToEnglish(ticket.destinationAddress.city) + " " +
-                    ticket.purchaseDateTime.Date + " " + System.currentTimeMillis().toString() +
-                    ".pdf"
+                view.draw(canvas)
 
-            val filePath = File(downloadsDir, fileName)
-            try {
-                val fos = FileOutputStream(filePath)
-                document.writeTo(fos)
-                document.close()
-                fos.close()
+                document.finishPage(page)
 
-                Toast.makeText(context, "Квиток був успішно створений", Toast.LENGTH_LONG).show()
-            } catch (e: IOException) {
-                e.printStackTrace()
-                Toast.makeText(context, "Квиток не був завантажений", Toast.LENGTH_LONG).show()
-                Log.d("myLog", e.toString())
+                val downloadsDir =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+
+                var parts_time = ticket.purchaseDateTime.Time.replace(":", " ").split(" ")
+                var parts_date = ticket.purchaseDateTime.Date.replace("-", " ").split(" ")
+
+                val fileName = (transliterateToEnglish(ticket.fullName).split(" ")[0] + " " +
+                        transliterateToEnglish(ticket.fullName).split(" ")[1] + " " +
+                        transliterateToEnglish(ticket.departureAddress.city) + "-" +
+                        transliterateToEnglish(ticket.destinationAddress.city) + " " +
+                        ticket.purchaseDateTime.Date + " " + System.currentTimeMillis().toString() +
+                        ".pdf").replace(":", ".")
+
+                val filePath = File(downloadsDir, fileName)
+                try {
+                    val fos = FileOutputStream(filePath)
+                    document.writeTo(fos)
+                    document.close()
+                    fos.close()
+                    Toast.makeText(context, "Квиток був успішно згенерований", Toast.LENGTH_LONG).show()
+                    return true
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    Toast.makeText(context, "Квиток не був згенерований", Toast.LENGTH_LONG).show()
+                    return false
+                }
             }
+            return false
         }
         fun transliterateToEnglish(input: String): String {
             val ukrainianCharacters = arrayOf(

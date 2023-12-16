@@ -60,7 +60,7 @@ class TicketPreview : AppCompatActivity() {
         findViewById<TextView>(R.id.ticket_destinationTime).text = ticket.destinationDateTime.Time
         findViewById<TextView>(R.id.ticket_price).text = ticket.price.toString()
         findViewById<TextView>(R.id.ticket_currency).text = ticket.currency.toString()
-        findViewById<TextView>(R.id.ticket_seat).text = ticket.seat.toString()
+        findViewById<TextView>(R.id.ticket_seat).text =  if(ticket.seat == -1) "При посадці" else ticket.seat.toString()
         findViewById<TextView>(R.id.ticket_purchaseDate).text = ticket.purchaseDateTime.Time + " " +
                 ticket.purchaseDateTime.Date
 
@@ -68,6 +68,7 @@ class TicketPreview : AppCompatActivity() {
         goDetailedInformationPage.setOnClickListener {
             if (doubleClick) {
                 val intent = Intent(this, DetailedInformationAboutTicket::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                 intent.putExtra("TicketPreview_TO_DetailedInformationAboutTicket_ticketData", ticket)
                 startActivity(intent)
 
