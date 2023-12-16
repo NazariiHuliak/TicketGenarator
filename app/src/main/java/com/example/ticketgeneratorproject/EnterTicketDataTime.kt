@@ -317,8 +317,9 @@ class EnterTicketDataTime: AppCompatActivity() {
                     dbAdapter.addTicket(ticket)
                 }
 
-                askPermissions()
-                convertXmlToPdf(ticket, this)
+                if (askPermissions()){
+                    convertXmlToPdf(ticket, this)
+                }
 
                 val intent = Intent(this, HomePage::class.java)
                 startActivity(intent)
@@ -334,7 +335,7 @@ class EnterTicketDataTime: AppCompatActivity() {
         val formattedTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(myCalendar.time)
         view.setText(formattedTime.format(myCalendar.time))
     }
-    private fun askPermissions() {
+    private fun askPermissions(): Boolean {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
             != PackageManager.PERMISSION_GRANTED
         ) {
@@ -344,6 +345,8 @@ class EnterTicketDataTime: AppCompatActivity() {
                 1
             )
         }
+        return (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED)
     }
     companion object{
         @SuppressLint("MissingInflatedId", "SetTextI18n", "InflateParams")
@@ -371,7 +374,7 @@ class EnterTicketDataTime: AppCompatActivity() {
             val displayMetrics = DisplayMetrics()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 context.display!!.getRealMetrics(displayMetrics)
-            } //else context.windowManager.defaultDisplay.getMetrics(displayMetrics)
+            }
             view.measure(
                 View.MeasureSpec.makeMeasureSpec(displayMetrics.widthPixels, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(displayMetrics.heightPixels, View.MeasureSpec.EXACTLY)
@@ -421,12 +424,11 @@ class EnterTicketDataTime: AppCompatActivity() {
 
             val filePath = File(downloadsDir, fileName)
             try {
-                // Save the document to a file
                 val fos = FileOutputStream(filePath)
                 document.writeTo(fos)
                 document.close()
                 fos.close()
-                // PDF conversion successful
+
                 Toast.makeText(context, "Квиток був успішно створений", Toast.LENGTH_LONG).show()
             } catch (e: IOException) {
                 e.printStackTrace()
