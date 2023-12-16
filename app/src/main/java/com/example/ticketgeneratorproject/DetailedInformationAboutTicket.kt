@@ -120,9 +120,6 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
                 }, DOUBLE_CLICK_DELAY.toLong())
             }
         }
-        /*val builder = StrictMode.VmPolicy.Builder()
-        StrictMode.setVmPolicy(builder.build())
-        builder.detectFileUriExposure()*/
     }
     companion object {
         const val DOUBLE_CLICK_DELAY = 300

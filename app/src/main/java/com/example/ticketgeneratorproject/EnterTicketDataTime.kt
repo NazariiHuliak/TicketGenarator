@@ -430,7 +430,8 @@ class EnterTicketDataTime: AppCompatActivity() {
                 Toast.makeText(context, "Квиток був успішно створений", Toast.LENGTH_LONG).show()
             } catch (e: IOException) {
                 e.printStackTrace()
-                // Error occurred while converting to PDF
+                Toast.makeText(context, "Квиток не був завантажений", Toast.LENGTH_LONG).show()
+                Log.d("myLog", e.toString())
             }
         }
         fun transliterateToEnglish(input: String): String {

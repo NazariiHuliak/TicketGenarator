@@ -14,25 +14,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TicketGeneratorProject"
         tools:targetApi="31">
-        <activity
-            android:name=".TicketPriviewFullScreen"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:exported="false"
-            android:label="@string/title_activity_ticket_priview_full_screen"
-            android:theme="@style/Theme.TicketGeneratorProject.Fullscreen" />
+
         <activity
             android:name=".TicketPreview"
             android:exported="false" />
-
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="com.example.ticketgeneratorproject.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
 
         <activity
             android:name=".DetailedInformationAboutTicket"
