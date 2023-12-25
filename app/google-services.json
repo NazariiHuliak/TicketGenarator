@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "559866218895",
+    "firebase_url": "https://ticketgenerator-a172c-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "ticketgenerator-a172c",
+    "storage_bucket": "ticketgenerator-a172c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:559866218895:android:755db06106f209263223fa",
+        "android_client_info": {
+          "package_name": "com.example.ticketgeneratorproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5sKQ7HArRd0-0U-JekivdN-yWCCdwcps"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

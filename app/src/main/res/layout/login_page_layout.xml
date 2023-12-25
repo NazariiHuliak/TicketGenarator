@@ -12,7 +12,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="30sp"
+            android:layout_marginStart="30sp"
+            android:layout_marginEnd="30sp"
+            android:layout_marginTop="5sp"
             android:orientation="vertical">
             <LinearLayout
                 android:layout_width="match_parent"
@@ -43,7 +45,7 @@
                 app:dividerColor="@color/black"/>
             <ImageView
                 android:layout_width="350sp"
-                android:layout_height="200sp"
+                android:layout_height="180sp"
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/bus_icon"
                 android:contentDescription="bus icon"
@@ -88,7 +90,9 @@
                 app:boxCornerRadiusTopStart="17dp"
                 app:boxStrokeColor="@color/black"
                 app:startIconDrawable="@drawable/password_icon"
-                android:textColorHint="@color/black">
+                android:textColorHint="@color/black"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="@color/grey">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/password_input"
                     android:layout_width="match_parent"
@@ -96,10 +100,11 @@
                     android:fontFamily="@font/rubik"
                     android:hint="Пароль"
                     android:maxLines="1"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    android:inputType="textPassword"/>
             </com.google.android.material.textfield.TextInputLayout>
             <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                android:id="@+id/create_new_ticket"
+                android:id="@+id/login_btn"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:layout_gravity="bottom|center"
@@ -115,6 +120,7 @@
                 app:iconTint="@color/white" />
         </LinearLayout>
         <TextView
+            android:id="@+id/create_new_account_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Немає акаунту? Створіть його!"
@@ -125,6 +131,4 @@
             android:layout_marginBottom="40dp"
             android:layout_centerHorizontal="true" />
     </RelativeLayout>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
