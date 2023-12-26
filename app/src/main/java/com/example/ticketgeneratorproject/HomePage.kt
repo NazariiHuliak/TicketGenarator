@@ -5,14 +5,22 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.AutoTransition
+import androidx.transition.TransitionManager
 import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
 import com.example.ticketgeneratorproject.Entities.TicketModel
+import com.google.android.material.card.MaterialCardView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import java.util.*
 
 class HomePage : AppCompatActivity() {
@@ -26,13 +34,22 @@ class HomePage : AppCompatActivity() {
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var recyclerViewAdapter: RecyclerViewAdapter
 
+    private lateinit var usernameField: TextView
+    private lateinit var emailField: TextView
+
+    private lateinit var materialCardView: MaterialCardView
+    private lateinit var hiddenMaterialCardContent: LinearLayout
+
+    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var firebaseDatabase: FirebaseDatabase
+
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.home_page_layout)
 
         val dbAdapter = DataBaseAdapter(this)
         searchField = findViewById(R.id.search_input)
-
 
         layoutManager = LinearLayoutManager(this)
         layoutManager.reverseLayout = true
@@ -46,6 +63,17 @@ class HomePage : AppCompatActivity() {
         recyclerViewAdapter = RecyclerViewAdapter(ticketsArrayList)
         recyclerView.adapter = recyclerViewAdapter
 
+        usernameField = findViewById(R.id.username)
+        emailField = findViewById(R.id.email)
+
+        materialCardView = findViewById(R.id.main_menu)
+        hiddenMaterialCardContent = findViewById(R.id.hiden_card_content)
+
+        firebaseDatabase = FirebaseDatabase.getInstance()
+        firebaseAuth = FirebaseAuth.getInstance()
+
+        emailField.text = firebaseAuth.currentUser?.email.toString()
+
         searchField.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -58,16 +86,27 @@ class HomePage : AppCompatActivity() {
             }
         })
 
+        materialCardView.setOnClickListener {
+            animateCardExpansion(materialCardView, hiddenMaterialCardContent)
+        }
         val addBtn = findViewById<Button>(R.id.create_new_ticket)
 
         addBtn.setOnClickListener {
             val intent = Intent(this, EnterTicketData::class.java)
             startActivity(intent)
         }
-
     }
+
+    private fun animateCardExpansion(materialCardView: MaterialCardView, content: LinearLayout) {
+        val visibility = if (content.visibility == View.GONE) View.VISIBLE else View.GONE
+
+        TransitionManager.beginDelayedTransition(materialCardView, AutoTransition())
+        content.visibility = visibility
+    }
+
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
+        super.onBackPressed()
         val currentTime = System.currentTimeMillis()
         if (currentTime - lastBackPressTime < BACK_PRESS_INTERVAL) {
             finishAffinity()

@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import com.example.ticketgeneratorproject.Entities.User
 import com.example.ticketgeneratorproject.databinding.RegisterPageLayoutBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
@@ -18,7 +17,6 @@ import com.google.firebase.database.FirebaseDatabase
 class RegisterPage : AppCompatActivity() {
 
     private lateinit var firebaseAuth: FirebaseAuth
-    //private lateinit var firebaseDB: FirebaseDatabase
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var usersRef: DatabaseReference
 
@@ -59,8 +57,7 @@ class RegisterPage : AppCompatActivity() {
                         .addOnCompleteListener {
                             if(it.isSuccessful){
                                 val uid = firebaseAuth.currentUser!!.uid
-                                val user = User(name, email)
-                                usersRef.child(uid).setValue(user)
+                                usersRef.child(uid).setValue(name)
                                 val intent = Intent(this, LoginPage::class.java)
                                 startActivity(intent)
                             }
