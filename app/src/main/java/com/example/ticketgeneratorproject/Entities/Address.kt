@@ -3,10 +3,10 @@ package com.example.ticketgeneratorproject.Entities
 import android.util.Log
 
 data class Address(
-    val country: String,
-    val city: String,
-    val street: String,
-    val number: String
+    val country: String = "",
+    val city: String = "",
+    val street: String = "",
+    val number: String = ""
 ): java.io.Serializable{
     companion object{
         fun parseAddress(address: String): Address{

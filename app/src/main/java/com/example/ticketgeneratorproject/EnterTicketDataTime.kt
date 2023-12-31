@@ -7,7 +7,6 @@ import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -39,6 +38,8 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
 import com.example.ticketgeneratorproject.Entities.Currency
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class EnterTicketDataTime: AppCompatActivity() {
     private lateinit var currencyDropDownMenu: AutoCompleteTextView
@@ -66,6 +67,9 @@ class EnterTicketDataTime: AppCompatActivity() {
     private lateinit var error_icon_3: ImageView
     private lateinit var error_icon_4: ImageView
 
+    private lateinit var firebaseDatabase: FirebaseDatabase
+    private lateinit var firebaseAuth: FirebaseAuth
+
     private lateinit var ticket: TicketModel
     @SuppressLint("MissingInflatedId", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,8 +83,8 @@ class EnterTicketDataTime: AppCompatActivity() {
         currencyDropDownMenu.setAdapter(adapter)
 
         price = findViewById<TextInputEditText>(R.id.price)
-        priceLayout = findViewById<TextInputLayout>(R.id.price_layout)
-        currencyLayout = findViewById<TextInputLayout>(R.id.currency_layout)
+        priceLayout = findViewById(R.id.price_layout)
+        currencyLayout = findViewById(R.id.currency_layout)
 
         departureLayoutTime = findViewById(R.id.btn_departure_time)
         departureLayoutDate = findViewById(R.id.btn_departure_date)
@@ -102,6 +106,12 @@ class EnterTicketDataTime: AppCompatActivity() {
         error_icon_3 = findViewById(R.id.error_icon_3)
         error_icon_4 = findViewById(R.id.error_icon_4)
 
+        firebaseAuth = FirebaseAuth.getInstance()
+        firebaseDatabase = FirebaseDatabase.getInstance()
+        val uid = firebaseAuth.currentUser!!.uid
+        val firebaseDatabaseRef = firebaseDatabase.getReference("users").child(uid).child("tickets")
+        val objectID = firebaseDatabaseRef.child("tickets").push().key
+
         //find intent Extra and set proper data
         val intentHasExtraToUpdate = intent.hasExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update")
         val intentHasExtraToCreateSimilar = intent.hasExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_CreateSimilar")
@@ -116,10 +126,10 @@ class EnterTicketDataTime: AppCompatActivity() {
                     as TicketModel
         }
         if(intentHasExtraToUpdate || intentHasExtraToCreateSimilar) {
-            departureDateText.text = ticket.departureDateTime.Date
-            departureTimeText.text = ticket.departureDateTime.Time
-            destinationDateText.text = ticket.destinationDateTime.Date
-            destinationTimeText.text = ticket.destinationDateTime.Time
+            departureDateText.text = ticket.departureDateTime.date
+            departureTimeText.text = ticket.departureDateTime.time
+            destinationDateText.text = ticket.destinationDateTime.date
+            destinationTimeText.text = ticket.destinationDateTime.time
             price.text = ticket.price.toString()
             currencyDropDownMenu.setText(Currency.parseToString(ticket.currency), false)
         }
@@ -267,6 +277,10 @@ class EnterTicketDataTime: AppCompatActivity() {
                 } else {
                     ticket.purchaseDateTime = DateTime.parseDateTime(getCurrentDateTime())
                     dbAdapter.addTicket(ticket)
+
+                    if (objectID != null) {
+                        firebaseDatabaseRef.child(objectID).setValue(ticket)
+                    }
                 }
 
                 Toast.makeText(this, "Квиток був успішно збережений", Toast.LENGTH_LONG).show()
@@ -356,18 +370,18 @@ class EnterTicketDataTime: AppCompatActivity() {
                 view.findViewById<TextView>(R.id.ticket_departureCity).text = ticket.departureAddress.city
                 view.findViewById<TextView>(R.id.ticket_departureAddress).text = ticket.departureAddress.street + " " +
                         ticket.departureAddress.number
-                view.findViewById<TextView>(R.id.ticket_departureDate).text = ticket.departureDateTime.Date
-                view.findViewById<TextView>(R.id.ticket_departureTime).text = ticket.departureDateTime.Time
+                view.findViewById<TextView>(R.id.ticket_departureDate).text = ticket.departureDateTime.date
+                view.findViewById<TextView>(R.id.ticket_departureTime).text = ticket.departureDateTime.time
                 view.findViewById<TextView>(R.id.ticket_destinationCity).text = ticket.destinationAddress.city
                 view.findViewById<TextView>(R.id.ticket_destinationAddress).text = ticket.destinationAddress.street + " " +
                         ticket.destinationAddress.number
-                view.findViewById<TextView>(R.id.ticket_destinationDate).text = ticket.destinationDateTime.Date
-                view.findViewById<TextView>(R.id.ticket_destinationTime).text = ticket.destinationDateTime.Time
+                view.findViewById<TextView>(R.id.ticket_destinationDate).text = ticket.destinationDateTime.date
+                view.findViewById<TextView>(R.id.ticket_destinationTime).text = ticket.destinationDateTime.time
                 view.findViewById<TextView>(R.id.ticket_price).text = ticket.price.toString()
                 view.findViewById<TextView>(R.id.ticket_currency).text = ticket.currency.toString()
                 view.findViewById<TextView>(R.id.ticket_seat).text = if(ticket.seat == -1) "При посадці" else ticket.seat.toString()
-                view.findViewById<TextView>(R.id.ticket_purchaseDate).text = ticket.purchaseDateTime.Time + " " +
-                        ticket.purchaseDateTime.Date
+                view.findViewById<TextView>(R.id.ticket_purchaseDate).text = ticket.purchaseDateTime.time + " " +
+                        ticket.purchaseDateTime.date
 
                 val displayMetrics = DisplayMetrics()
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -401,14 +415,14 @@ class EnterTicketDataTime: AppCompatActivity() {
                 val downloadsDir =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
 
-                var parts_time = ticket.purchaseDateTime.Time.replace(":", " ").split(" ")
-                var parts_date = ticket.purchaseDateTime.Date.replace("-", " ").split(" ")
+                /*var parts_time = ticket.purchaseDateTime.Time.replace(":", " ").split(" ")
+                var parts_date = ticket.purchaseDateTime.Date.replace("-", " ").split(" ")*/
 
                 val fileName = (transliterateToEnglish(ticket.fullName).split(" ")[0] + " " +
                         transliterateToEnglish(ticket.fullName).split(" ")[1] + " " +
                         transliterateToEnglish(ticket.departureAddress.city) + "-" +
                         transliterateToEnglish(ticket.destinationAddress.city) + " " +
-                        ticket.purchaseDateTime.Date + " " + System.currentTimeMillis().toString() +
+                        ticket.purchaseDateTime.date + " " + System.currentTimeMillis().toString() +
                         ".pdf").replace(":", ".")
 
                 val filePath = File(downloadsDir, fileName)

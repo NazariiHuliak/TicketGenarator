@@ -1,34 +1,15 @@
 package com.example.ticketgeneratorproject
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.os.Looper
-import android.os.StrictMode
-import android.os.StrictMode.VmPolicy
-import android.provider.MediaStore
-import android.util.Log
-import android.view.GestureDetector
-import android.view.MotionEvent
-import android.view.View
-import android.view.WindowManager
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import com.example.ticketgeneratorproject.Entities.TicketModel
-import java.io.File
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 
 class DetailedInformationAboutTicket : AppCompatActivity() {
     private lateinit var backToMainButton: LinearLayout
@@ -67,19 +48,19 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
         findViewById<TextView>(R.id.ticket_departureAddress).text =
             ticket.departureAddress.street + " " +
                     ticket.departureAddress.number
-        findViewById<TextView>(R.id.ticket_departureDate).text = ticket.departureDateTime.Date
-        findViewById<TextView>(R.id.ticket_departureTime).text = ticket.departureDateTime.Time
+        findViewById<TextView>(R.id.ticket_departureDate).text = ticket.departureDateTime.date
+        findViewById<TextView>(R.id.ticket_departureTime).text = ticket.departureDateTime.time
         findViewById<TextView>(R.id.ticket_destinationCity).text = ticket.destinationAddress.city
         findViewById<TextView>(R.id.ticket_destinationAddress).text =
             ticket.destinationAddress.street + " " +
                     ticket.destinationAddress.number
-        findViewById<TextView>(R.id.ticket_destinationDate).text = ticket.destinationDateTime.Date
-        findViewById<TextView>(R.id.ticket_destinationTime).text = ticket.destinationDateTime.Time
+        findViewById<TextView>(R.id.ticket_destinationDate).text = ticket.destinationDateTime.date
+        findViewById<TextView>(R.id.ticket_destinationTime).text = ticket.destinationDateTime.time
         findViewById<TextView>(R.id.ticket_price).text = ticket.price.toString()
         findViewById<TextView>(R.id.ticket_currency).text = ticket.currency.toString()
         findViewById<TextView>(R.id.ticket_seat).text =  if(ticket.seat == -1) "При посадці" else ticket.seat.toString()
-        findViewById<TextView>(R.id.ticket_purchaseDate).text = ticket.purchaseDateTime.Time + " " +
-                ticket.purchaseDateTime.Date
+        findViewById<TextView>(R.id.ticket_purchaseDate).text = ticket.purchaseDateTime.time + " " +
+                ticket.purchaseDateTime.date
 
         backToMainButton.setOnClickListener {
             finish()

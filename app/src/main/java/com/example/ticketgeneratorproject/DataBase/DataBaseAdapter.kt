@@ -23,12 +23,12 @@ class DataBaseAdapter(private val context: Context) {
             put(DataBaseHelper.DESTINATION_ADDRESS, ticket.destinationAddress.country + ", " +
                     ticket.destinationAddress.city + ", " + ticket.destinationAddress.street + ", " +
                     ticket.destinationAddress.number)
-            put(DataBaseHelper.DEPARTURE_TIME, ticket.departureDateTime.Date + " " + ticket.departureDateTime.Time)
-            put(DataBaseHelper.DESTINATION_TIME, ticket.destinationDateTime.Date + " " + ticket.destinationDateTime.Time)
+            put(DataBaseHelper.DEPARTURE_TIME, ticket.departureDateTime.date + " " + ticket.departureDateTime.time)
+            put(DataBaseHelper.DESTINATION_TIME, ticket.destinationDateTime.date + " " + ticket.destinationDateTime.time)
             put(DataBaseHelper.SEAT, ticket.seat)
             put(DataBaseHelper.PRICE, ticket.price)
             put(DataBaseHelper.CURRENCY, ticket.currency.name)
-            put(DataBaseHelper.PURCHASE_TIME, ticket.purchaseDateTime.Date + " " + ticket.purchaseDateTime.Time)
+            put(DataBaseHelper.PURCHASE_TIME, ticket.purchaseDateTime.date + " " + ticket.purchaseDateTime.time)
         }
         return database.insert(DataBaseHelper.TABLE_NAME, null, values)
     }
@@ -43,12 +43,12 @@ class DataBaseAdapter(private val context: Context) {
             put(DataBaseHelper.DESTINATION_ADDRESS, ticket.destinationAddress.country + ", " +
                     ticket.destinationAddress.city + ", " + ticket.destinationAddress.street + ", " +
                     ticket.destinationAddress.number)
-            put(DataBaseHelper.DEPARTURE_TIME, ticket.departureDateTime.Date + " " + ticket.departureDateTime.Time)
-            put(DataBaseHelper.DESTINATION_TIME, ticket.destinationDateTime.Date + " " + ticket.destinationDateTime.Time)
+            put(DataBaseHelper.DEPARTURE_TIME, ticket.departureDateTime.date + " " + ticket.departureDateTime.time)
+            put(DataBaseHelper.DESTINATION_TIME, ticket.destinationDateTime.date + " " + ticket.destinationDateTime.time)
             put(DataBaseHelper.SEAT, ticket.seat)
             put(DataBaseHelper.PRICE, ticket.price)
             put(DataBaseHelper.CURRENCY, ticket.currency.name)
-            put(DataBaseHelper.PURCHASE_TIME, ticket.purchaseDateTime.Date + " " + ticket.purchaseDateTime.Time)
+            put(DataBaseHelper.PURCHASE_TIME, ticket.purchaseDateTime.date + " " + ticket.purchaseDateTime.time)
         }
 
         val whereClause = "${DataBaseHelper.TICKET_ID} = ?"
