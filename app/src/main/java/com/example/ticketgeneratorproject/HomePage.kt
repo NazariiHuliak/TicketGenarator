@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -20,7 +21,11 @@ import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
 import com.example.ticketgeneratorproject.Entities.TicketModel
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import java.util.*
 
 class HomePage : AppCompatActivity() {
@@ -33,6 +38,8 @@ class HomePage : AppCompatActivity() {
     private lateinit var searchField: EditText
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var recyclerViewAdapter: RecyclerViewAdapter
+    private lateinit var addButton: Button
+    private lateinit var logoutButton: Button
 
     private lateinit var usernameField: TextView
     private lateinit var emailField: TextView
@@ -42,6 +49,7 @@ class HomePage : AppCompatActivity() {
 
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firebaseDatabase: FirebaseDatabase
+    private lateinit var firebaseDatabaseRef: DatabaseReference
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,12 +57,12 @@ class HomePage : AppCompatActivity() {
         setContentView(R.layout.home_page_layout)
 
         val dbAdapter = DataBaseAdapter(this)
+
         searchField = findViewById(R.id.search_input)
 
         layoutManager = LinearLayoutManager(this)
         layoutManager.reverseLayout = true
         layoutManager.stackFromEnd = true
-
         recyclerView = findViewById(R.id.recycler_view)
         recyclerView.layoutManager = layoutManager
         recyclerView.setHasFixedSize(true)
@@ -62,6 +70,8 @@ class HomePage : AppCompatActivity() {
         ticketsArrayList = dbAdapter.getTickets()
         recyclerViewAdapter = RecyclerViewAdapter(ticketsArrayList)
         recyclerView.adapter = recyclerViewAdapter
+        addButton = findViewById(R.id.create_new_ticket)
+        logoutButton = findViewById(R.id.logout)
 
         usernameField = findViewById(R.id.username)
         emailField = findViewById(R.id.email)
@@ -69,9 +79,24 @@ class HomePage : AppCompatActivity() {
         materialCardView = findViewById(R.id.main_menu)
         hiddenMaterialCardContent = findViewById(R.id.hiden_card_content)
 
-        firebaseDatabase = FirebaseDatabase.getInstance()
         firebaseAuth = FirebaseAuth.getInstance()
+        firebaseDatabase = FirebaseDatabase.getInstance()
+        val uid = firebaseAuth.currentUser!!.uid
+        firebaseDatabaseRef = firebaseDatabase.getReference("users")
+        val userReference = firebaseDatabaseRef.child(uid)
 
+        userReference.child("name").addValueEventListener(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if(snapshot.exists()){
+                    val data = snapshot.getValue(String::class.java)
+                    usernameField.text = data
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("myLog", "Error: ${error.message}")
+            }
+        })
         emailField.text = firebaseAuth.currentUser?.email.toString()
 
         searchField.addTextChangedListener(object : TextWatcher {
@@ -86,12 +111,17 @@ class HomePage : AppCompatActivity() {
             }
         })
 
+        logoutButton.setOnClickListener {
+            firebaseAuth.signOut()
+            val intent = Intent(this, LoginPage::class.java)
+            startActivity(intent)
+        }
+
         materialCardView.setOnClickListener {
             animateCardExpansion(materialCardView, hiddenMaterialCardContent)
         }
-        val addBtn = findViewById<Button>(R.id.create_new_ticket)
 
-        addBtn.setOnClickListener {
+        addButton.setOnClickListener {
             val intent = Intent(this, EnterTicketData::class.java)
             startActivity(intent)
         }

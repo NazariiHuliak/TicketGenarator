@@ -39,6 +39,8 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
 import com.example.ticketgeneratorproject.Entities.Currency
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class EnterTicketDataTime: AppCompatActivity() {
     private lateinit var currencyDropDownMenu: AutoCompleteTextView
@@ -66,6 +68,9 @@ class EnterTicketDataTime: AppCompatActivity() {
     private lateinit var error_icon_3: ImageView
     private lateinit var error_icon_4: ImageView
 
+    private lateinit var firebaseDatabase: FirebaseDatabase
+    private lateinit var firebaseAuth: FirebaseAuth
+
     private lateinit var ticket: TicketModel
     @SuppressLint("MissingInflatedId", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,8 +84,8 @@ class EnterTicketDataTime: AppCompatActivity() {
         currencyDropDownMenu.setAdapter(adapter)
 
         price = findViewById<TextInputEditText>(R.id.price)
-        priceLayout = findViewById<TextInputLayout>(R.id.price_layout)
-        currencyLayout = findViewById<TextInputLayout>(R.id.currency_layout)
+        priceLayout = findViewById(R.id.price_layout)
+        currencyLayout = findViewById(R.id.currency_layout)
 
         departureLayoutTime = findViewById(R.id.btn_departure_time)
         departureLayoutDate = findViewById(R.id.btn_departure_date)
@@ -101,6 +106,12 @@ class EnterTicketDataTime: AppCompatActivity() {
         error_icon_2 = findViewById(R.id.error_icon_2)
         error_icon_3 = findViewById(R.id.error_icon_3)
         error_icon_4 = findViewById(R.id.error_icon_4)
+
+        firebaseAuth = FirebaseAuth.getInstance()
+        firebaseDatabase = FirebaseDatabase.getInstance()
+        val uid = firebaseAuth.currentUser!!.uid
+        val firebaseDatabaseRef = firebaseDatabase.getReference("users").child(uid).child("tickets")
+        val objectID = firebaseDatabaseRef.child("tickets").push().key
 
         //find intent Extra and set proper data
         val intentHasExtraToUpdate = intent.hasExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update")
@@ -267,6 +278,10 @@ class EnterTicketDataTime: AppCompatActivity() {
                 } else {
                     ticket.purchaseDateTime = DateTime.parseDateTime(getCurrentDateTime())
                     dbAdapter.addTicket(ticket)
+
+                    if (objectID != null) {
+                        firebaseDatabaseRef.child(objectID).setValue(ticket)
+                    }
                 }
 
                 Toast.makeText(this, "Квиток був успішно збережений", Toast.LENGTH_LONG).show()
@@ -401,8 +416,8 @@ class EnterTicketDataTime: AppCompatActivity() {
                 val downloadsDir =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
 
-                var parts_time = ticket.purchaseDateTime.Time.replace(":", " ").split(" ")
-                var parts_date = ticket.purchaseDateTime.Date.replace("-", " ").split(" ")
+                /*var parts_time = ticket.purchaseDateTime.Time.replace(":", " ").split(" ")
+                var parts_date = ticket.purchaseDateTime.Date.replace("-", " ").split(" ")*/
 
                 val fileName = (transliterateToEnglish(ticket.fullName).split(" ")[0] + " " +
                         transliterateToEnglish(ticket.fullName).split(" ")[1] + " " +

@@ -37,6 +37,8 @@ class RegisterPage : AppCompatActivity() {
         firebaseDatabase = FirebaseDatabase.getInstance()
         usersRef = firebaseDatabase.getReference("users")
 
+
+
         nameInput = findViewById(R.id.name_input)
         emailInput = findViewById(R.id.email_input)
         passwordInput = findViewById(R.id.password_input)
@@ -57,7 +59,7 @@ class RegisterPage : AppCompatActivity() {
                         .addOnCompleteListener {
                             if(it.isSuccessful){
                                 val uid = firebaseAuth.currentUser!!.uid
-                                usersRef.child(uid).setValue(name)
+                                usersRef.child(uid).child("name").setValue(name)
                                 val intent = Intent(this, LoginPage::class.java)
                                 startActivity(intent)
                             }
