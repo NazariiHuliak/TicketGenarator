@@ -1,17 +1,18 @@
 package com.example.ticketgeneratorproject.Entities
 data class TicketModel(
-    var id: Int,
-    val fullName: String,
-    val tripNumber: String,
-    val departureAddress: Address,
-    val destinationAddress: Address,
-    var departureDateTime: DateTime,
-    var destinationDateTime: DateTime,
-    val seat: Int,
-    var price: Double,
-    var currency: Currency,
-    var purchaseDateTime: DateTime
+    var id: Int = 0,
+    val fullName: String = "",
+    val tripNumber: String = "",
+    val departureAddress: Address = Address("", "", "", ""),
+    val destinationAddress: Address = Address("", "", "", ""),
+    var departureDateTime: DateTime = DateTime("", ""),
+    var destinationDateTime: DateTime = DateTime("", ""),
+    val seat: Int = 0,
+    var price: Double = 0.0,
+    var currency: Currency = Currency.UNKNOWN,
+    var purchaseDateTime: DateTime = DateTime("", "")
 ): java.io.Serializable{
+
     fun setId(id: Int): TicketModel{
         this.id = id
         return this

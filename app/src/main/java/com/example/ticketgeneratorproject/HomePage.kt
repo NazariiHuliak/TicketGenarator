@@ -67,9 +67,9 @@ class HomePage : AppCompatActivity() {
         recyclerView.layoutManager = layoutManager
         recyclerView.setHasFixedSize(true)
 
-        ticketsArrayList = dbAdapter.getTickets()
+        /*ticketsArrayList = dbAdapter.getTickets()
         recyclerViewAdapter = RecyclerViewAdapter(ticketsArrayList)
-        recyclerView.adapter = recyclerViewAdapter
+        recyclerView.adapter = recyclerViewAdapter*/
         addButton = findViewById(R.id.create_new_ticket)
         logoutButton = findViewById(R.id.logout)
 
@@ -81,11 +81,12 @@ class HomePage : AppCompatActivity() {
 
         firebaseAuth = FirebaseAuth.getInstance()
         firebaseDatabase = FirebaseDatabase.getInstance()
-        val uid = firebaseAuth.currentUser!!.uid
         firebaseDatabaseRef = firebaseDatabase.getReference("users")
-        val userReference = firebaseDatabaseRef.child(uid)
+        val uid = firebaseAuth.currentUser!!.uid
+        val userReference = firebaseDatabaseRef.child(uid).child("name")
+        val ticketsReference = firebaseDatabaseRef.child(uid).child("tickets")
 
-        userReference.child("name").addValueEventListener(object: ValueEventListener{
+        userReference.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if(snapshot.exists()){
                     val data = snapshot.getValue(String::class.java)
@@ -98,6 +99,25 @@ class HomePage : AppCompatActivity() {
             }
         })
         emailField.text = firebaseAuth.currentUser?.email.toString()
+
+        ticketsReference.addValueEventListener(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val ticketsList = mutableListOf<TicketModel>()
+                for (ticketSnapshot in snapshot.children) {
+                    val ticket = ticketSnapshot.getValue(TicketModel::class.java)
+                    if (ticket != null) {
+                        ticketsList.add(ticket)
+                    }
+                }
+                ticketsArrayList = ticketsList
+                recyclerViewAdapter = RecyclerViewAdapter(ticketsArrayList)
+                recyclerView.adapter = recyclerViewAdapter
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("myLog", "Error: ${error.message}")
+            }
+        })
 
         searchField.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}

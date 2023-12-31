@@ -5,7 +5,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.*
-import androidx.compose.ui.text.capitalize
 import androidx.core.widget.addTextChangedListener
 import com.example.ticketgeneratorproject.Entities.Address
 import com.example.ticketgeneratorproject.Entities.Currency
@@ -13,7 +12,6 @@ import com.example.ticketgeneratorproject.Entities.DateTime
 import com.example.ticketgeneratorproject.Entities.TicketModel
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import java.util.Locale
 
 class EnterTicketData : AppCompatActivity() {
     private lateinit var ticket: TicketModel
@@ -130,16 +128,16 @@ class EnterTicketData : AppCompatActivity() {
                     intent.putExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update",
                         ticketToPass.
                         setId(ticket.id).
-                        setDepartureDestinationDateTime(DateTime.parseDateTime(ticket.departureDateTime.Date+ " " + ticket.departureDateTime.Time),
-                            DateTime.parseDateTime(ticket.destinationDateTime.Date+ " " + ticket.destinationDateTime.Time)).
+                        setDepartureDestinationDateTime(DateTime.parseDateTime(ticket.departureDateTime.date+ " " + ticket.departureDateTime.time),
+                            DateTime.parseDateTime(ticket.destinationDateTime.date+ " " + ticket.destinationDateTime.time)).
                         setPurchaseDateTime(ticket.purchaseDateTime).
                         setPrice(ticket.price).
                         setCurrency(ticket.currency))
                 } else if(intentHasExtraToCreateSimilar) {
                     intent.putExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_CreateSimilar",
                         ticketToPass.
-                        setDepartureDestinationDateTime(DateTime.parseDateTime(ticket.departureDateTime.Date+ " " + ticket.departureDateTime.Time),
-                            DateTime.parseDateTime(ticket.destinationDateTime.Date+ " " + ticket.destinationDateTime.Time)).
+                        setDepartureDestinationDateTime(DateTime.parseDateTime(ticket.departureDateTime.date+ " " + ticket.departureDateTime.time),
+                            DateTime.parseDateTime(ticket.destinationDateTime.date+ " " + ticket.destinationDateTime.time)).
                         setPrice(ticket.price).
                         setCurrency(ticket.currency))
                 } else {

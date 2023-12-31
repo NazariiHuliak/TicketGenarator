@@ -7,7 +7,6 @@ import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -127,10 +126,10 @@ class EnterTicketDataTime: AppCompatActivity() {
                     as TicketModel
         }
         if(intentHasExtraToUpdate || intentHasExtraToCreateSimilar) {
-            departureDateText.text = ticket.departureDateTime.Date
-            departureTimeText.text = ticket.departureDateTime.Time
-            destinationDateText.text = ticket.destinationDateTime.Date
-            destinationTimeText.text = ticket.destinationDateTime.Time
+            departureDateText.text = ticket.departureDateTime.date
+            departureTimeText.text = ticket.departureDateTime.time
+            destinationDateText.text = ticket.destinationDateTime.date
+            destinationTimeText.text = ticket.destinationDateTime.time
             price.text = ticket.price.toString()
             currencyDropDownMenu.setText(Currency.parseToString(ticket.currency), false)
         }
@@ -371,18 +370,18 @@ class EnterTicketDataTime: AppCompatActivity() {
                 view.findViewById<TextView>(R.id.ticket_departureCity).text = ticket.departureAddress.city
                 view.findViewById<TextView>(R.id.ticket_departureAddress).text = ticket.departureAddress.street + " " +
                         ticket.departureAddress.number
-                view.findViewById<TextView>(R.id.ticket_departureDate).text = ticket.departureDateTime.Date
-                view.findViewById<TextView>(R.id.ticket_departureTime).text = ticket.departureDateTime.Time
+                view.findViewById<TextView>(R.id.ticket_departureDate).text = ticket.departureDateTime.date
+                view.findViewById<TextView>(R.id.ticket_departureTime).text = ticket.departureDateTime.time
                 view.findViewById<TextView>(R.id.ticket_destinationCity).text = ticket.destinationAddress.city
                 view.findViewById<TextView>(R.id.ticket_destinationAddress).text = ticket.destinationAddress.street + " " +
                         ticket.destinationAddress.number
-                view.findViewById<TextView>(R.id.ticket_destinationDate).text = ticket.destinationDateTime.Date
-                view.findViewById<TextView>(R.id.ticket_destinationTime).text = ticket.destinationDateTime.Time
+                view.findViewById<TextView>(R.id.ticket_destinationDate).text = ticket.destinationDateTime.date
+                view.findViewById<TextView>(R.id.ticket_destinationTime).text = ticket.destinationDateTime.time
                 view.findViewById<TextView>(R.id.ticket_price).text = ticket.price.toString()
                 view.findViewById<TextView>(R.id.ticket_currency).text = ticket.currency.toString()
                 view.findViewById<TextView>(R.id.ticket_seat).text = if(ticket.seat == -1) "При посадці" else ticket.seat.toString()
-                view.findViewById<TextView>(R.id.ticket_purchaseDate).text = ticket.purchaseDateTime.Time + " " +
-                        ticket.purchaseDateTime.Date
+                view.findViewById<TextView>(R.id.ticket_purchaseDate).text = ticket.purchaseDateTime.time + " " +
+                        ticket.purchaseDateTime.date
 
                 val displayMetrics = DisplayMetrics()
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -423,7 +422,7 @@ class EnterTicketDataTime: AppCompatActivity() {
                         transliterateToEnglish(ticket.fullName).split(" ")[1] + " " +
                         transliterateToEnglish(ticket.departureAddress.city) + "-" +
                         transliterateToEnglish(ticket.destinationAddress.city) + " " +
-                        ticket.purchaseDateTime.Date + " " + System.currentTimeMillis().toString() +
+                        ticket.purchaseDateTime.date + " " + System.currentTimeMillis().toString() +
                         ".pdf").replace(":", ".")
 
                 val filePath = File(downloadsDir, fileName)
