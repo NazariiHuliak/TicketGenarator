@@ -2,7 +2,8 @@ package com.example.ticketgeneratorproject.Entities
 
 data class DateTime(
     val date: String = "",
-    val time: String = ""
+    val time: String = "",
+    val seconds: String = ""
 ): java.io.Serializable {
     companion object{
         fun parseDateTime(dateTime: String): DateTime{

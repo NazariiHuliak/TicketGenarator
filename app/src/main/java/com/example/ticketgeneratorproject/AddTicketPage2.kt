@@ -41,7 +41,7 @@ import com.example.ticketgeneratorproject.Entities.Currency
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-class EnterTicketDataTime: AppCompatActivity() {
+class AddTicketPage2: AppCompatActivity() {
     private lateinit var currencyDropDownMenu: AutoCompleteTextView
     private lateinit var price: TextView
     private lateinit var priceLayout: TextInputLayout
@@ -74,7 +74,7 @@ class EnterTicketDataTime: AppCompatActivity() {
     @SuppressLint("MissingInflatedId", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_enter_ticket_data_time)
+        setContentView(R.layout.add_ticket_page_2)
 
         //setting list of items for auto complete text view
         currencyDropDownMenu = findViewById<AutoCompleteTextView>(R.id.auto_complete1)
@@ -109,8 +109,7 @@ class EnterTicketDataTime: AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
         firebaseDatabase = FirebaseDatabase.getInstance()
         val uid = firebaseAuth.currentUser!!.uid
-        val firebaseDatabaseRef = firebaseDatabase.getReference("users").child(uid).child("tickets")
-        val objectID = firebaseDatabaseRef.child("tickets").push().key
+        val ticketsReference = firebaseDatabase.getReference("users").child(uid).child("tickets")
 
         //find intent Extra and set proper data
         val intentHasExtraToUpdate = intent.hasExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update")
@@ -274,13 +273,11 @@ class EnterTicketDataTime: AppCompatActivity() {
 
                 if (intentHasExtraToUpdate) {
                     dbAdapter.updateTicket(ticket)
+                    ticketsReference.child(getUniqueIdByTicket(ticket)).updateChildren(ticket.getHashMap())
                 } else {
                     ticket.purchaseDateTime = DateTime.parseDateTime(getCurrentDateTime())
                     dbAdapter.addTicket(ticket)
-
-                    if (objectID != null) {
-                        firebaseDatabaseRef.child(objectID).setValue(ticket)
-                    }
+                    ticketsReference.child(getUniqueIdByTicket(ticket)).setValue(ticket.getHashMap())
                 }
 
                 Toast.makeText(this, "Квиток був успішно збережений", Toast.LENGTH_LONG).show()
@@ -365,6 +362,12 @@ class EnterTicketDataTime: AppCompatActivity() {
             if(askPermissions()){
                 val view: View = LayoutInflater.from(context).inflate(R.layout.to_generate_pdf, null)
 
+                if(ticket.fullName.length >= 32){
+                    view.findViewById<TextView>(R.id.ticket_fullName).textSize = 14f;
+                    if(ticket.fullName.length >= 36 && ticket.tripNumber.length >= 9){
+                        view.findViewById<TextView>(R.id.ticket_tripNumber).textSize = 13f;
+                    }
+                }
                 view.findViewById<TextView>(R.id.ticket_fullName).text = ticket.fullName
                 view.findViewById<TextView>(R.id.ticket_tripNumber).text = ticket.tripNumber
                 view.findViewById<TextView>(R.id.ticket_departureCity).text = ticket.departureAddress.city
@@ -414,9 +417,6 @@ class EnterTicketDataTime: AppCompatActivity() {
 
                 val downloadsDir =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-
-                /*var parts_time = ticket.purchaseDateTime.Time.replace(":", " ").split(" ")
-                var parts_date = ticket.purchaseDateTime.Date.replace("-", " ").split(" ")*/
 
                 val fileName = (transliterateToEnglish(ticket.fullName).split(" ")[0] + " " +
                         transliterateToEnglish(ticket.fullName).split(" ")[1] + " " +
@@ -474,8 +474,13 @@ class EnterTicketDataTime: AppCompatActivity() {
             return stringBuilder.toString()
         }
         fun getCurrentDateTime(): String {
-            val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault())
+            val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault())
             return dateFormat.format(Date())
+        }
+
+        fun getUniqueIdByTicket(ticket: TicketModel): String{
+            return ticket.purchaseDateTime.time.replace(":", "") +
+                    ticket.purchaseDateTime.date.replace("-", "")
         }
     }
 }

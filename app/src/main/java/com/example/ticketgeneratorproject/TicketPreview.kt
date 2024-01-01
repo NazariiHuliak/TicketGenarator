@@ -21,7 +21,7 @@ class TicketPreview : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_ticket_preview)
+        setContentView(R.layout.ticket_preview)
 
         //hide status bar
         val windowInsetsController =
@@ -34,6 +34,12 @@ class TicketPreview : AppCompatActivity() {
             intent.getSerializableExtra("DetailedInformationAboutTicket_TO_TicketPreview_ticketData")
                     as TicketModel
 
+        if(ticket.fullName.length >= 32){
+            findViewById<TextView>(R.id.ticket_fullName).textSize = 14f;
+            if(ticket.fullName.length >= 36 && ticket.tripNumber.length >= 9){
+                findViewById<TextView>(R.id.ticket_tripNumber).textSize = 13f;
+            }
+        }
         findViewById<TextView>(R.id.ticket_fullName).text = ticket.fullName
         findViewById<TextView>(R.id.ticket_tripNumber).text = ticket.tripNumber
         findViewById<TextView>(R.id.ticket_departureCity).text = ticket.departureAddress.city

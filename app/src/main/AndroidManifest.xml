@@ -28,13 +28,13 @@
             android:name=".DetailedInformationAboutTicket"
             android:exported="false" />
         <activity
-            android:name=".EnterTicketDataTime"
+            android:name=".AddTicketPage2"
             android:exported="false" />
         <activity
             android:name=".TicketPreview"
             android:exported="false" />
         <activity
-            android:name=".EnterTicketData"
+            android:name=".AddTicketPage1"
             android:exported="false" />
         <activity
             android:name=".LoginPage"
