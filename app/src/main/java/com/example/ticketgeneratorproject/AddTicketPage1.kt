@@ -5,7 +5,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.*
-import androidx.compose.ui.text.capitalize
 import androidx.core.widget.addTextChangedListener
 import com.example.ticketgeneratorproject.Entities.Address
 import com.example.ticketgeneratorproject.Entities.Currency
@@ -13,14 +12,13 @@ import com.example.ticketgeneratorproject.Entities.DateTime
 import com.example.ticketgeneratorproject.Entities.TicketModel
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import java.util.Locale
 
-class EnterTicketData : AppCompatActivity() {
+class AddTicketPage1 : AppCompatActivity() {
     private lateinit var ticket: TicketModel
     @SuppressLint("MissingInflatedId", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_enter_ticket_data)
+        setContentView(R.layout.add_ticket_page_1)
 
         val intentHasExtraToUpdate = intent.hasExtra("DetailedInformationTicket_TO_EnterTicketData_TicketData_Update")
         val intentHasExtraToCreateSimilar = intent.hasExtra("DetailedInformationTicket_TO_EnterTicketData_TicketData_CreateSimilar")
@@ -112,7 +110,7 @@ class EnterTicketData : AppCompatActivity() {
             }
 
             if(!hasErrors){
-                val intent = Intent(this, EnterTicketDataTime::class.java)
+                val intent = Intent(this, AddTicketPage2::class.java)
                 val ticketToPass = TicketModel(
                     0,
                     capitalizeWords(fullnameText),
@@ -124,22 +122,22 @@ class EnterTicketData : AppCompatActivity() {
                     if(seatText.isEmpty()) -1 else seatText.toInt(),
                     0.0,
                     Currency.UAH,
-                    DateTime.parseDateTime("01-01-1991 00:00")
+                    DateTime.parseDateTime("01-01-1991 00:00:00")
                 )
                 if(intentHasExtraToUpdate){
                     intent.putExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update",
                         ticketToPass.
                         setId(ticket.id).
-                        setDepartureDestinationDateTime(DateTime.parseDateTime(ticket.departureDateTime.Date+ " " + ticket.departureDateTime.Time),
-                            DateTime.parseDateTime(ticket.destinationDateTime.Date+ " " + ticket.destinationDateTime.Time)).
+                        setDepartureDestinationDateTime(DateTime.parseDateTime(ticket.departureDateTime.date+ " " + ticket.departureDateTime.time),
+                            DateTime.parseDateTime(ticket.destinationDateTime.date+ " " + ticket.destinationDateTime.time)).
                         setPurchaseDateTime(ticket.purchaseDateTime).
                         setPrice(ticket.price).
                         setCurrency(ticket.currency))
                 } else if(intentHasExtraToCreateSimilar) {
                     intent.putExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_CreateSimilar",
                         ticketToPass.
-                        setDepartureDestinationDateTime(DateTime.parseDateTime(ticket.departureDateTime.Date+ " " + ticket.departureDateTime.Time),
-                            DateTime.parseDateTime(ticket.destinationDateTime.Date+ " " + ticket.destinationDateTime.Time)).
+                        setDepartureDestinationDateTime(DateTime.parseDateTime(ticket.departureDateTime.date+ " " + ticket.departureDateTime.time),
+                            DateTime.parseDateTime(ticket.destinationDateTime.date+ " " + ticket.destinationDateTime.time)).
                         setPrice(ticket.price).
                         setCurrency(ticket.currency))
                 } else {

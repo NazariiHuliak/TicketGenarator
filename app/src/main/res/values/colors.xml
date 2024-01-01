@@ -17,6 +17,7 @@
     <color name="light_blue_A400">#BD0500</color>
     <color name="errorColor">#BD0500</color>
     <color name="black_overlay">#BD0500</color>
-
+    <color name="white_green">#EEF4EA</color>
+    <color name="grey">#717171</color>
 
 </resources>

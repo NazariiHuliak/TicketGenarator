@@ -2,11 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
-
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -18,19 +19,25 @@
         android:theme="@style/Theme.TicketGeneratorProject"
         tools:targetApi="31">
         <activity
+            android:name=".RegisterPage"
+            android:exported="false" />
+        <activity
+            android:name=".HomePage"
+            android:exported="false" />
+        <activity
             android:name=".DetailedInformationAboutTicket"
             android:exported="false" />
         <activity
-            android:name=".EnterTicketDataTime"
+            android:name=".AddTicketPage2"
             android:exported="false" />
         <activity
             android:name=".TicketPreview"
             android:exported="false" />
         <activity
-            android:name=".EnterTicketData"
+            android:name=".AddTicketPage1"
             android:exported="false" />
         <activity
-            android:name=".HomePage"
+            android:name=".LoginPage"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

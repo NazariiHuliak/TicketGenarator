@@ -1,34 +1,15 @@
 package com.example.ticketgeneratorproject
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.os.Looper
-import android.os.StrictMode
-import android.os.StrictMode.VmPolicy
-import android.provider.MediaStore
-import android.util.Log
-import android.view.GestureDetector
-import android.view.MotionEvent
-import android.view.View
-import android.view.WindowManager
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import com.example.ticketgeneratorproject.Entities.TicketModel
-import java.io.File
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 
 class DetailedInformationAboutTicket : AppCompatActivity() {
     private lateinit var backToMainButton: LinearLayout
@@ -41,7 +22,7 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
     @SuppressLint("MissingInflatedId", "SetTextI18n", "ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_detailed_information_about_ticket)
+        setContentView(R.layout.detailed_information_about_ticket_layout)
 
         fullScreenViewButton = findViewById(R.id.show_on_full_size_btn)
         backToMainButton = findViewById(R.id.back_to_main_menu)
@@ -61,25 +42,31 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
 
         var doubleClick = false
 
+        if(ticket.fullName.length >= 32){
+            findViewById<TextView>(R.id.ticket_fullName).textSize = 14f;
+            if(ticket.fullName.length >= 36 && ticket.tripNumber.length >= 9){
+                findViewById<TextView>(R.id.ticket_tripNumber).textSize = 13f;
+            }
+        }
         findViewById<TextView>(R.id.ticket_fullName).text = ticket.fullName
         findViewById<TextView>(R.id.ticket_tripNumber).text = ticket.tripNumber
         findViewById<TextView>(R.id.ticket_departureCity).text = ticket.departureAddress.city
         findViewById<TextView>(R.id.ticket_departureAddress).text =
             ticket.departureAddress.street + " " +
                     ticket.departureAddress.number
-        findViewById<TextView>(R.id.ticket_departureDate).text = ticket.departureDateTime.Date
-        findViewById<TextView>(R.id.ticket_departureTime).text = ticket.departureDateTime.Time
+        findViewById<TextView>(R.id.ticket_departureDate).text = ticket.departureDateTime.date
+        findViewById<TextView>(R.id.ticket_departureTime).text = ticket.departureDateTime.time
         findViewById<TextView>(R.id.ticket_destinationCity).text = ticket.destinationAddress.city
         findViewById<TextView>(R.id.ticket_destinationAddress).text =
             ticket.destinationAddress.street + " " +
                     ticket.destinationAddress.number
-        findViewById<TextView>(R.id.ticket_destinationDate).text = ticket.destinationDateTime.Date
-        findViewById<TextView>(R.id.ticket_destinationTime).text = ticket.destinationDateTime.Time
+        findViewById<TextView>(R.id.ticket_destinationDate).text = ticket.destinationDateTime.date
+        findViewById<TextView>(R.id.ticket_destinationTime).text = ticket.destinationDateTime.time
         findViewById<TextView>(R.id.ticket_price).text = ticket.price.toString()
         findViewById<TextView>(R.id.ticket_currency).text = ticket.currency.toString()
         findViewById<TextView>(R.id.ticket_seat).text =  if(ticket.seat == -1) "При посадці" else ticket.seat.toString()
-        findViewById<TextView>(R.id.ticket_purchaseDate).text = ticket.purchaseDateTime.Time + " " +
-                ticket.purchaseDateTime.Date
+        findViewById<TextView>(R.id.ticket_purchaseDate).text = ticket.purchaseDateTime.time + " " +
+                ticket.purchaseDateTime.date
 
         backToMainButton.setOnClickListener {
             finish()
@@ -87,7 +74,7 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
             startActivity(intent)
         }
         createSimilarButton.setOnClickListener {
-            val intent = Intent(this, EnterTicketData::class.java)
+            val intent = Intent(this, AddTicketPage1::class.java)
             intent.putExtra(
                 "DetailedInformationTicket_TO_EnterTicketData_TicketData_CreateSimilar",
                 ticket
@@ -95,7 +82,7 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
             startActivity(intent)
         }
         editButton.setOnClickListener {
-            val intent = Intent(this, EnterTicketData::class.java)
+            val intent = Intent(this, AddTicketPage1::class.java)
             intent.putExtra(
                 "DetailedInformationTicket_TO_EnterTicketData_TicketData_Update",
                 ticket
@@ -103,7 +90,7 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
             startActivity(intent)
         }
         downloadButton.setOnClickListener {
-            if(EnterTicketDataTime.convertXmlToPdf(ticket, this)){
+            if(AddTicketPage2.convertXmlToPdf(ticket, this)){
                 finish()
             }
         }
