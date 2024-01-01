@@ -142,7 +142,7 @@ class HomePage : AppCompatActivity() {
         }
 
         addButton.setOnClickListener {
-            val intent = Intent(this, EnterTicketData::class.java)
+            val intent = Intent(this, AddTicketPage1::class.java)
             startActivity(intent)
         }
     }

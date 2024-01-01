@@ -1,4 +1,7 @@
 package com.example.ticketgeneratorproject.Entities
+
+import java.util.HashMap
+
 data class TicketModel(
     var id: Int = 0,
     val fullName: String = "",
@@ -33,5 +36,21 @@ data class TicketModel(
     fun setCurrency(currency: Currency): TicketModel{
         this.currency = currency
         return this
+    }
+
+    fun getHashMap(): Map<String, Any> {
+        return mapOf(
+            "id" to this.id,
+            "fullName" to this.fullName,
+            "tripNumber" to this.tripNumber,
+            "departureAddress" to this.departureAddress,
+            "destinationAddress" to this.destinationAddress,
+            "departureDateTime" to this.departureDateTime,
+            "destinationDateTime" to this.destinationDateTime,
+            "seat" to this.seat,
+            "price" to this.price,
+            "currency" to this.currency.name,
+            "purchaseDateTime" to this.purchaseDateTime
+        )
     }
 }

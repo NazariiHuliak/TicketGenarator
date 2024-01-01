@@ -22,7 +22,7 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
     @SuppressLint("MissingInflatedId", "SetTextI18n", "ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_detailed_information_about_ticket)
+        setContentView(R.layout.detailed_information_about_ticket_layout)
 
         fullScreenViewButton = findViewById(R.id.show_on_full_size_btn)
         backToMainButton = findViewById(R.id.back_to_main_menu)
@@ -42,6 +42,12 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
 
         var doubleClick = false
 
+        if(ticket.fullName.length >= 32){
+            findViewById<TextView>(R.id.ticket_fullName).textSize = 14f;
+            if(ticket.fullName.length >= 36 && ticket.tripNumber.length >= 9){
+                findViewById<TextView>(R.id.ticket_tripNumber).textSize = 13f;
+            }
+        }
         findViewById<TextView>(R.id.ticket_fullName).text = ticket.fullName
         findViewById<TextView>(R.id.ticket_tripNumber).text = ticket.tripNumber
         findViewById<TextView>(R.id.ticket_departureCity).text = ticket.departureAddress.city
@@ -68,7 +74,7 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
             startActivity(intent)
         }
         createSimilarButton.setOnClickListener {
-            val intent = Intent(this, EnterTicketData::class.java)
+            val intent = Intent(this, AddTicketPage1::class.java)
             intent.putExtra(
                 "DetailedInformationTicket_TO_EnterTicketData_TicketData_CreateSimilar",
                 ticket
@@ -76,7 +82,7 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
             startActivity(intent)
         }
         editButton.setOnClickListener {
-            val intent = Intent(this, EnterTicketData::class.java)
+            val intent = Intent(this, AddTicketPage1::class.java)
             intent.putExtra(
                 "DetailedInformationTicket_TO_EnterTicketData_TicketData_Update",
                 ticket
@@ -84,7 +90,7 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
             startActivity(intent)
         }
         downloadButton.setOnClickListener {
-            if(EnterTicketDataTime.convertXmlToPdf(ticket, this)){
+            if(AddTicketPage2.convertXmlToPdf(ticket, this)){
                 finish()
             }
         }
