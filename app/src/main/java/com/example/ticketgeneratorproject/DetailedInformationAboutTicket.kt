@@ -5,11 +5,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
 import com.example.ticketgeneratorproject.Entities.TicketModel
+import java.io.FileOutputStream
+import java.io.OutputStream
 
 class DetailedInformationAboutTicket : AppCompatActivity() {
     private lateinit var backToMainButton: LinearLayout
@@ -17,6 +23,7 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
     private lateinit var downloadButton: Button
     private lateinit var createSimilarButton: Button
     private lateinit var ticket: TicketModel
+    private lateinit var shareButton: Button
 
     private lateinit var fullScreenViewButton: LinearLayout
     @SuppressLint("MissingInflatedId", "SetTextI18n", "ClickableViewAccessibility")
@@ -29,6 +36,7 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
         editButton = findViewById(R.id.edit_btn)
         downloadButton = findViewById(R.id.download_btn)
         createSimilarButton = findViewById(R.id.create_similar)
+        shareButton = findViewById(R.id.share_btn)
 
         if(intent.hasExtra("recyclerViewAdapter_TO_DetailedInformationAboutTicket_ticketData")){
             ticket =
@@ -89,10 +97,19 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
             )
             startActivity(intent)
         }
+
         downloadButton.setOnClickListener {
             if(AddTicketPage2.convertXmlToPdf(ticket, this)){
                 finish()
             }
+        }
+
+
+        val dbAdapter = DataBaseAdapter(this)
+        shareButton.setOnClickListener {
+            /*val pdfFile = AddTicketPage2.convertXMLToPDF(ticket, this)*/
+            /*dbAdapter.addAddress("Test")
+            Log.d("myLog", "${dbAdapter.getAddresses().size}")*/
         }
 
         fullScreenViewButton.setOnClickListener {
