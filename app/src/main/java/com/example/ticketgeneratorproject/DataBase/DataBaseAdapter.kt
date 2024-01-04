@@ -30,7 +30,13 @@ class DataBaseAdapter(private val context: Context) {
             put(DataBaseHelper.CURRENCY, ticket.currency.name)
             put(DataBaseHelper.PURCHASE_TIME, ticket.purchaseDateTime.date + " " + ticket.purchaseDateTime.time)
         }
-        return database.insert(DataBaseHelper.TABLE_NAME, null, values)
+        return database.insert(DataBaseHelper.TICKET_TABLE, null, values)
+    }
+
+    fun addTickets(ticketsList: MutableList<TicketModel>) {
+        for (ticket: TicketModel in ticketsList){
+            addTicket(ticket)
+        }
     }
 
     fun updateTicket(ticket: TicketModel): Int {
@@ -54,13 +60,13 @@ class DataBaseAdapter(private val context: Context) {
         val whereClause = "${DataBaseHelper.TICKET_ID} = ?"
         val whereArgs = arrayOf(ticket.id.toString())
 
-        return database.update(DataBaseHelper.TABLE_NAME, values, whereClause, whereArgs)
+        return database.update(DataBaseHelper.TICKET_TABLE, values, whereClause, whereArgs)
     }
 
     @SuppressLint("Range")
     fun getTickets(): MutableList<TicketModel>{
         var tickets: MutableList<TicketModel> = mutableListOf()
-        val query = "SELECT * FROM ${DataBaseHelper.TABLE_NAME}"
+        val query = "SELECT * FROM ${DataBaseHelper.TICKET_TABLE}"
         val cursor = database.rawQuery(query, null)
         if (cursor.moveToFirst()) {
             do {
@@ -94,5 +100,31 @@ class DataBaseAdapter(private val context: Context) {
             }while(cursor.moveToNext())
         }
         return tickets
+    }
+
+    fun addAddress(address: String): Long {
+        val values = ContentValues().apply {
+            put(DataBaseHelper.ADDRESS_NAME, address)
+        }
+        return database.insert(DataBaseHelper.ADDRESSES_TABLE, null, values)
+    }
+
+    @SuppressLint("Recycle", "Range")
+    fun getAddresses(): MutableList<String>{
+        val addresses = mutableListOf<String>()
+        val query = "SELECT * FROM ${DataBaseHelper.ADDRESSES_TABLE}"
+        val cursor = database.rawQuery(query, null)
+        if (cursor.moveToFirst()){
+            do {
+                val addressID = cursor.getInt(cursor.getColumnIndex(DataBaseHelper.ADDRESS_ID))
+                val address = cursor.getString(cursor.getColumnIndex(DataBaseHelper.ADDRESS_NAME))
+                addresses.add(address)
+            } while(cursor.moveToNext())
+        }
+        return addresses
+    }
+
+    fun deleteAllTicket() {
+        database.delete(DataBaseHelper.TICKET_TABLE, null, null)
     }
 }

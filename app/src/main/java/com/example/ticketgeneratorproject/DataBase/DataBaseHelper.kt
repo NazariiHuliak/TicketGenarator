@@ -7,9 +7,9 @@ import android.database.sqlite.SQLiteOpenHelper
 class DataBaseHelper(context: Context): SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
     companion object {
         private const val DB_NAME = "TicketsDataBase.db"
-        private const val DB_VERSION = 2
+        private const val DB_VERSION = 3
 
-        const val TABLE_NAME = "ticketsTable"
+        const val TICKET_TABLE = "ticketsTable"
         const val TICKET_ID = "ticketID"
         const val FULL_NAME = "fullName"
         const val TRIP_NUMBER = "tripNumber"
@@ -21,10 +21,14 @@ class DataBaseHelper(context: Context): SQLiteOpenHelper(context, DB_NAME, null,
         const val PRICE = "price"
         const val CURRENCY = "currency"
         const val PURCHASE_TIME = "purchaseTime"
+
+        const val ADDRESSES_TABLE = "frequentlyUsedAddresses"
+        const val ADDRESS_ID = "addressID"
+        const val ADDRESS_NAME = "addressName"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        val createTableTickets = "CREATE TABLE $TABLE_NAME " +
+        val createTableTickets = "CREATE TABLE $TICKET_TABLE " +
                 "($TICKET_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "$FULL_NAME TEXT, " +
                 "$TRIP_NUMBER TEXT, " +
@@ -36,10 +40,17 @@ class DataBaseHelper(context: Context): SQLiteOpenHelper(context, DB_NAME, null,
                 "$PRICE REAL," +
                 "$CURRENCY TEXT, " +
                 "$PURCHASE_TIME TEXT)"
+
+        val createTableAddress = "CREATE TABLE $ADDRESSES_TABLE " +
+                "($ADDRESS_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "$ADDRESS_NAME TEXT)"
+
         db?.execSQL(createTableTickets)
+        db?.execSQL(createTableAddress)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        db?.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
+        db?.execSQL("DROP TABLE IF EXISTS $TICKET_TABLE")
+        db?.execSQL("DROP TABLE IF EXISTS $ADDRESSES_TABLE")
     }
 }

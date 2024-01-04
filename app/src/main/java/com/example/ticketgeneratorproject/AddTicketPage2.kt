@@ -29,17 +29,17 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
+import com.example.ticketgeneratorproject.Entities.Currency
 import com.example.ticketgeneratorproject.Entities.DateTime
 import com.example.ticketgeneratorproject.Entities.TicketModel
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
-import com.example.ticketgeneratorproject.Entities.Currency
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 
 class AddTicketPage2: AppCompatActivity() {
     private lateinit var currencyDropDownMenu: AutoCompleteTextView
@@ -110,6 +110,7 @@ class AddTicketPage2: AppCompatActivity() {
         firebaseDatabase = FirebaseDatabase.getInstance()
         val uid = firebaseAuth.currentUser!!.uid
         val ticketsReference = firebaseDatabase.getReference("users").child(uid).child("tickets")
+        val addressesReference = firebaseDatabase.getReference("users").child(uid).child("commonAddresses")
 
         //find intent Extra and set proper data
         val intentHasExtraToUpdate = intent.hasExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update")
@@ -278,6 +279,10 @@ class AddTicketPage2: AppCompatActivity() {
                     ticket.purchaseDateTime = DateTime.parseDateTime(getCurrentDateTime())
                     dbAdapter.addTicket(ticket)
                     ticketsReference.child(getUniqueIdByTicket(ticket)).setValue(ticket.getHashMap())
+                    val addressId = addressesReference.push().key
+                    if(addressId!=null){
+                        addressesReference.child(addressId).setValue("test")
+                    }
                 }
 
                 Toast.makeText(this, "Квиток був успішно збережений", Toast.LENGTH_LONG).show()
@@ -441,6 +446,76 @@ class AddTicketPage2: AppCompatActivity() {
             }
             return false
         }
+
+        @SuppressLint("CutPasteId", "InflateParams", "SetTextI18n")
+        fun convertXMLToPDF(ticket: TicketModel, context: Context): PdfDocument{
+            val view: View = LayoutInflater.from(context).inflate(R.layout.to_generate_pdf, null)
+
+            if(ticket.fullName.length >= 32){
+                view.findViewById<TextView>(R.id.ticket_fullName).textSize = 14f;
+                if(ticket.fullName.length >= 36 && ticket.tripNumber.length >= 9){
+                    view.findViewById<TextView>(R.id.ticket_tripNumber).textSize = 13f;
+                }
+            }
+            view.findViewById<TextView>(R.id.ticket_fullName).text = ticket.fullName
+            view.findViewById<TextView>(R.id.ticket_tripNumber).text = ticket.tripNumber
+            view.findViewById<TextView>(R.id.ticket_departureCity).text = ticket.departureAddress.city
+            view.findViewById<TextView>(R.id.ticket_departureAddress).text = ticket.departureAddress.street + " " +
+                    ticket.departureAddress.number
+            view.findViewById<TextView>(R.id.ticket_departureDate).text = ticket.departureDateTime.date
+            view.findViewById<TextView>(R.id.ticket_departureTime).text = ticket.departureDateTime.time
+            view.findViewById<TextView>(R.id.ticket_destinationCity).text = ticket.destinationAddress.city
+            view.findViewById<TextView>(R.id.ticket_destinationAddress).text = ticket.destinationAddress.street + " " +
+                    ticket.destinationAddress.number
+            view.findViewById<TextView>(R.id.ticket_destinationDate).text = ticket.destinationDateTime.date
+            view.findViewById<TextView>(R.id.ticket_destinationTime).text = ticket.destinationDateTime.time
+            view.findViewById<TextView>(R.id.ticket_price).text = ticket.price.toString()
+            view.findViewById<TextView>(R.id.ticket_currency).text = ticket.currency.toString()
+            view.findViewById<TextView>(R.id.ticket_seat).text = if(ticket.seat == -1) "При посадці" else ticket.seat.toString()
+            view.findViewById<TextView>(R.id.ticket_purchaseDate).text = ticket.purchaseDateTime.time + " " +
+                    ticket.purchaseDateTime.date
+
+            val displayMetrics = DisplayMetrics()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                context.display!!.getRealMetrics(displayMetrics)
+            }
+            view.measure(
+                View.MeasureSpec.makeMeasureSpec(displayMetrics.widthPixels, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(displayMetrics.heightPixels, View.MeasureSpec.EXACTLY)
+            )
+
+            view.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels)
+
+            val document = PdfDocument()
+
+            val viewWidth = 1080
+            val viewHeight = 1920
+
+            val pageInfo = PageInfo.Builder(viewWidth, viewHeight, 1).create()
+
+            val page = document.startPage(pageInfo)
+
+            val canvas = page.canvas
+
+            val paint = Paint()
+            paint.color = Color.WHITE
+
+            view.draw(canvas)
+
+            document.finishPage(page)
+
+            val fileName = (transliterateToEnglish(ticket.fullName).split(" ")[0] + " " +
+                    transliterateToEnglish(ticket.fullName).split(" ")[1] + " " +
+                    transliterateToEnglish(ticket.departureAddress.city) + "-" +
+                    transliterateToEnglish(ticket.destinationAddress.city) + " " +
+                    ticket.purchaseDateTime.date + " " + System.currentTimeMillis().toString() +
+                    ".pdf").replace(":", ".")
+
+            return document
+        }
+
+
+
         fun transliterateToEnglish(input: String): String {
             val ukrainianCharacters = arrayOf(
                 "а", "б", "в", "г", "д", "е", "є", "ж", "з", "и", "і", "ї", "й", "к",

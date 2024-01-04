@@ -1,7 +1,9 @@
 package com.example.ticketgeneratorproject
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -32,6 +34,7 @@ class HomePage : AppCompatActivity() {
 
     private var lastBackPressTime: Long = 0
     private val BACK_PRESS_INTERVAL = 2000
+    private val INITIAL_SYNCHRONIZATION = "initialSynchronization"
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var ticketsArrayList: MutableList<TicketModel>
@@ -55,6 +58,8 @@ class HomePage : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.home_page_layout)
+        val sharedPreferences: SharedPreferences =
+            this.getSharedPreferences("HomePagePreferences", Context.MODE_PRIVATE)
 
         val dbAdapter = DataBaseAdapter(this)
 
@@ -67,9 +72,6 @@ class HomePage : AppCompatActivity() {
         recyclerView.layoutManager = layoutManager
         recyclerView.setHasFixedSize(true)
 
-        /*ticketsArrayList = dbAdapter.getTickets()
-        recyclerViewAdapter = RecyclerViewAdapter(ticketsArrayList)
-        recyclerView.adapter = recyclerViewAdapter*/
         addButton = findViewById(R.id.create_new_ticket)
         logoutButton = findViewById(R.id.logout)
 
@@ -86,6 +88,15 @@ class HomePage : AppCompatActivity() {
         val userReference = firebaseDatabaseRef.child(uid).child("name")
         val ticketsReference = firebaseDatabaseRef.child(uid).child("tickets")
 
+        if (!sharedPreferences.getBoolean(INITIAL_SYNCHRONIZATION, false)) {
+            loadDataFromFirebase(dbAdapter, ticketsReference, sharedPreferences)
+        } else {
+            ticketsArrayList = dbAdapter.getTickets()
+            recyclerViewAdapter = RecyclerViewAdapter(ticketsArrayList)
+            recyclerView.adapter = recyclerViewAdapter
+        }
+
+        emailField.text = firebaseAuth.currentUser?.email.toString()
         userReference.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if(snapshot.exists()){
@@ -98,26 +109,17 @@ class HomePage : AppCompatActivity() {
                 Log.e("myLog", "Error: ${error.message}")
             }
         })
-        emailField.text = firebaseAuth.currentUser?.email.toString()
 
-        ticketsReference.addValueEventListener(object: ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val ticketsList = mutableListOf<TicketModel>()
-                for (ticketSnapshot in snapshot.children) {
-                    val ticket = ticketSnapshot.getValue(TicketModel::class.java)
-                    if (ticket != null) {
-                        ticketsList.add(ticket)
-                    }
-                }
-                ticketsArrayList = ticketsList
-                recyclerViewAdapter = RecyclerViewAdapter(ticketsArrayList)
-                recyclerView.adapter = recyclerViewAdapter
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("myLog", "Error: ${error.message}")
-            }
-        })
+        materialCardView.setOnClickListener {
+            animateCardExpansion(materialCardView, hiddenMaterialCardContent)
+        }
+        logoutButton.setOnClickListener {
+            dbAdapter.deleteAllTicket()
+            sharedPreferences.edit().putBoolean(INITIAL_SYNCHRONIZATION, false).apply()
+            firebaseAuth.signOut()
+            val intent = Intent(this, LoginPage::class.java)
+            startActivity(intent)
+        }
 
         searchField.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
@@ -130,21 +132,42 @@ class HomePage : AppCompatActivity() {
                 layoutManager.scrollToPosition(recyclerViewAdapter.itemCount-1)
             }
         })
-
-        logoutButton.setOnClickListener {
-            firebaseAuth.signOut()
-            val intent = Intent(this, LoginPage::class.java)
-            startActivity(intent)
-        }
-
-        materialCardView.setOnClickListener {
-            animateCardExpansion(materialCardView, hiddenMaterialCardContent)
-        }
-
         addButton.setOnClickListener {
             val intent = Intent(this, AddTicketPage1::class.java)
             startActivity(intent)
         }
+    }
+
+    private fun loadDataFromFirebase(
+        dbAdapter: DataBaseAdapter,
+        ticketsReference: DatabaseReference,
+        sharedPreferences: SharedPreferences
+    ){
+        ticketsReference.addValueEventListener(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (!sharedPreferences.getBoolean(INITIAL_SYNCHRONIZATION, false) && snapshot.children.count() >= 0){
+                    val ticketsList = mutableListOf<TicketModel>()
+                    for (ticketSnapshot in snapshot.children) {
+                        val ticket = ticketSnapshot.getValue(TicketModel::class.java)
+                        if (ticket != null) {
+                            ticketsList.add(ticket)
+                        }
+                    }
+
+                    dbAdapter.addTickets(ticketsList)
+
+                    ticketsArrayList = ticketsList
+                    recyclerViewAdapter = RecyclerViewAdapter(ticketsArrayList)
+                    recyclerView.adapter = recyclerViewAdapter
+
+                    sharedPreferences.edit().putBoolean(INITIAL_SYNCHRONIZATION, true).apply()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("myLog", "Error: ${error.message}")
+            }
+        })
     }
 
     private fun animateCardExpansion(materialCardView: MaterialCardView, content: LinearLayout) {
