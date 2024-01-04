@@ -145,7 +145,7 @@ class HomePage : AppCompatActivity() {
     ){
         ticketsReference.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (!sharedPreferences.getBoolean(INITIAL_SYNCHRONIZATION, false) && snapshot.children.count() >= 0){
+                if (!sharedPreferences.getBoolean(INITIAL_SYNCHRONIZATION, false)){
                     val ticketsList = mutableListOf<TicketModel>()
                     for (ticketSnapshot in snapshot.children) {
                         val ticket = ticketSnapshot.getValue(TicketModel::class.java)
