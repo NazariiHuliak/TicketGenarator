@@ -33,6 +33,12 @@ class DataBaseAdapter(private val context: Context) {
         return database.insert(DataBaseHelper.TICKET_TABLE, null, values)
     }
 
+    fun addTickets(ticketsList: MutableList<TicketModel>) {
+        for (ticket: TicketModel in ticketsList){
+            addTicket(ticket)
+        }
+    }
+
     fun updateTicket(ticket: TicketModel): Int {
         val values = ContentValues().apply {
             put(DataBaseHelper.FULL_NAME, ticket.fullName)
@@ -96,7 +102,7 @@ class DataBaseAdapter(private val context: Context) {
         return tickets
     }
 
-    /*fun addAddress(address: String): Long {
+    fun addAddress(address: String): Long {
         val values = ContentValues().apply {
             put(DataBaseHelper.ADDRESS_NAME, address)
         }
@@ -110,11 +116,15 @@ class DataBaseAdapter(private val context: Context) {
         val cursor = database.rawQuery(query, null)
         if (cursor.moveToFirst()){
             do {
-                *//*val addressID = cursor.getInt(cursor.getColumnIndex(DataBaseHelper.ADDRESS_ID))*//*
+                val addressID = cursor.getInt(cursor.getColumnIndex(DataBaseHelper.ADDRESS_ID))
                 val address = cursor.getString(cursor.getColumnIndex(DataBaseHelper.ADDRESS_NAME))
                 addresses.add(address)
             } while(cursor.moveToNext())
         }
         return addresses
-    }*/
+    }
+
+    fun deleteAllTicket() {
+        database.delete(DataBaseHelper.TICKET_TABLE, null, null)
+    }
 }

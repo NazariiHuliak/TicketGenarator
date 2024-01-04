@@ -27,20 +27,19 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.core.widget.addTextChangedListener
 import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
+import com.example.ticketgeneratorproject.Entities.Currency
 import com.example.ticketgeneratorproject.Entities.DateTime
 import com.example.ticketgeneratorproject.Entities.TicketModel
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
-import com.example.ticketgeneratorproject.Entities.Currency
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 
 class AddTicketPage2: AppCompatActivity() {
     private lateinit var currencyDropDownMenu: AutoCompleteTextView
@@ -111,6 +110,7 @@ class AddTicketPage2: AppCompatActivity() {
         firebaseDatabase = FirebaseDatabase.getInstance()
         val uid = firebaseAuth.currentUser!!.uid
         val ticketsReference = firebaseDatabase.getReference("users").child(uid).child("tickets")
+        val addressesReference = firebaseDatabase.getReference("users").child(uid).child("commonAddresses")
 
         //find intent Extra and set proper data
         val intentHasExtraToUpdate = intent.hasExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update")
@@ -279,6 +279,10 @@ class AddTicketPage2: AppCompatActivity() {
                     ticket.purchaseDateTime = DateTime.parseDateTime(getCurrentDateTime())
                     dbAdapter.addTicket(ticket)
                     ticketsReference.child(getUniqueIdByTicket(ticket)).setValue(ticket.getHashMap())
+                    val addressId = addressesReference.push().key
+                    if(addressId!=null){
+                        addressesReference.child(addressId).setValue("test")
+                    }
                 }
 
                 Toast.makeText(this, "Квиток був успішно збережений", Toast.LENGTH_LONG).show()

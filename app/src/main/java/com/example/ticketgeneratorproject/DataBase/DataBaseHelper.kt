@@ -41,16 +41,16 @@ class DataBaseHelper(context: Context): SQLiteOpenHelper(context, DB_NAME, null,
                 "$CURRENCY TEXT, " +
                 "$PURCHASE_TIME TEXT)"
 
-        /*val createTableAddress = "CREATE TABLE $ADDRESSES_TABLE " +
+        val createTableAddress = "CREATE TABLE $ADDRESSES_TABLE " +
                 "($ADDRESS_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "$ADDRESS_NAME TEXT)"*/
+                "$ADDRESS_NAME TEXT)"
 
         db?.execSQL(createTableTickets)
-        /*db?.execSQL(createTableAddress)*/
+        db?.execSQL(createTableAddress)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         db?.execSQL("DROP TABLE IF EXISTS $TICKET_TABLE")
-        /*db?.execSQL("DROP TABLE IF EXISTS $ADDRESSES_TABLE")*/
+        db?.execSQL("DROP TABLE IF EXISTS $ADDRESSES_TABLE")
     }
 }

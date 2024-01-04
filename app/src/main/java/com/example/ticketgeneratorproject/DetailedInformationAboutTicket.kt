@@ -104,12 +104,11 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
             }
         }
 
-
         val dbAdapter = DataBaseAdapter(this)
         shareButton.setOnClickListener {
             /*val pdfFile = AddTicketPage2.convertXMLToPDF(ticket, this)*/
-            /*dbAdapter.addAddress("Test")
-            Log.d("myLog", "${dbAdapter.getAddresses().size}")*/
+            dbAdapter.addAddress("Test")
+            Log.d("myLog", "${dbAdapter.getAddresses().size}")
         }
 
         fullScreenViewButton.setOnClickListener {
