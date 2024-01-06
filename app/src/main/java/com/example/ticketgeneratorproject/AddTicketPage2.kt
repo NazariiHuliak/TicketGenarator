@@ -70,6 +70,8 @@ class AddTicketPage2: AppCompatActivity() {
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var firebaseAuth: FirebaseAuth
 
+    private lateinit var dbAdapter: DataBaseAdapter
+
     private lateinit var ticket: TicketModel
     @SuppressLint("MissingInflatedId", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,6 +110,9 @@ class AddTicketPage2: AppCompatActivity() {
 
         firebaseAuth = FirebaseAuth.getInstance()
         firebaseDatabase = FirebaseDatabase.getInstance()
+
+        dbAdapter = DataBaseAdapter(this)
+
         val uid = firebaseAuth.currentUser!!.uid
         val ticketsReference = firebaseDatabase.getReference("users").child(uid).child("tickets")
         val addressesReference = firebaseDatabase.getReference("users").child(uid).child("commonAddresses")
@@ -135,7 +140,6 @@ class AddTicketPage2: AppCompatActivity() {
         }
 
         var hasInputtingErrors = false
-        val dbAdapter = DataBaseAdapter(this)
         var datePickerState = -1
         var timePickerState = -1
         val myCalendar = Calendar.getInstance()
@@ -277,11 +281,23 @@ class AddTicketPage2: AppCompatActivity() {
                     ticketsReference.child(getUniqueIdByTicket(ticket)).updateChildren(ticket.getHashMap())
                 } else {
                     ticket.purchaseDateTime = DateTime.parseDateTime(getCurrentDateTime())
+
                     dbAdapter.addTicket(ticket)
                     ticketsReference.child(getUniqueIdByTicket(ticket)).setValue(ticket.getHashMap())
-                    val addressId = addressesReference.push().key
-                    if(addressId!=null){
-                        addressesReference.child(addressId).setValue("test")
+
+                    if(dbAdapter.isUniqueAddress(ticket.departureAddress.toString())){
+                        val addressId = addressesReference.push().key
+                        if (addressId != null) {
+                            dbAdapter.addAddress(ticket.departureAddress.toString())
+                            addressesReference.child(addressId).setValue(ticket.departureAddress.toString())
+                        }
+                    }
+                    if(dbAdapter.isUniqueAddress(ticket.destinationAddress.toString())){
+                        val addressId = addressesReference.push().key
+                        if (addressId != null) {
+                            dbAdapter.addAddress(ticket.destinationAddress.toString())
+                            addressesReference.child(addressId).setValue(ticket.destinationAddress.toString())
+                        }
                     }
                 }
 
