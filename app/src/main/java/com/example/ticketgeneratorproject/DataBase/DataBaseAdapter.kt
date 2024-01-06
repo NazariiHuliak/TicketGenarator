@@ -8,8 +8,14 @@ import com.example.ticketgeneratorproject.Entities.Address
 import com.example.ticketgeneratorproject.Entities.Currency
 import com.example.ticketgeneratorproject.Entities.DateTime
 import com.example.ticketgeneratorproject.Entities.TicketModel
+import java.io.Serializable
 
 class DataBaseAdapter(private val context: Context) {
+    private var preLoadedListOfAddresses = listOf(
+        "Україна, Львів, Стрийський автовокзал",
+        "Україна, Львів, Залізничний вокзал",
+        "Україна, Золочів, Залізничний вокзал")
+
     private val database: SQLiteDatabase by lazy {
         DataBaseHelper(context).writableDatabase
     }
@@ -33,7 +39,7 @@ class DataBaseAdapter(private val context: Context) {
         return database.insert(DataBaseHelper.TICKET_TABLE, null, values)
     }
 
-    fun addTickets(ticketsList: MutableList<TicketModel>) {
+    fun addAllTickets(ticketsList: MutableList<TicketModel>) {
         for (ticket: TicketModel in ticketsList){
             addTicket(ticket)
         }
@@ -64,7 +70,7 @@ class DataBaseAdapter(private val context: Context) {
     }
 
     @SuppressLint("Range")
-    fun getTickets(): MutableList<TicketModel>{
+    fun getAllTickets(): MutableList<TicketModel> {
         var tickets: MutableList<TicketModel> = mutableListOf()
         val query = "SELECT * FROM ${DataBaseHelper.TICKET_TABLE}"
         val cursor = database.rawQuery(query, null)
@@ -102,6 +108,10 @@ class DataBaseAdapter(private val context: Context) {
         return tickets
     }
 
+    fun deleteAllTicket() {
+        database.delete(DataBaseHelper.TICKET_TABLE, null, null)
+    }
+
     fun addAddress(address: String): Long {
         val values = ContentValues().apply {
             put(DataBaseHelper.ADDRESS_NAME, address)
@@ -109,22 +119,40 @@ class DataBaseAdapter(private val context: Context) {
         return database.insert(DataBaseHelper.ADDRESSES_TABLE, null, values)
     }
 
+    fun addAllAddresses(addressesList: MutableList<String>){
+        for (address: String in addressesList){
+            addAddress(address)
+        }
+    }
+
     @SuppressLint("Recycle", "Range")
-    fun getAddresses(): MutableList<String>{
+    fun getAllAddresses(): List<String> {
         val addresses = mutableListOf<String>()
         val query = "SELECT * FROM ${DataBaseHelper.ADDRESSES_TABLE}"
         val cursor = database.rawQuery(query, null)
         if (cursor.moveToFirst()){
             do {
-                val addressID = cursor.getInt(cursor.getColumnIndex(DataBaseHelper.ADDRESS_ID))
+                //val addressID = cursor.getInt(cursor.getColumnIndex(DataBaseHelper.ADDRESS_ID))
                 val address = cursor.getString(cursor.getColumnIndex(DataBaseHelper.ADDRESS_NAME))
                 addresses.add(address)
             } while(cursor.moveToNext())
         }
-        return addresses
+        return addresses + preLoadedListOfAddresses
     }
 
-    fun deleteAllTicket() {
-        database.delete(DataBaseHelper.TICKET_TABLE, null, null)
+    fun isUniqueAddress(address: String): Boolean {
+        val commonAddresses = getAllAddresses().map{
+            it.replace(Regex("[.,/: ]"), "")}.map{it.lowercase()}
+
+        for (addressItem in commonAddresses){
+            if (address == addressItem.replace(Regex("[.,/: ]"), "").lowercase()){
+                return false
+            }
+        }
+        return true
+    }
+
+    fun deleteAllAddresses() {
+        database.delete(DataBaseHelper.ADDRESSES_TABLE, null, null)
     }
 }

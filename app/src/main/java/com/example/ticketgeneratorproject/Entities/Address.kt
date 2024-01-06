@@ -8,6 +8,11 @@ data class Address(
     val street: String = "",
     val number: String = ""
 ): java.io.Serializable{
+
+    override fun toString(): String {
+        return "$country, $city, $street, $number"
+    }
+
     companion object{
         fun parseAddress(address: String): Address{
             var formattedAddress = address.replace(",", "").

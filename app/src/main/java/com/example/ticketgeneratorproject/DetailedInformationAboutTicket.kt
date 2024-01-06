@@ -10,12 +10,8 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
 import com.example.ticketgeneratorproject.Entities.TicketModel
-import java.io.FileOutputStream
-import java.io.OutputStream
 
 class DetailedInformationAboutTicket : AppCompatActivity() {
     private lateinit var backToMainButton: LinearLayout
@@ -108,7 +104,7 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
         shareButton.setOnClickListener {
             /*val pdfFile = AddTicketPage2.convertXMLToPDF(ticket, this)*/
             dbAdapter.addAddress("Test")
-            Log.d("myLog", "${dbAdapter.getAddresses().size}")
+            Log.d("myLog", "${dbAdapter.getAllAddresses().size}")
         }
 
         fullScreenViewButton.setOnClickListener {

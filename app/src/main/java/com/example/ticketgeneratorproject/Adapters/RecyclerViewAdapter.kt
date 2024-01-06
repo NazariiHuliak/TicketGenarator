@@ -1,17 +1,15 @@
-package com.example.ticketgeneratorproject
+package com.example.ticketgeneratorproject.Adapters
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
-import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
-import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.ticketgeneratorproject.DetailedInformationAboutTicket
 import com.example.ticketgeneratorproject.Entities.TicketModel
+import com.example.ticketgeneratorproject.R
 
 
 class RecyclerViewAdapter(private var ticketsList: MutableList<TicketModel>): RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>(){

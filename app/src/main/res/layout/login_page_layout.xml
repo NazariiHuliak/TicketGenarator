@@ -75,6 +75,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/rubik"
+                    android:inputType="textEmailAddress"
                     android:hint="Пошта"
                     android:maxLines="1"
                     android:textColor="@color/black" />

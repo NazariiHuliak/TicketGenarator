@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Ticket Generator</string>
+    <string name="AddressHint">Місто, адреса, номер будинку</string>
 </resources>

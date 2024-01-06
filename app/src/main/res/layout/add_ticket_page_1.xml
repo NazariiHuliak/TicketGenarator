@@ -173,13 +173,17 @@
             app:boxStrokeErrorColor="@color/errorColor"
             app:errorTextColor="@color/errorColor"
             app:errorIconTint="@color/errorColor">
-            <com.google.android.material.textfield.TextInputEditText
+            <AutoCompleteTextView
                 android:id="@+id/departure"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="54sp"
                 android:fontFamily="@font/rubik"
-                android:hint="Місто, адреса, номер будинку"
-                android:maxLines="1"
+                android:hint="@string/AddressHint"
+                android:dropDownHeight="150dp"
+                android:paddingStart="16sp"
+                android:paddingEnd="16sp"
+                android:maxLines="2"
+                android:textSize="16sp"
                 android:textColor="@color/black" />
         </com.google.android.material.textfield.TextInputLayout>
         <TextView
@@ -205,14 +209,17 @@
             app:boxStrokeErrorColor="@color/errorColor"
             app:errorTextColor="@color/errorColor"
             app:errorIconTint="@color/errorColor">
-            <com.google.android.material.textfield.TextInputEditText
+            <AutoCompleteTextView
                 android:id="@+id/destination"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="54sp"
                 android:fontFamily="@font/rubik"
-                android:hint="Місто, адреса, номер будинку"
-                android:maxLines="1"
-                android:textColor="@color/black" />
+                android:hint="@string/AddressHint"
+                android:paddingStart="16sp"
+                android:paddingEnd="16sp"
+                android:maxLines="2"
+                android:textSize="16sp"
+                android:textColor="@color/black"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton

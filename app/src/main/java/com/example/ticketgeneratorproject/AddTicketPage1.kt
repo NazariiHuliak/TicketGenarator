@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.*
 import androidx.core.widget.addTextChangedListener
+import com.example.ticketgeneratorproject.Adapters.AutoCompleteAddressAdapter
+import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
 import com.example.ticketgeneratorproject.Entities.Address
 import com.example.ticketgeneratorproject.Entities.Currency
 import com.example.ticketgeneratorproject.Entities.DateTime
@@ -14,6 +16,19 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
 class AddTicketPage1 : AppCompatActivity() {
+    private lateinit var fullnameLayout: TextInputLayout
+    private lateinit var tripnumberLayout: TextInputLayout
+    private lateinit var seatLayout: TextInputLayout
+    private lateinit var departureLayout: TextInputLayout
+    private lateinit var destinationLayout: TextInputLayout
+
+    private lateinit var fullname: TextInputEditText
+    private lateinit var tripNumber: TextInputEditText
+    private lateinit var seat: TextInputEditText
+    private lateinit var departure: AutoCompleteTextView
+    private lateinit var destination: AutoCompleteTextView
+
+    private lateinit var dbAdapter: DataBaseAdapter
     private lateinit var ticket: TicketModel
     @SuppressLint("MissingInflatedId", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,19 +38,27 @@ class AddTicketPage1 : AppCompatActivity() {
         val intentHasExtraToUpdate = intent.hasExtra("DetailedInformationTicket_TO_EnterTicketData_TicketData_Update")
         val intentHasExtraToCreateSimilar = intent.hasExtra("DetailedInformationTicket_TO_EnterTicketData_TicketData_CreateSimilar")
 
-        val fullname = findViewById<TextInputEditText>(R.id.fullname)
-        val tripNumber = findViewById<TextInputEditText>(R.id.trip_number)
-        val seat = findViewById<TextInputEditText>(R.id.seat)
-        val departure = findViewById<TextInputEditText>(R.id.departure)
-        val destination = findViewById<TextInputEditText>(R.id.destination)
+        fullnameLayout = findViewById(R.id.fullName_layout)
+        tripnumberLayout = findViewById(R.id.trip_number_layout)
+        seatLayout = findViewById(R.id.seat_layout)
+        departureLayout = findViewById(R.id.departure_layout)
+        destinationLayout = findViewById(R.id.destination_layout)
 
-        val fullname_layout = findViewById<TextInputLayout>(R.id.fullName_layout)
-        val tripNumber_layout = findViewById<TextInputLayout>(R.id.trip_number_layout)
-        val seat_layout = findViewById<TextInputLayout>(R.id.seat_layout)
-        val departure_layout = findViewById<TextInputLayout>(R.id.departure_layout)
-        val destination_layout = findViewById<TextInputLayout>(R.id.destination_layout)
+        fullname = findViewById(R.id.fullname)
+        tripNumber = findViewById(R.id.trip_number)
+        seat = findViewById(R.id.seat)
+        departure = findViewById(R.id.departure)
+        destination = findViewById(R.id.destination)
 
-        var hasErrors: Boolean = false
+        dbAdapter = DataBaseAdapter(this)
+        val addresses = dbAdapter.getAllAddresses()
+        val modifiedAddress = addresses.map{it.replace(Regex("[.,/: ]"), "")}.map{it.lowercase()}
+
+        val dropDownAdapter = AutoCompleteAddressAdapter(this, R.layout.currency_item, addresses)
+        departure.setAdapter(dropDownAdapter)
+        destination.setAdapter(dropDownAdapter)
+        departure.setMaxVisibleOptions(3, modifiedAddress)
+        destination.setMaxVisibleOptions(3, modifiedAddress)
 
         if(intentHasExtraToUpdate){
             ticket = intent.getSerializableExtra("DetailedInformationTicket_TO_EnterTicketData_TicketData_Update")
@@ -55,27 +78,29 @@ class AddTicketPage1 : AppCompatActivity() {
 
         }
 
+        var hasErrors: Boolean = false
+
         fullname.addTextChangedListener {
             if(it!!.count()>0){
-                fullname_layout.error = null
+                fullnameLayout.error = null
                 hasErrors = false
             }
         }
         tripNumber.addTextChangedListener {
             if(it!!.count()>0){
-                tripNumber_layout.error = null
+                tripnumberLayout.error = null
                 hasErrors = false
             }
         }
         departure.addTextChangedListener {
             if(it!!.count()>0){
-                departure_layout.error = null
+                departureLayout.error = null
                 hasErrors = false
             }
         }
         destination.addTextChangedListener {
             if(it!!.count()>0){
-                destination_layout.error = null
+                destinationLayout.error = null
                 hasErrors = false
             }
         }
@@ -91,21 +116,20 @@ class AddTicketPage1 : AppCompatActivity() {
             val departureText = departure.text.toString()
             val destinationText = destination.text.toString()
 
-
             if(fullnameText.isEmpty()){
-                fullname_layout.error = "Введіть дані"
+                fullnameLayout.error = "Введіть дані"
                 hasErrors=true
             }
             if(tripNumberText.isEmpty()){
-                tripNumber_layout.error = "Введіть дані"
+                tripnumberLayout.error = "Введіть дані"
                 hasErrors=true
             }
             if(departureText.isEmpty()){
-                departure_layout.error = "Введіть дані"
+                departureLayout.error = "Введіть дані"
                 hasErrors=true
             }
             if(destinationText.isEmpty()){
-                destination_layout.error = "Введіть дані"
+                destinationLayout.error = "Введіть дані"
                 hasErrors=true
             }
 
@@ -144,6 +168,20 @@ class AddTicketPage1 : AppCompatActivity() {
                     intent.putExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Complete", ticketToPass)
                 }
                 startActivity(intent)
+            }
+        }
+    }
+    private fun AutoCompleteTextView.setMaxVisibleOptions(number: Int, items: List<String>){
+        this.addTextChangedListener {
+            val counter = items.filter{
+                it.contains(this.text.toString().replace(" ", "")
+                    .replace(",", "").lowercase()) }.size
+            if(counter == 0){
+                this.dropDownHeight = 0
+            } else if(counter<number){
+                this.dropDownHeight = counter*150
+            } else {
+                this.dropDownHeight = 450
             }
         }
     }

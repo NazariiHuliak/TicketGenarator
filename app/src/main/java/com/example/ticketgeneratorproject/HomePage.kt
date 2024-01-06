@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
+import com.example.ticketgeneratorproject.Adapters.RecyclerViewAdapter
 import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
 import com.example.ticketgeneratorproject.Entities.TicketModel
 import com.google.android.material.card.MaterialCardView
@@ -34,7 +35,8 @@ class HomePage : AppCompatActivity() {
 
     private var lastBackPressTime: Long = 0
     private val BACK_PRESS_INTERVAL = 2000
-    private val INITIAL_SYNCHRONIZATION = "initialSynchronization"
+    private val INITIAL_TICKETS_SYNCHRONIZATION = "initialTicketsSynchronization"
+    private val INITIAL_ADDRESSES_SYNCHRONIZATION = "initialAddressesSynchronization"
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var ticketsArrayList: MutableList<TicketModel>
@@ -82,18 +84,21 @@ class HomePage : AppCompatActivity() {
         hiddenMaterialCardContent = findViewById(R.id.hiden_card_content)
 
         firebaseAuth = FirebaseAuth.getInstance()
-        firebaseDatabase = FirebaseDatabase.getInstance()
-        firebaseDatabaseRef = firebaseDatabase.getReference("users")
+        firebaseDatabaseRef = FirebaseDatabase.getInstance().getReference("users")
         val uid = firebaseAuth.currentUser!!.uid
         val userReference = firebaseDatabaseRef.child(uid).child("name")
         val ticketsReference = firebaseDatabaseRef.child(uid).child("tickets")
+        val addressReference = firebaseDatabaseRef.child(uid).child("commonAddresses")
 
-        if (!sharedPreferences.getBoolean(INITIAL_SYNCHRONIZATION, false)) {
-            loadDataFromFirebase(dbAdapter, ticketsReference, sharedPreferences)
+        if (!sharedPreferences.getBoolean(INITIAL_TICKETS_SYNCHRONIZATION, false)) {
+            loadTicketsDataFromFirebase(dbAdapter, ticketsReference, sharedPreferences)
         } else {
-            ticketsArrayList = dbAdapter.getTickets()
+            ticketsArrayList = dbAdapter.getAllTickets()
             recyclerViewAdapter = RecyclerViewAdapter(ticketsArrayList)
             recyclerView.adapter = recyclerViewAdapter
+        }
+        if(!sharedPreferences.getBoolean(INITIAL_ADDRESSES_SYNCHRONIZATION, false)){
+            loadAddressesDataFromFirebase(dbAdapter, addressReference, sharedPreferences)
         }
 
         emailField.text = firebaseAuth.currentUser?.email.toString()
@@ -115,7 +120,11 @@ class HomePage : AppCompatActivity() {
         }
         logoutButton.setOnClickListener {
             dbAdapter.deleteAllTicket()
-            sharedPreferences.edit().putBoolean(INITIAL_SYNCHRONIZATION, false).apply()
+            dbAdapter.deleteAllAddresses()
+
+            sharedPreferences.edit().putBoolean(INITIAL_TICKETS_SYNCHRONIZATION, false).apply()
+            sharedPreferences.edit().putBoolean(INITIAL_ADDRESSES_SYNCHRONIZATION, false).apply()
+
             firebaseAuth.signOut()
             val intent = Intent(this, LoginPage::class.java)
             startActivity(intent)
@@ -138,14 +147,15 @@ class HomePage : AppCompatActivity() {
         }
     }
 
-    private fun loadDataFromFirebase(
+    private fun loadTicketsDataFromFirebase(
         dbAdapter: DataBaseAdapter,
         ticketsReference: DatabaseReference,
         sharedPreferences: SharedPreferences
     ){
         ticketsReference.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (!sharedPreferences.getBoolean(INITIAL_SYNCHRONIZATION, false) && snapshot.children.count() >= 0){
+                if (!sharedPreferences.getBoolean(INITIAL_TICKETS_SYNCHRONIZATION, false)){
+                    Log.d("myLog", "Works2")
                     val ticketsList = mutableListOf<TicketModel>()
                     for (ticketSnapshot in snapshot.children) {
                         val ticket = ticketSnapshot.getValue(TicketModel::class.java)
@@ -154,13 +164,41 @@ class HomePage : AppCompatActivity() {
                         }
                     }
 
-                    dbAdapter.addTickets(ticketsList)
+                    dbAdapter.addAllTickets(ticketsList)
 
                     ticketsArrayList = ticketsList
                     recyclerViewAdapter = RecyclerViewAdapter(ticketsArrayList)
                     recyclerView.adapter = recyclerViewAdapter
 
-                    sharedPreferences.edit().putBoolean(INITIAL_SYNCHRONIZATION, true).apply()
+                    sharedPreferences.edit().putBoolean(INITIAL_TICKETS_SYNCHRONIZATION, true).apply()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("myLog", "Error: ${error.message}")
+            }
+        })
+    }
+
+    private fun loadAddressesDataFromFirebase(
+        dbAdapter: DataBaseAdapter,
+        addressReference: DatabaseReference,
+        sharedPreferences: SharedPreferences
+    ){
+        addressReference.addValueEventListener(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (!sharedPreferences.getBoolean(INITIAL_ADDRESSES_SYNCHRONIZATION, false)){
+                    Log.d("myLog", "Works1")
+                    val addressesList = mutableListOf<String>()
+                    for (addressSnapshot in snapshot.children) {
+                        val address = addressSnapshot.getValue(String::class.java)
+                        if (address != null) {
+                            addressesList.add(address)
+                        }
+                    }
+
+                    dbAdapter.addAllAddresses(addressesList)
+                    sharedPreferences.edit().putBoolean(INITIAL_ADDRESSES_SYNCHRONIZATION, true).apply()
                 }
             }
 
