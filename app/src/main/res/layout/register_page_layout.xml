@@ -69,7 +69,7 @@
                 app:boxCornerRadiusTopEnd="17dp"
                 app:boxCornerRadiusTopStart="17dp"
                 app:boxStrokeColor="@color/black"
-                app:startIconDrawable="@drawable/mail_icon"
+                app:startIconDrawable="@drawable/user_icon"
                 android:textColorHint="@color/black">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/name_input"

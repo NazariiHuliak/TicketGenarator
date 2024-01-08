@@ -217,10 +217,10 @@ class HomePage : AppCompatActivity() {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        super.onBackPressed()
         val currentTime = System.currentTimeMillis()
         if (currentTime - lastBackPressTime < BACK_PRESS_INTERVAL) {
             finishAffinity()
+            super.onBackPressed()
         } else {
             lastBackPressTime = currentTime
             Toast.makeText(this, "Натисніть ще раз для виходу", Toast.LENGTH_SHORT).show()
