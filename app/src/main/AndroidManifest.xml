@@ -7,7 +7,7 @@
     <uses-permission
         android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -18,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TicketGeneratorProject"
         tools:targetApi="31">
+        <activity
+            android:name=".LoginPage"
+            android:exported="false" />
         <activity
             android:name=".RegisterPage"
             android:exported="false" />
@@ -37,11 +40,10 @@
             android:name=".AddTicketPage1"
             android:exported="false" />
         <activity
-            android:name=".LoginPage"
+            android:name=".SplashScreen"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

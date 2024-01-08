@@ -56,13 +56,4 @@ class LoginPage : AppCompatActivity() {
             startActivity(intent)
         }
     }
-
-    override fun onStart() {
-        super.onStart()
-
-        if(firebaseAuth.currentUser!=null){
-            val intent = Intent(this, HomePage::class.java)
-            startActivity(intent)
-        }
-    }
 }
