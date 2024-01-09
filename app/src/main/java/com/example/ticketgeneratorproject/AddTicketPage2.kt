@@ -1,14 +1,11 @@
 package com.example.ticketgeneratorproject
 
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
@@ -25,13 +22,13 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
 import com.example.ticketgeneratorproject.Entities.Currency
 import com.example.ticketgeneratorproject.Entities.DateTime
 import com.example.ticketgeneratorproject.Entities.TicketModel
+import com.example.ticketgeneratorproject.databinding.AddTicketPage2Binding
+import com.example.ticketgeneratorproject.databinding.RegisterPageLayoutBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
@@ -67,16 +64,22 @@ class AddTicketPage2: AppCompatActivity() {
     private lateinit var error_icon_3: ImageView
     private lateinit var error_icon_4: ImageView
 
+    private lateinit var saveButton: Button
+    private lateinit var downloadButton: Button
+
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var firebaseAuth: FirebaseAuth
 
     private lateinit var dbAdapter: DataBaseAdapter
 
+    private lateinit var binding: AddTicketPage2Binding
+
     private lateinit var ticket: TicketModel
     @SuppressLint("MissingInflatedId", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.add_ticket_page_2)
+        binding = AddTicketPage2Binding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         //setting list of items for auto complete text view
         currencyDropDownMenu = findViewById<AutoCompleteTextView>(R.id.auto_complete1)
@@ -97,6 +100,9 @@ class AddTicketPage2: AppCompatActivity() {
         destinationDateText = findViewById(R.id.destination_date)
         departureTimeText = findViewById(R.id.departure_time)
         destinationTimeText = findViewById(R.id.destination_time)
+
+        saveButton = findViewById(R.id.save_btn)
+        downloadButton = findViewById(R.id.generate_ticket)
 
         errorText1 = findViewById(R.id.errorText1)
         errorText2 = findViewById(R.id.errorText2)
@@ -234,38 +240,11 @@ class AddTicketPage2: AppCompatActivity() {
             finish()
         }
 
-        findViewById<Button>(R.id.save_ticket).setOnClickListener {
+        saveButton.setOnClickListener {
             val priceText = price.text.toString()
             val currencyText = currencyDropDownMenu.text.toString()
 
-            if(priceText.isEmpty()){
-                priceLayout.error = "Введіть дані"
-                hasInputtingErrors = true
-            }
-            if(currencyText.isEmpty()){
-                currencyLayout.error = "Введіть дані"
-                hasInputtingErrors = true
-            }
-            if (departureDateText.text.isEmpty()) {
-                errorText1.visibility = View.VISIBLE
-                error_icon_1.visibility = View.VISIBLE
-                hasInputtingErrors = true
-            }
-            if (departureTimeText.text.isEmpty()) {
-                errorText2.visibility = View.VISIBLE
-                error_icon_2.visibility = View.VISIBLE
-                hasInputtingErrors = true
-            }
-            if (destinationDateText.text.isEmpty()) {
-                errorText3.visibility = View.VISIBLE
-                error_icon_3.visibility = View.VISIBLE
-                hasInputtingErrors = true
-            }
-            if (destinationTimeText.text.isEmpty()) {
-                errorText4.visibility = View.VISIBLE
-                error_icon_4.visibility = View.VISIBLE
-                hasInputtingErrors = true
-            }
+            hasInputtingErrors = checkForEmptyFields(binding)
 
             if (!hasInputtingErrors) {
                 ticket.price = priceText.toDouble()
@@ -307,50 +286,91 @@ class AddTicketPage2: AppCompatActivity() {
                 startActivity(intent)
             }
         }
-        findViewById<Button>(R.id.generate_ticket).setOnClickListener {
+        downloadButton.setOnClickListener {
             val priceText = price.text.toString()
             val currencyText = currencyDropDownMenu.text.toString()
-            if(priceText.isEmpty()){
-                priceLayout.error = "Введіть дані"
-                hasInputtingErrors = true
-            }
-
-            if(currencyText.isEmpty()){
-                currencyLayout.error = "Введіть дані"
-                hasInputtingErrors = true
-            }
-
-            if(departureDateText.text.isEmpty()){
-                errorText1.visibility = View.VISIBLE
-                error_icon_1.visibility = View.VISIBLE
-                hasInputtingErrors = true
-            }
-            if(departureTimeText.text.isEmpty()){
-                errorText2.visibility = View.VISIBLE
-                error_icon_2.visibility = View.VISIBLE
-                hasInputtingErrors = true
-            }
-            if(destinationDateText.text.isEmpty()){
-                errorText3.visibility = View.VISIBLE
-                error_icon_3.visibility = View.VISIBLE
-                hasInputtingErrors = true
-            }
-            if(destinationTimeText.text.isEmpty()){
-                errorText4.visibility = View.VISIBLE
-                error_icon_4.visibility = View.VISIBLE
-                hasInputtingErrors = true
-            }
+            hasInputtingErrors = checkForEmptyFields(binding)
 
             if(!hasInputtingErrors){
-                ticket.departureDateTime = DateTime.parseDateTime("${departureDateText.text} ${departureTimeText.text}")
-                ticket.destinationDateTime = DateTime.parseDateTime("${destinationDateText.text} ${destinationTimeText.text}")
+                ticket.price = priceText.toDouble()
+                ticket.currency = Currency.parseToCurrency(currencyText)
 
-                if(convertXmlToPdf(ticket, this)){
-                    val intent = Intent(this, HomePage::class.java)
-                    startActivity(intent)
+                ticket.departureDateTime =
+                    DateTime.parseDateTime("${departureDateText.text} ${departureTimeText.text}")
+                ticket.destinationDateTime =
+                    DateTime.parseDateTime("${destinationDateText.text} ${destinationTimeText.text}")
+
+                if (intentHasExtraToUpdate) {
+                    dbAdapter.updateTicket(ticket)
+                    ticketsReference.child(getUniqueIdByTicket(ticket)).updateChildren(ticket.getHashMap())
+                } else {
+                    ticket.purchaseDateTime = DateTime.parseDateTime(getCurrentDateTime())
+
+                    dbAdapter.addTicket(ticket)
+                    ticketsReference.child(getUniqueIdByTicket(ticket)).setValue(ticket.getHashMap())
+
+                    if(dbAdapter.isUniqueAddress(ticket.departureAddress.toString())){
+                        val addressId = addressesReference.push().key
+                        if (addressId != null) {
+                            dbAdapter.addAddress(ticket.departureAddress.toString())
+                            addressesReference.child(addressId).setValue(ticket.departureAddress.toString())
+                        }
+                    }
+                    if(dbAdapter.isUniqueAddress(ticket.destinationAddress.toString())){
+                        val addressId = addressesReference.push().key
+                        if (addressId != null) {
+                            dbAdapter.addAddress(ticket.destinationAddress.toString())
+                            addressesReference.child(addressId).setValue(ticket.destinationAddress.toString())
+                        }
+                    }
                 }
+
+                val downloadsDir =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                val file = File(downloadsDir, getFileNameForTicket(ticket) + System.currentTimeMillis())
+
+                val pdfDocument = createPdfForTicket(this, ticket)
+                writeFileToStorage(file, pdfDocument)
+
+                val intent = Intent(this, HomePage::class.java)
+                startActivity(intent)
+
+                Toast.makeText(this, "Квиток був успішно згенерований", Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    private fun checkForEmptyFields(binding: AddTicketPage2Binding): Boolean {
+        var hasInputtingErrors = false
+        if(binding.price.text!!.isEmpty()){
+            binding.priceLayout.error = "Введіть дані"
+            hasInputtingErrors = true
+        }
+        if(binding.autoComplete1.text.isEmpty()){
+            binding.currencyLayout.error = "Введіть дані"
+            hasInputtingErrors = true
+        }
+        if (binding.departureDate.text.isEmpty()) {
+            binding.errorText1.visibility = View.VISIBLE
+            binding.errorIcon1.visibility = View.VISIBLE
+            hasInputtingErrors = true
+        }
+        if (departureTimeText.text.isEmpty()) {
+            binding.errorText2.visibility = View.VISIBLE
+            binding.errorIcon2.visibility = View.VISIBLE
+            hasInputtingErrors = true
+        }
+        if (destinationDateText.text.isEmpty()) {
+            binding.errorText3.visibility = View.VISIBLE
+            binding.errorIcon3.visibility = View.VISIBLE
+            hasInputtingErrors = true
+        }
+        if (destinationTimeText.text.isEmpty()) {
+            binding.errorText4.visibility = View.VISIBLE
+            binding.errorIcon4.visibility = View.VISIBLE
+            hasInputtingErrors = true
+        }
+        return hasInputtingErrors
     }
 
     private fun updateDateText (myCalendar: Calendar, view: TextView) {
@@ -364,7 +384,7 @@ class AddTicketPage2: AppCompatActivity() {
     }
 
     companion object{
-        @SuppressLint("MissingInflatedId", "SetTextI18n", "InflateParams")
+        /*@SuppressLint("MissingInflatedId", "SetTextI18n", "InflateParams")
         fun convertXmlToPdf(ticket: TicketModel, context: Context):Boolean {
             fun askPermissions(): Boolean {
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -461,6 +481,15 @@ class AddTicketPage2: AppCompatActivity() {
                 }
             }
             return false
+        }*/
+
+        fun getFileNameForTicket(ticket: TicketModel): String{
+            return (transliterateToEnglish(ticket.fullName).split(" ")[0] + " " +
+                    transliterateToEnglish(ticket.fullName).split(" ")[1] + " " +
+                    transliterateToEnglish(ticket.departureAddress.city) + "-" +
+                    transliterateToEnglish(ticket.destinationAddress.city) + " " +
+                    ticket.purchaseDateTime.date /*+ " " + System.currentTimeMillis().toString()*/ +
+                    ".pdf").replace(":", ".")
         }
 
         @SuppressLint("CutPasteId", "InflateParams", "SetTextI18n")
@@ -522,13 +551,15 @@ class AddTicketPage2: AppCompatActivity() {
 
             return document
         }
-        fun getFileNameForTicket(ticket: TicketModel): String{
-            return (transliterateToEnglish(ticket.fullName).split(" ")[0] + " " +
-                    transliterateToEnglish(ticket.fullName).split(" ")[1] + " " +
-                    transliterateToEnglish(ticket.departureAddress.city) + "-" +
-                    transliterateToEnglish(ticket.destinationAddress.city) + " " +
-                    ticket.purchaseDateTime.date /*+ " " + System.currentTimeMillis().toString()*/ +
-                    ".pdf").replace(":", ".")
+
+        fun writeFileToStorage(file: File, pdfDocument: PdfDocument){
+            try {
+                val fileOutputStream = FileOutputStream(file)
+                pdfDocument.writeTo(fileOutputStream)
+                fileOutputStream.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
         }
 
         fun transliterateToEnglish(input: String): String {
@@ -563,6 +594,7 @@ class AddTicketPage2: AppCompatActivity() {
             }
             return stringBuilder.toString()
         }
+
         fun getCurrentDateTime(): String {
             val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault())
             return dateFormat.format(Date())

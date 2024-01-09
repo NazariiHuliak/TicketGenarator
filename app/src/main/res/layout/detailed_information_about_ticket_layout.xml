@@ -41,11 +41,43 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-                <ImageView
+                <RelativeLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="119dp"
-                    android:src="@drawable/bannerlogo"
-                    tools:ignore="MissingConstraints" />
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="119dp"
+                        android:src="@drawable/bannerlogo"
+                        tools:ignore="MissingConstraints" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:layout_alignParentEnd="true">
+                        <ImageView
+                            android:id="@+id/edit_btn"
+                            android:layout_width="30sp"
+                            android:layout_height="30sp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="30dp"
+                            android:contentDescription="edit_icon"
+                            android:src="@drawable/edit_icon" />
+                        <ImageView
+                            android:id="@+id/delete_btn"
+                            android:layout_width="30sp"
+                            android:layout_height="30sp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="8dp"
+                            android:contentDescription="delete_icon"
+                            android:src="@drawable/delete_icon" />
+                    </LinearLayout>
+
+                </RelativeLayout>
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -492,19 +524,19 @@
                 app:iconSize="33dp"
                 app:iconTint="@color/white"/>
             <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                android:id="@+id/edit_btn"
+                android:id="@+id/share_btn"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_gravity="bottom|center"
-                android:text="Редагувати"
-                app:icon="@drawable/edit_icon"
+                android:text="Поділитися"
+                app:icon="@drawable/share_icon"
                 android:backgroundTint="@color/dark_green"
                 android:textColor="@color/white"
                 android:textSize="20dp"
-                app:iconSize="35dp"
+                app:iconSize="40dp"
                 app:iconTint="@color/white"/>
             <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
                 android:id="@+id/download_btn"
@@ -521,21 +553,7 @@
                 android:textSize="20dp"
                 app:iconSize="40dp"
                 app:iconTint="@color/white"/>
-            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                android:id="@+id/share_btn"
-                android:layout_width="match_parent"
-                android:layout_height="70dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_gravity="bottom|center"
-                android:text="Поділитися"
-                app:icon="@drawable/download_icon"
-                android:backgroundTint="@color/dark_green"
-                android:textColor="@color/white"
-                android:textSize="20dp"
-                app:iconSize="40dp"
-                app:iconTint="@color/white"/>
+
         </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

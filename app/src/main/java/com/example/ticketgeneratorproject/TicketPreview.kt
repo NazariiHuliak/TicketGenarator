@@ -63,11 +63,7 @@ class TicketPreview : AppCompatActivity() {
         goDetailedInformationPage = findViewById(R.id.back_to_detailed_activity)
         goDetailedInformationPage.setOnClickListener {
             if (doubleClick) {
-                val intent = Intent(this, DetailedInformationAboutTicket::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                intent.putExtra("TicketPreview_TO_DetailedInformationAboutTicket_ticketData", ticket)
-                startActivity(intent)
-
+                finish()
                 doubleClick = false
             } else {
                 doubleClick = true
