@@ -1,7 +1,9 @@
 package com.example.ticketgeneratorproject
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.graphics.pdf.PdfDocument
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -9,9 +11,15 @@ import android.util.Log
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
+import androidx.core.content.FileProvider
+import com.example.ticketgeneratorproject.AddTicketPage2.Companion.createPdfForTicket
+import com.example.ticketgeneratorproject.AddTicketPage2.Companion.getFileNameForTicket
 import com.example.ticketgeneratorproject.Entities.TicketModel
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 class DetailedInformationAboutTicket : AppCompatActivity() {
     private lateinit var backToMainButton: LinearLayout
@@ -100,11 +108,16 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
             }
         }
 
-        val dbAdapter = DataBaseAdapter(this)
         shareButton.setOnClickListener {
-            /*val pdfFile = AddTicketPage2.convertXMLToPDF(ticket, this)*/
-            dbAdapter.addAddress("Test")
-            Log.d("myLog", "${dbAdapter.getAllAddresses().size}")
+            val file = File(this.filesDir, getFileNameForTicket(ticket))
+
+            if(file.exists()){
+                sharePdf(this, file)
+            } else {
+                val pdfDocument = createPdfForTicket(this, ticket)
+                writeFileToInternalStorage(file, pdfDocument)
+                sharePdf(this, file)
+            }
         }
 
         fullScreenViewButton.setOnClickListener {
@@ -120,7 +133,31 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
                 }, DOUBLE_CLICK_DELAY.toLong())
             }
         }
+
     }
+
+    private fun writeFileToInternalStorage(file: File, pdfDocument: PdfDocument){
+        try {
+            val fileOutputStream = FileOutputStream(file)
+            pdfDocument.writeTo(fileOutputStream)
+            fileOutputStream.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun sharePdf(context: Context, file: File){
+        val fileUri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_STREAM, fileUri)
+            type = "application/pdf"
+        }
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        startActivity(Intent.createChooser(shareIntent, "Надіслати квиток"))
+    }
+
     companion object {
         const val DOUBLE_CLICK_DELAY = 300
     }

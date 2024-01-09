@@ -464,7 +464,7 @@ class AddTicketPage2: AppCompatActivity() {
         }
 
         @SuppressLint("CutPasteId", "InflateParams", "SetTextI18n")
-        fun convertXMLToPDF(ticket: TicketModel, context: Context): PdfDocument{
+        fun createPdfForTicket(context: Context, ticket: TicketModel): PdfDocument{
             val view: View = LayoutInflater.from(context).inflate(R.layout.to_generate_pdf, null)
 
             if(ticket.fullName.length >= 32){
@@ -520,17 +520,16 @@ class AddTicketPage2: AppCompatActivity() {
 
             document.finishPage(page)
 
-            val fileName = (transliterateToEnglish(ticket.fullName).split(" ")[0] + " " +
+            return document
+        }
+        fun getFileNameForTicket(ticket: TicketModel): String{
+            return (transliterateToEnglish(ticket.fullName).split(" ")[0] + " " +
                     transliterateToEnglish(ticket.fullName).split(" ")[1] + " " +
                     transliterateToEnglish(ticket.departureAddress.city) + "-" +
                     transliterateToEnglish(ticket.destinationAddress.city) + " " +
-                    ticket.purchaseDateTime.date + " " + System.currentTimeMillis().toString() +
+                    ticket.purchaseDateTime.date /*+ " " + System.currentTimeMillis().toString()*/ +
                     ".pdf").replace(":", ".")
-
-            return document
         }
-
-
 
         fun transliterateToEnglish(input: String): String {
             val ukrainianCharacters = arrayOf(
