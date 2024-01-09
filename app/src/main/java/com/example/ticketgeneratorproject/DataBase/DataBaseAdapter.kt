@@ -150,9 +150,10 @@ class DataBaseAdapter(private val context: Context) {
     fun isUniqueAddress(address: String): Boolean {
         val commonAddresses = getAllAddresses().map{
             it.replace(Regex("[.,/: ]"), "")}.map{it.lowercase()}
+        val addressFormatted = address.replace(Regex("[.,/: ]"), "").lowercase()
 
         for (addressItem in commonAddresses){
-            if (address == addressItem.replace(Regex("[.,/: ]"), "").lowercase()){
+            if (addressFormatted == addressItem){
                 return false
             }
         }
