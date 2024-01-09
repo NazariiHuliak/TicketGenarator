@@ -108,6 +108,13 @@ class DataBaseAdapter(private val context: Context) {
         return tickets
     }
 
+    fun deleteTicketById(id: Int): Int {
+        val whereClause = "${DataBaseHelper.TICKET_ID} = ?"
+        val whereArgs = arrayOf(id.toString())
+
+        return database.delete(DataBaseHelper.TICKET_TABLE, whereClause, whereArgs)
+    }
+
     fun deleteAllTicket() {
         database.delete(DataBaseHelper.TICKET_TABLE, null, null)
     }

@@ -53,7 +53,6 @@ class HomePage : AppCompatActivity() {
     private lateinit var hiddenMaterialCardContent: LinearLayout
 
     private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var firebaseDatabaseRef: DatabaseReference
 
     @SuppressLint("MissingInflatedId")
@@ -145,6 +144,15 @@ class HomePage : AppCompatActivity() {
             val intent = Intent(this, AddTicketPage1::class.java)
             startActivity(intent)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val dbAdapter = DataBaseAdapter(this)
+
+        ticketsArrayList = dbAdapter.getAllTickets()
+        recyclerViewAdapter = RecyclerViewAdapter(ticketsArrayList)
+        recyclerView.adapter = recyclerViewAdapter
     }
 
     private fun loadTicketsDataFromFirebase(
