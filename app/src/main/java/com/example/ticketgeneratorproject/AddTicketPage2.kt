@@ -24,11 +24,12 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
+import com.example.ticketgeneratorproject.Entities.Address
+import com.example.ticketgeneratorproject.additionalClasses.ApplicationSettings
 import com.example.ticketgeneratorproject.Entities.Currency
 import com.example.ticketgeneratorproject.Entities.DateTime
 import com.example.ticketgeneratorproject.Entities.TicketModel
 import com.example.ticketgeneratorproject.databinding.AddTicketPage2Binding
-import com.example.ticketgeneratorproject.databinding.RegisterPageLayoutBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
@@ -264,18 +265,14 @@ class AddTicketPage2: AppCompatActivity() {
                     dbAdapter.addTicket(ticket)
                     ticketsReference.child(getUniqueIdByTicket(ticket)).setValue(ticket.getHashMap())
 
-                    if(dbAdapter.isUniqueAddress(ticket.departureAddress.toString())){
-                        val addressId = addressesReference.push().key
-                        if (addressId != null) {
-                            dbAdapter.addAddress(ticket.departureAddress.toString())
-                            addressesReference.child(addressId).setValue(ticket.departureAddress.toString())
+                    if(ApplicationSettings.saveAddresses){
+                        if(dbAdapter.isUniqueAddress(ticket.departureAddress)){
+                            dbAdapter.addAddress(ticket.departureAddress)
+                            addressesReference.child(ticket.departureAddress.getUniqueId()).setValue(ticket.departureAddress)
                         }
-                    }
-                    if(dbAdapter.isUniqueAddress(ticket.destinationAddress.toString())){
-                        val addressId = addressesReference.push().key
-                        if (addressId != null) {
-                            dbAdapter.addAddress(ticket.destinationAddress.toString())
-                            addressesReference.child(addressId).setValue(ticket.destinationAddress.toString())
+                        if(dbAdapter.isUniqueAddress(ticket.destinationAddress)){
+                            dbAdapter.addAddress(ticket.destinationAddress)
+                            addressesReference.child(ticket.destinationAddress.getUniqueId()).setValue(ticket.destinationAddress)
                         }
                     }
                 }
@@ -309,19 +306,13 @@ class AddTicketPage2: AppCompatActivity() {
                     dbAdapter.addTicket(ticket)
                     ticketsReference.child(getUniqueIdByTicket(ticket)).setValue(ticket.getHashMap())
 
-                    if(dbAdapter.isUniqueAddress(ticket.departureAddress.toString())){
-                        val addressId = addressesReference.push().key
-                        if (addressId != null) {
-                            dbAdapter.addAddress(ticket.departureAddress.toString())
-                            addressesReference.child(addressId).setValue(ticket.departureAddress.toString())
-                        }
+                    if(dbAdapter.isUniqueAddress(ticket.departureAddress)){
+                        dbAdapter.addAddress(ticket.departureAddress)
+                        addressesReference.child(ticket.departureAddress.getUniqueId()).setValue(ticket.departureAddress)
                     }
-                    if(dbAdapter.isUniqueAddress(ticket.destinationAddress.toString())){
-                        val addressId = addressesReference.push().key
-                        if (addressId != null) {
-                            dbAdapter.addAddress(ticket.destinationAddress.toString())
-                            addressesReference.child(addressId).setValue(ticket.destinationAddress.toString())
-                        }
+                    if(dbAdapter.isUniqueAddress(ticket.destinationAddress)){
+                        dbAdapter.addAddress(ticket.destinationAddress)
+                        addressesReference.child(ticket.destinationAddress.getUniqueId()).setValue(ticket.destinationAddress)
                     }
                 }
 

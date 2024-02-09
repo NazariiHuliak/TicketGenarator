@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class DataBaseHelper(context: Context): SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
     companion object {
         private const val DB_NAME = "TicketsDataBase.db"
-        private const val DB_VERSION = 3
+        private const val DB_VERSION = 4
 
         const val TICKET_TABLE = "ticketsTable"
         const val TICKET_ID = "ticketID"
@@ -24,7 +24,10 @@ class DataBaseHelper(context: Context): SQLiteOpenHelper(context, DB_NAME, null,
 
         const val ADDRESSES_TABLE = "frequentlyUsedAddresses"
         const val ADDRESS_ID = "addressID"
-        const val ADDRESS_NAME = "addressName"
+        const val COUNTRY = "country"
+        const val CITY = "city"
+        const val STREET = "street"
+        const val NUMBER = "number"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -43,7 +46,10 @@ class DataBaseHelper(context: Context): SQLiteOpenHelper(context, DB_NAME, null,
 
         val createTableAddress = "CREATE TABLE $ADDRESSES_TABLE " +
                 "($ADDRESS_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "$ADDRESS_NAME TEXT)"
+                "$COUNTRY TEXT, " +
+                "$CITY TEXT, " +
+                "$STREET TEXT, " +
+                "$NUMBER TEXT)"
 
         db?.execSQL(createTableTickets)
         db?.execSQL(createTableAddress)

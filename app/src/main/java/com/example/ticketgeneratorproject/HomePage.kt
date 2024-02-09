@@ -11,7 +11,9 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -19,8 +21,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
-import com.example.ticketgeneratorproject.Adapters.RecyclerViewAdapter
+import com.example.ticketgeneratorproject.Adapters.TicketRecyclerViewAdapter
 import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
+import com.example.ticketgeneratorproject.Entities.Address
+import com.example.ticketgeneratorproject.additionalClasses.ApplicationSettings
 import com.example.ticketgeneratorproject.Entities.TicketModel
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
@@ -42,9 +46,10 @@ class HomePage : AppCompatActivity() {
     private lateinit var ticketsArrayList: MutableList<TicketModel>
     private lateinit var searchField: EditText
     private lateinit var layoutManager: LinearLayoutManager
-    private lateinit var recyclerViewAdapter: RecyclerViewAdapter
+    private lateinit var ticketRecyclerViewAdapter: TicketRecyclerViewAdapter
     private lateinit var addButton: Button
     private lateinit var logoutButton: Button
+    private lateinit var editProfile: RelativeLayout
 
     private lateinit var usernameField: TextView
     private lateinit var emailField: TextView
@@ -55,12 +60,10 @@ class HomePage : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firebaseDatabaseRef: DatabaseReference
 
-    @SuppressLint("MissingInflatedId")
+    @SuppressLint("MissingInflatedId", "CommitPrefEdits")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.home_page_layout)
-        val sharedPreferences: SharedPreferences =
-            this.getSharedPreferences("HomePagePreferences", Context.MODE_PRIVATE)
 
         val dbAdapter = DataBaseAdapter(this)
 
@@ -78,6 +81,7 @@ class HomePage : AppCompatActivity() {
 
         usernameField = findViewById(R.id.username)
         emailField = findViewById(R.id.email)
+        editProfile = findViewById(R.id.editProfile)
 
         materialCardView = findViewById(R.id.main_menu)
         hiddenMaterialCardContent = findViewById(R.id.hiden_card_content)
@@ -89,12 +93,15 @@ class HomePage : AppCompatActivity() {
         val ticketsReference = firebaseDatabaseRef.child(uid).child("tickets")
         val addressReference = firebaseDatabaseRef.child(uid).child("commonAddresses")
 
+        val sharedPreferences: SharedPreferences =
+            this.getSharedPreferences("HomePagePreferences", Context.MODE_PRIVATE)
+
         if (!sharedPreferences.getBoolean(INITIAL_TICKETS_SYNCHRONIZATION, false)) {
             loadTicketsDataFromFirebase(dbAdapter, ticketsReference, sharedPreferences)
         } else {
             ticketsArrayList = dbAdapter.getAllTickets()
-            recyclerViewAdapter = RecyclerViewAdapter(ticketsArrayList)
-            recyclerView.adapter = recyclerViewAdapter
+            ticketRecyclerViewAdapter = TicketRecyclerViewAdapter(ticketsArrayList)
+            recyclerView.adapter = ticketRecyclerViewAdapter
         }
         if(!sharedPreferences.getBoolean(INITIAL_ADDRESSES_SYNCHRONIZATION, false)){
             loadAddressesDataFromFirebase(dbAdapter, addressReference, sharedPreferences)
@@ -102,10 +109,12 @@ class HomePage : AppCompatActivity() {
 
         emailField.text = firebaseAuth.currentUser?.email.toString()
         userReference.addValueEventListener(object: ValueEventListener{
+            @SuppressLint("CommitPrefEdits")
             override fun onDataChange(snapshot: DataSnapshot) {
                 if(snapshot.exists()){
                     val data = snapshot.getValue(String::class.java)
                     usernameField.text = data
+                    ApplicationSettings.username = data!!
                 }
             }
 
@@ -129,15 +138,20 @@ class HomePage : AppCompatActivity() {
             startActivity(intent)
         }
 
+        editProfile.setOnClickListener {
+            val intent = Intent(this, ProfilePage::class.java)
+            startActivity(intent)
+        }
+
         searchField.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                filterRecyclerView(s.toString(), recyclerViewAdapter, ticketsArrayList, layoutManager)
+                filterRecyclerView(s.toString(), ticketRecyclerViewAdapter, ticketsArrayList, layoutManager)
             }
             override fun afterTextChanged(s: Editable) {
                 layoutManager.reverseLayout = true
                 layoutManager.stackFromEnd = true
-                layoutManager.scrollToPosition(recyclerViewAdapter.itemCount-1)
+                layoutManager.scrollToPosition(ticketRecyclerViewAdapter.itemCount-1)
             }
         })
         addButton.setOnClickListener {
@@ -151,8 +165,8 @@ class HomePage : AppCompatActivity() {
         val dbAdapter = DataBaseAdapter(this)
 
         ticketsArrayList = dbAdapter.getAllTickets()
-        recyclerViewAdapter = RecyclerViewAdapter(ticketsArrayList)
-        recyclerView.adapter = recyclerViewAdapter
+        ticketRecyclerViewAdapter = TicketRecyclerViewAdapter(ticketsArrayList)
+        recyclerView.adapter = ticketRecyclerViewAdapter
     }
 
     private fun loadTicketsDataFromFirebase(
@@ -175,8 +189,8 @@ class HomePage : AppCompatActivity() {
                     dbAdapter.addAllTickets(ticketsList)
 
                     ticketsArrayList = ticketsList
-                    recyclerViewAdapter = RecyclerViewAdapter(ticketsArrayList)
-                    recyclerView.adapter = recyclerViewAdapter
+                    ticketRecyclerViewAdapter = TicketRecyclerViewAdapter(ticketsArrayList)
+                    recyclerView.adapter = ticketRecyclerViewAdapter
 
                     sharedPreferences.edit().putBoolean(INITIAL_TICKETS_SYNCHRONIZATION, true).apply()
                 }
@@ -196,10 +210,9 @@ class HomePage : AppCompatActivity() {
         addressReference.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (!sharedPreferences.getBoolean(INITIAL_ADDRESSES_SYNCHRONIZATION, false)){
-                    Log.d("myLog", "Works1")
-                    val addressesList = mutableListOf<String>()
+                    val addressesList = mutableListOf<Address>()
                     for (addressSnapshot in snapshot.children) {
-                        val address = addressSnapshot.getValue(String::class.java)
+                        val address = addressSnapshot.getValue(Address::class.java)
                         if (address != null) {
                             addressesList.add(address)
                         }
@@ -237,14 +250,14 @@ class HomePage : AppCompatActivity() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun filterRecyclerView(searchText: String,
-                                   recyclerViewAdapter: RecyclerViewAdapter,
+                                   ticketRecyclerViewAdapter: TicketRecyclerViewAdapter,
                                    ticketsArrayList:MutableList<TicketModel>,
                                    layoutManager: LinearLayoutManager) {
         val filteredList = ticketsArrayList.filter { item ->
             item.fullName.lowercase().contains(searchText.lowercase())
         }
-        recyclerViewAdapter.setFilteredList(filteredList as MutableList<TicketModel>)
-        recyclerViewAdapter.notifyDataSetChanged()
+        ticketRecyclerViewAdapter.setFilteredList(filteredList as MutableList<TicketModel>)
+        ticketRecyclerViewAdapter.notifyDataSetChanged()
 
         layoutManager.reverseLayout = false
         layoutManager.stackFromEnd = false

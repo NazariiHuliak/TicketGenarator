@@ -52,7 +52,7 @@ class AddTicketPage1 : AppCompatActivity() {
 
         dbAdapter = DataBaseAdapter(this)
         val addresses = dbAdapter.getAllAddresses()
-        val modifiedAddress = addresses.map{it.replace(Regex("[.,/: ]"), "")}.map{it.lowercase()}
+        val modifiedAddress = addresses.map{it.toString().replace(Regex("[.,/: ]"), "")}.map{it.lowercase()}
 
         val dropDownAdapter = AutoCompleteAddressAdapter(this, R.layout.currency_item, addresses)
         departure.setAdapter(dropDownAdapter)

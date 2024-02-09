@@ -12,7 +12,7 @@ import com.example.ticketgeneratorproject.Entities.TicketModel
 import com.example.ticketgeneratorproject.R
 
 
-class RecyclerViewAdapter(private var ticketsList: MutableList<TicketModel>): RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>(){
+class TicketRecyclerViewAdapter(private var ticketsList: MutableList<TicketModel>): RecyclerView.Adapter<TicketRecyclerViewAdapter.ViewHolder>(){
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.ticket_item, parent, false)
         return ViewHolder(itemView)

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import android.provider.Telephony.Mms.Addr
 import com.example.ticketgeneratorproject.Entities.Address
 import com.example.ticketgeneratorproject.Entities.Currency
 import com.example.ticketgeneratorproject.Entities.DateTime
@@ -12,9 +13,21 @@ import java.io.Serializable
 
 class DataBaseAdapter(private val context: Context) {
     private var preLoadedListOfAddresses = listOf(
-        "Україна, Львів, Стрийський автовокзал",
-        "Україна, Львів, Залізничний вокзал",
-        "Україна, Золочів, Залізничний вокзал")
+        Address(
+            country = "Україна",
+            city = "Львів",
+            street = "Стрийський автовокзал",
+            number = ""),
+        Address(
+            country = "Україна",
+            city = "Львів",
+            street = "Залізничний вокзал",
+            number = ""),
+        Address(
+            country = "Україна",
+            city = "Золочів",
+            street = "Залізничний вокзал",
+            number = ""))
 
     private val database: SQLiteDatabase by lazy {
         DataBaseHelper(context).writableDatabase
@@ -119,38 +132,44 @@ class DataBaseAdapter(private val context: Context) {
         database.delete(DataBaseHelper.TICKET_TABLE, null, null)
     }
 
-    fun addAddress(address: String): Long {
+    fun addAddress(address: Address): Long {
         val values = ContentValues().apply {
-            put(DataBaseHelper.ADDRESS_NAME, address)
+            put(DataBaseHelper.COUNTRY, address.country)
+            put(DataBaseHelper.CITY, address.city)
+            put(DataBaseHelper.STREET, address.street)
+            put(DataBaseHelper.NUMBER, address.number)
         }
         return database.insert(DataBaseHelper.ADDRESSES_TABLE, null, values)
     }
 
-    fun addAllAddresses(addressesList: MutableList<String>){
-        for (address: String in addressesList){
+    fun addAllAddresses(addressesList: List<Address>){
+        for (address: Address in addressesList){
             addAddress(address)
         }
     }
 
     @SuppressLint("Recycle", "Range")
-    fun getAllAddresses(): List<String> {
-        val addresses = mutableListOf<String>()
+    fun getAllAddresses(): List<Address> {
+        val addresses = mutableListOf<Address>()
         val query = "SELECT * FROM ${DataBaseHelper.ADDRESSES_TABLE}"
         val cursor = database.rawQuery(query, null)
         if (cursor.moveToFirst()){
             do {
-                //val addressID = cursor.getInt(cursor.getColumnIndex(DataBaseHelper.ADDRESS_ID))
-                val address = cursor.getString(cursor.getColumnIndex(DataBaseHelper.ADDRESS_NAME))
-                addresses.add(address)
+                val id = cursor.getInt(cursor.getColumnIndex(DataBaseHelper.ADDRESS_ID))
+                val country = cursor.getString(cursor.getColumnIndex(DataBaseHelper.COUNTRY))
+                val city = cursor.getString(cursor.getColumnIndex(DataBaseHelper.CITY))
+                val street = cursor.getString(cursor.getColumnIndex(DataBaseHelper.STREET))
+                val number = cursor.getString(cursor.getColumnIndex(DataBaseHelper.NUMBER))
+                addresses.add(Address(id, country, city, street, number))
             } while(cursor.moveToNext())
         }
         return addresses + preLoadedListOfAddresses
     }
 
-    fun isUniqueAddress(address: String): Boolean {
-        val commonAddresses = getAllAddresses().map{
+    fun isUniqueAddress(address: Address): Boolean {
+        val commonAddresses = getAllAddresses().map{it.toString()}.map{
             it.replace(Regex("[.,/: ]"), "")}.map{it.lowercase()}
-        val addressFormatted = address.replace(Regex("[.,/: ]"), "").lowercase()
+        val addressFormatted = address.toString().replace(Regex("[.,/: ]"), "").lowercase()
 
         for (addressItem in commonAddresses){
             if (addressFormatted == addressItem){
@@ -158,6 +177,29 @@ class DataBaseAdapter(private val context: Context) {
             }
         }
         return true
+    }
+
+    @SuppressLint("Range", "Recycle")
+    fun getAddressById(id: Int): Address{
+        val query = "SELECT * FROM ${DataBaseHelper.ADDRESSES_TABLE} WHERE ${DataBaseHelper.ADDRESS_ID} = ?"
+        val cursor = database.rawQuery(query, arrayOf(id.toString()))
+
+        return if (cursor.moveToFirst()) {
+            val country = cursor.getString(cursor.getColumnIndex(DataBaseHelper.COUNTRY))
+            val city = cursor.getString(cursor.getColumnIndex(DataBaseHelper.CITY))
+            val street = cursor.getString(cursor.getColumnIndex(DataBaseHelper.STREET))
+            val number = cursor.getString(cursor.getColumnIndex(DataBaseHelper.NUMBER))
+            Address(id, country, city, street, number)
+        } else{
+            Address(0, "", "", "", "")
+        }
+    }
+
+    fun deleteAddressById(id: Int):Int{
+        val whereClause = "${DataBaseHelper.ADDRESS_ID} = ?"
+        val whereArgs = arrayOf(id.toString())
+
+        return database.delete(DataBaseHelper.ADDRESSES_TABLE, whereClause, whereArgs)
     }
 
     fun deleteAllAddresses() {

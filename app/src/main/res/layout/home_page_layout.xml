@@ -69,54 +69,88 @@
                     android:layout_marginEnd="20dp"
                     app:dividerColor="@color/black"
                     android:visibility="visible"/>
-                <RelativeLayout
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_margin="20dp">
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="12dp"
+                    app:strokeWidth="0dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardElevation="4dp">
                     <LinearLayout
-                        android:id="@+id/username_line"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center"
-                        android:layout_marginBottom="7dp">
-                        <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+                        <RelativeLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/user_icon"
-                            android:layout_marginEnd="5dp"/>
-                        <TextView
-                            android:id="@+id/username"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Loading..."
-                            android:textSize="20sp"
-                            android:textColor="@color/black"
-                            android:paddingBottom="1sp"/>
+                            android:orientation="vertical"
+                            android:layout_margin="5dp">
+                            <LinearLayout
+                                android:id="@+id/username_line"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center"
+                                android:layout_marginBottom="7dp">
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/user_icon"
+                                    android:layout_marginEnd="5dp"/>
+                                <TextView
+                                    android:id="@+id/username"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Loading..."
+                                    android:textSize="20sp"
+                                    android:textColor="@color/black"
+                                    android:paddingBottom="1sp"/>
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center"
+                                android:layout_below="@+id/username_line">
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/mail_icon"
+                                    android:layout_marginEnd="5dp"/>
+                                <TextView
+                                    android:id="@+id/email"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="example@gmail.com"
+                                    android:textSize="20sp"
+                                    android:textColor="@color/black"
+                                    android:paddingBottom="4sp"/>
+                            </LinearLayout>
+                        </RelativeLayout>
+                        <RelativeLayout
+                            android:id="@+id/editProfile"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <com.google.android.material.divider.MaterialDivider
+                                android:layout_width="2dp"
+                                android:layout_height="match_parent"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginEnd="44dp"
+                                app:dividerColor="#BAB8B8"/>
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:src="@drawable/edit_icon"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginEnd="10dp"
+                                app:tint="#323232"/>
+                        </RelativeLayout>
                     </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center"
-                        android:layout_below="@+id/username_line">
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/mail_icon"
-                            android:layout_marginEnd="5dp"/>
-                        <TextView
-                            android:id="@+id/email"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="example@gmail.com"
-                            android:textSize="20sp"
-                            android:textColor="@color/black"
-                            android:paddingBottom="4sp"/>
-                    </LinearLayout>
-                </RelativeLayout>
-
+                </com.google.android.material.card.MaterialCardView>
                 <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
                     android:id="@+id/logout"
                     android:layout_width="180dp"

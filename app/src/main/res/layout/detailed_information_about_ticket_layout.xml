@@ -463,7 +463,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_below="@id/textView2"
-                                    android:text="+380676721601"
+                                    android:text="+380676767211"
                                     android:textColor="@color/black"
                                     android:textSize="14dp"
                                     android:layout_marginLeft="4dp"
