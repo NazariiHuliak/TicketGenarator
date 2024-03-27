@@ -11,18 +11,19 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <LinearLayout
-            android:id="@+id/back_to_main_menu"
+            android:id="@+id/goBackButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:layout_marginTop="20dp"
-            android:layout_marginLeft="20dp">
+            android:layout_marginStart="20dp"
+            tools:ignore="UseCompoundDrawables">
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/back_arrow"
-                android:layout_marginRight="3dp"/>
+                android:layout_marginRight="3dp" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -36,480 +37,43 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_margin="10dp">
-            <LinearLayout
-                android:id="@+id/show_on_full_size_btn"
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="119dp"
-                        android:src="@drawable/bannerlogo"
-                        tools:ignore="MissingConstraints" />
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:layout_alignParentEnd="true">
-                        <ImageView
-                            android:id="@+id/edit_btn"
-                            android:layout_width="30sp"
-                            android:layout_height="30sp"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginEnd="8dp"
-                            android:layout_marginBottom="30dp"
-                            android:contentDescription="edit_icon"
-                            android:src="@drawable/edit_icon" />
-                        <ImageView
-                            android:id="@+id/delete_btn"
-                            android:layout_width="30sp"
-                            android:layout_height="30sp"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginEnd="8dp"
-                            android:layout_marginBottom="8dp"
-                            android:contentDescription="delete_icon"
-                            android:src="@drawable/delete_icon" />
-                    </LinearLayout>
-
-                </RelativeLayout>
-                <com.google.android.material.card.MaterialCardView
+                android:layout_height="wrap_content">
+                <FrameLayout
+                    android:id="@+id/ticketFragment"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="2dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="@android:color/white"
-                    app:strokeColor="@android:color/black"
-                    app:strokeWidth="1dp">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-                            <RelativeLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="ПІБ пасажира/Fullname passeger"
-                                    android:textSize="8dp"
-                                    android:layout_marginLeft="3dp"
-                                    android:textColor="@color/white_black"/>
-                                <TextView
-                                    android:id="@+id/ticket_fullName"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="match_parent"
-                                    android:text="Петренко Петро Петрович"
-                                    android:textSize="17dp"
-                                    android:layout_marginLeft="4dp"
-                                    android:layout_marginRight="4dp"
-                                    android:textColor="@color/black"
-                                    android:gravity="center"/>
-                            </RelativeLayout>
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="40dp"
-                                android:background="@drawable/rectangle" />
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Номер рейсу/Trip number"
-                                    android:textSize="8dp"
-                                    android:layout_marginLeft="3dp"
-                                    android:textColor="@color/white_black"/>
-                                <TextView
-                                    android:id="@+id/ticket_tripNumber"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/black"
-                                    android:text="54655165"
-                                    android:textSize="17dp"
-                                    android:gravity="center"/>
-                            </LinearLayout>
-                        </LinearLayout>
-                        <View
-                            android:layout_width="wrap_content"
-                            android:layout_height="1dp"
-                            android:background="@drawable/rectangle" />
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-                            <RelativeLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="0.7"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Від/From"
-                                    android:textSize="8dp"
-                                    android:layout_marginLeft="3dp"
-                                    android:textColor="@color/white_black"/>
-                                <TextView
-                                    android:id="@+id/ticket_departureCity"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:text="Катовіце"
-                                    android:textSize="14dp"
-                                    android:gravity="center"
-                                    android:textColor="@color/black"/>
-                            </RelativeLayout>
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="50dp"
-                                android:background="@drawable/rectangle" />
-                            <RelativeLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Адреса/Address"
-                                    android:textSize="8dp"
-                                    android:layout_marginLeft="3dp"
-                                    android:textColor="@color/white_black"/>
-                                <TextView
-                                    android:id="@+id/ticket_departureAddress"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:textColor="@color/black"
-                                    android:gravity="center"
-                                    android:text="вул. Коперника"
-                                    android:textSize="14dp" />
-                            </RelativeLayout>
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="50dp"
-                                android:background="@drawable/rectangle" />
-                            <RelativeLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="0.6"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Дата/Date"
-                                    android:textSize="8dp"
-                                    android:layout_marginLeft="3dp"
-                                    android:textColor="@color/white_black"/>
-                                <TextView
-                                    android:id="@+id/ticket_departureDate"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:text="11.04.2023"
-                                    android:textColor="@color/black"
-                                    android:textSize="15dp"
-                                    android:gravity="center"/>
-                            </RelativeLayout>
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="50dp"
-                                android:background="@drawable/rectangle" />
-                            <RelativeLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="0.32"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Час/Time"
-                                    android:textSize="8dp"
-                                    android:layout_marginLeft="3dp"
-                                    android:textColor="@color/white_black"/>
-                                <TextView
-                                    android:id="@+id/ticket_departureTime"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:text="11:45"
-                                    android:textColor="@color/black"
-                                    android:textSize="15dp"
-                                    android:gravity="center"/>
-                            </RelativeLayout>
-                        </LinearLayout>
-                        <View
-                            android:layout_width="wrap_content"
-                            android:layout_height="1dp"
-                            android:background="@drawable/rectangle" />
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-                            <RelativeLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="0.7"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical"
-                                >
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="До/To"
-                                    android:textColor="@color/white_black"
-                                    android:textSize="8dp"
-                                    android:layout_marginLeft="3dp"/>
-                                <TextView
-                                    android:id="@+id/ticket_destinationCity"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:text="Катовіце"
-                                    android:textSize="14dp"
-                                    android:gravity="center"
-                                    android:textColor="@color/black"/>
-                            </RelativeLayout>
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="50dp"
-                                android:background="@drawable/rectangle" />
-                            <RelativeLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Адреса/Address"
-                                    android:textSize="8dp"
-                                    android:layout_marginLeft="3dp"
-                                    android:textColor="@color/white_black"/>
-                                <TextView
-                                    android:id="@+id/ticket_destinationAddress"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:text="вул. Коперника"
-                                    android:textSize="14dp"
-                                    android:gravity="center"
-                                    android:textColor="@color/black"/>
-                            </RelativeLayout>
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="50dp"
-                                android:background="@drawable/rectangle" />
-                            <RelativeLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="0.6"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Дата/Date"
-                                    android:textSize="8dp"
-                                    android:layout_marginLeft="3dp"
-                                    android:textColor="@color/white_black"/>
-                                <TextView
-                                    android:id="@+id/ticket_destinationDate"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:text="11.04.2023"
-                                    android:textColor="@color/black"
-                                    android:textSize="15dp"
-                                    android:gravity="center"/>
-                            </RelativeLayout>
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="50dp"
-                                android:background="@drawable/rectangle" />
-                            <RelativeLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="0.32"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Час/Time"
-                                    android:textSize="8dp"
-                                    android:layout_marginLeft="3dp"
-                                    android:textColor="@color/white_black"/>
-                                <TextView
-                                    android:id="@+id/ticket_destinationTime"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:text="11:45"
-                                    android:textColor="@color/black"
-                                    android:textSize="15dp"
-                                    android:gravity="center"/>
-                            </RelativeLayout>
-                        </LinearLayout>
-                        <View
-                            android:layout_width="wrap_content"
-                            android:layout_height="1dp"
-                            android:background="@drawable/rectangle" />
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-                            <RelativeLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical"
-                                android:layout_marginRight="10dp">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Вартість/Price"
-                                    android:textSize="8dp"
-                                    android:layout_marginLeft="3dp"
-                                    android:textColor="@color/white_black"/>
-                                <TextView
-                                    android:id="@+id/ticket_price"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:text="350"
-                                    android:textColor="@color/black"
-                                    android:textSize="14dp"
-                                    android:layout_marginLeft="4dp"
-                                    android:gravity="center" />
-                            </RelativeLayout>
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="50dp"
-                                android:background="@drawable/rectangle" />
-                            <RelativeLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Валюта/Currency"
-                                    android:textSize="8dp"
-                                    android:layout_marginLeft="3dp"
-                                    android:textColor="@color/white_black"/>
-                                <TextView
-                                    android:id="@+id/ticket_currency"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:text="UAH(гривня)"
-                                    android:textColor="@color/black"
-                                    android:textSize="14dp"
-                                    android:layout_marginLeft="4dp"
-                                    android:gravity="center"/>
-                            </RelativeLayout>
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="50dp"
-                                android:background="@drawable/rectangle" />
-                            <RelativeLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Місце"
-                                    android:textSize="8dp"
-                                    android:layout_marginLeft="3dp"
-                                    android:textColor="@color/white_black"/>
-                                <TextView
-                                    android:id="@+id/ticket_seat"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:text="17"
-                                    android:textColor="@color/black"
-                                    android:textSize="15dp"
-                                    android:layout_marginLeft="4dp"
-                                    android:gravity="center"/>
-                            </RelativeLayout>
-                        </LinearLayout>
-                        <View
-                            android:layout_width="wrap_content"
-                            android:layout_height="1dp"
-                            android:background="@drawable/rectangle" />
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-                            <RelativeLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical"
-                                android:layout_marginRight="10dp">
-                                <TextView
-                                    android:id="@+id/textView2"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Контактні дані перевізника/Carrier contacts"
-                                    android:textColor="@color/white_black"
-                                    android:textSize="8dp"
-                                    android:layout_marginLeft="3dp"/>
-                                <TextView
-                                    android:id="@+id/textView1"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@id/textView2"
-                                    android:text="+380676767211"
-                                    android:textColor="@color/black"
-                                    android:textSize="14dp"
-                                    android:layout_marginLeft="4dp"
-                                    android:gravity="center" />
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@id/textView1"
-                                    android:text="+380676721101"
-                                    android:textColor="@color/black"
-                                    android:textSize="14dp"
-                                    android:layout_marginLeft="4dp"
-                                    android:gravity="center" />
-                            </RelativeLayout>
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="50dp"
-                                android:background="@drawable/rectangle" />
-                            <RelativeLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Дата продажу/Purchase date"
-                                    android:textColor="@color/white_black"
-                                    android:textSize="8dp"
-                                    android:layout_marginLeft="3dp"/>
-                                <TextView
-                                    android:id="@+id/ticket_purchaseDate"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:text="11:24 11.04.2023"
-                                    android:textColor="@color/black"
-                                    android:textSize="15dp"
-                                    android:layout_marginLeft="4dp"
-                                    android:gravity="center"/>
-                            </RelativeLayout>
-                        </LinearLayout>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-            </LinearLayout>
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="5dp">
+                    <ImageView
+                        android:id="@+id/editButton"
+                        android:layout_width="30sp"
+                        android:layout_height="30sp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="30dp"
+                        android:contentDescription="edit_icon"
+                        android:src="@drawable/edit_icon" />
+                    <ImageView
+                        android:id="@+id/deleteButton"
+                        android:layout_width="30sp"
+                        android:layout_height="30sp"
+                        android:layout_margin="8dp"
+                        android:contentDescription="delete_icon"
+                        android:src="@drawable/delete_icon" />
+                </LinearLayout>
+
+            </RelativeLayout>
             <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                android:id="@+id/create_similar"
+                android:id="@+id/createSimilarButton"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:layout_marginTop="30dp"
@@ -524,7 +88,7 @@
                 app:iconSize="33dp"
                 app:iconTint="@color/white"/>
             <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                android:id="@+id/share_btn"
+                android:id="@+id/shareButton"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:layout_marginTop="15dp"
@@ -539,7 +103,7 @@
                 app:iconSize="40dp"
                 app:iconTint="@color/white"/>
             <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                android:id="@+id/download_btn"
+                android:id="@+id/downloadButton"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:layout_marginTop="15dp"
@@ -553,7 +117,6 @@
                 android:textSize="20dp"
                 app:iconSize="40dp"
                 app:iconTint="@color/white"/>
-
         </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

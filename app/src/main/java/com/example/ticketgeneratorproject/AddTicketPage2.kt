@@ -2,6 +2,7 @@ package com.example.ticketgeneratorproject
 
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
@@ -23,6 +24,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.FragmentManager
 import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
 import com.example.ticketgeneratorproject.Entities.Address
 import com.example.ticketgeneratorproject.additionalClasses.ApplicationSettings
@@ -30,6 +32,7 @@ import com.example.ticketgeneratorproject.Entities.Currency
 import com.example.ticketgeneratorproject.Entities.DateTime
 import com.example.ticketgeneratorproject.Entities.TicketModel
 import com.example.ticketgeneratorproject.databinding.AddTicketPage2Binding
+import com.example.ticketgeneratorproject.databinding.TicketFragmentBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
@@ -318,7 +321,7 @@ class AddTicketPage2: AppCompatActivity() {
 
                 val downloadsDir =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                val file = File(downloadsDir, getFileNameForTicket(ticket) + System.currentTimeMillis())
+                val file = File(downloadsDir, getFileNameForTicket(ticket, true))
 
                 val pdfDocument = createPdfForTicket(this, ticket)
                 writeFileToStorage(file, pdfDocument)
@@ -375,141 +378,19 @@ class AddTicketPage2: AppCompatActivity() {
     }
 
     companion object{
-        /*@SuppressLint("MissingInflatedId", "SetTextI18n", "InflateParams")
-        fun convertXmlToPdf(ticket: TicketModel, context: Context):Boolean {
-            fun askPermissions(): Boolean {
-                if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED
-                ) {
-                    ActivityCompat.requestPermissions(
-                        context as Activity,
-                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        1
-                    )
-                }
-                return (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        == PackageManager.PERMISSION_GRANTED)
-            }
-
-            if(askPermissions()){
-                val view: View = LayoutInflater.from(context).inflate(R.layout.to_generate_pdf, null)
-
-                if(ticket.fullName.length >= 32){
-                    view.findViewById<TextView>(R.id.ticket_fullName).textSize = 14f;
-                    if(ticket.fullName.length >= 36 && ticket.tripNumber.length >= 9){
-                        view.findViewById<TextView>(R.id.ticket_tripNumber).textSize = 13f;
-                    }
-                }
-                view.findViewById<TextView>(R.id.ticket_fullName).text = ticket.fullName
-                view.findViewById<TextView>(R.id.ticket_tripNumber).text = ticket.tripNumber
-                view.findViewById<TextView>(R.id.ticket_departureCity).text = ticket.departureAddress.city
-                view.findViewById<TextView>(R.id.ticket_departureAddress).text = ticket.departureAddress.street + " " +
-                        ticket.departureAddress.number
-                view.findViewById<TextView>(R.id.ticket_departureDate).text = ticket.departureDateTime.date
-                view.findViewById<TextView>(R.id.ticket_departureTime).text = ticket.departureDateTime.time
-                view.findViewById<TextView>(R.id.ticket_destinationCity).text = ticket.destinationAddress.city
-                view.findViewById<TextView>(R.id.ticket_destinationAddress).text = ticket.destinationAddress.street + " " +
-                        ticket.destinationAddress.number
-                view.findViewById<TextView>(R.id.ticket_destinationDate).text = ticket.destinationDateTime.date
-                view.findViewById<TextView>(R.id.ticket_destinationTime).text = ticket.destinationDateTime.time
-                view.findViewById<TextView>(R.id.ticket_price).text = ticket.price.toString()
-                view.findViewById<TextView>(R.id.ticket_currency).text = ticket.currency.toString()
-                view.findViewById<TextView>(R.id.ticket_seat).text = if(ticket.seat == -1) "При посадці" else ticket.seat.toString()
-                view.findViewById<TextView>(R.id.ticket_purchaseDate).text = ticket.purchaseDateTime.time + " " +
-                        ticket.purchaseDateTime.date
-
-                val displayMetrics = DisplayMetrics()
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    context.display!!.getRealMetrics(displayMetrics)
-                }
-                view.measure(
-                    View.MeasureSpec.makeMeasureSpec(displayMetrics.widthPixels, View.MeasureSpec.EXACTLY),
-                    View.MeasureSpec.makeMeasureSpec(displayMetrics.heightPixels, View.MeasureSpec.EXACTLY)
-                )
-
-                view.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels)
-
-                val document = PdfDocument()
-
-                val viewWidth = 1080
-                val viewHeight = 1920
-
-                val pageInfo = PageInfo.Builder(viewWidth, viewHeight, 1).create()
-
-                val page = document.startPage(pageInfo)
-
-                val canvas = page.canvas
-
-                val paint = Paint()
-                paint.color = Color.WHITE
-
-                view.draw(canvas)
-
-                document.finishPage(page)
-
-                val downloadsDir =
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-
-                val fileName = (transliterateToEnglish(ticket.fullName).split(" ")[0] + " " +
-                        transliterateToEnglish(ticket.fullName).split(" ")[1] + " " +
-                        transliterateToEnglish(ticket.departureAddress.city) + "-" +
-                        transliterateToEnglish(ticket.destinationAddress.city) + " " +
-                        ticket.purchaseDateTime.date + " " + System.currentTimeMillis().toString() +
-                        ".pdf").replace(":", ".")
-
-                val filePath = File(downloadsDir, fileName)
-                try {
-                    val fos = FileOutputStream(filePath)
-                    document.writeTo(fos)
-                    document.close()
-                    fos.close()
-                    Toast.makeText(context, "Квиток був успішно згенерований", Toast.LENGTH_LONG).show()
-                    return true
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    Toast.makeText(context, "Квиток не був згенерований", Toast.LENGTH_LONG).show()
-                    return false
-                }
-            }
-            return false
-        }*/
-
-        fun getFileNameForTicket(ticket: TicketModel): String{
+        fun getFileNameForTicket(ticket: TicketModel, addTime: Boolean): String{
             return (transliterateToEnglish(ticket.fullName).split(" ")[0] + " " +
                     transliterateToEnglish(ticket.fullName).split(" ")[1] + " " +
                     transliterateToEnglish(ticket.departureAddress.city) + "-" +
                     transliterateToEnglish(ticket.destinationAddress.city) + " " +
-                    ticket.purchaseDateTime.date /*+ " " + System.currentTimeMillis().toString()*/ +
-                    ".pdf").replace(":", ".")
+                    ticket.purchaseDateTime.date + if(addTime)System.currentTimeMillis().toString() else "") +
+                    ".pdf".replace(":", ".")
         }
 
-        @SuppressLint("CutPasteId", "InflateParams", "SetTextI18n")
         fun createPdfForTicket(context: Context, ticket: TicketModel): PdfDocument{
-            val view: View = LayoutInflater.from(context).inflate(R.layout.to_generate_pdf, null)
-
-            if(ticket.fullName.length >= 32){
-                view.findViewById<TextView>(R.id.ticket_fullName).textSize = 14f;
-                if(ticket.fullName.length >= 36 && ticket.tripNumber.length >= 9){
-                    view.findViewById<TextView>(R.id.ticket_tripNumber).textSize = 13f;
-                }
-            }
-            view.findViewById<TextView>(R.id.ticket_fullName).text = ticket.fullName
-            view.findViewById<TextView>(R.id.ticket_tripNumber).text = ticket.tripNumber
-            view.findViewById<TextView>(R.id.ticket_departureCity).text = ticket.departureAddress.city
-            view.findViewById<TextView>(R.id.ticket_departureAddress).text = ticket.departureAddress.street + " " +
-                    ticket.departureAddress.number
-            view.findViewById<TextView>(R.id.ticket_departureDate).text = ticket.departureDateTime.date
-            view.findViewById<TextView>(R.id.ticket_departureTime).text = ticket.departureDateTime.time
-            view.findViewById<TextView>(R.id.ticket_destinationCity).text = ticket.destinationAddress.city
-            view.findViewById<TextView>(R.id.ticket_destinationAddress).text = ticket.destinationAddress.street + " " +
-                    ticket.destinationAddress.number
-            view.findViewById<TextView>(R.id.ticket_destinationDate).text = ticket.destinationDateTime.date
-            view.findViewById<TextView>(R.id.ticket_destinationTime).text = ticket.destinationDateTime.time
-            view.findViewById<TextView>(R.id.ticket_price).text = ticket.price.toString()
-            view.findViewById<TextView>(R.id.ticket_currency).text = ticket.currency.toString()
-            view.findViewById<TextView>(R.id.ticket_seat).text = if(ticket.seat == -1) "При посадці" else ticket.seat.toString()
-            view.findViewById<TextView>(R.id.ticket_purchaseDate).text = ticket.purchaseDateTime.time + " " +
-                    ticket.purchaseDateTime.date
+            val inflater = LayoutInflater.from(context)
+            val view = inflater.inflate(R.layout.ticket_fragment, null)
+            setTicketDataInView(TicketFragmentBinding.bind(view), ticket)
 
             val displayMetrics = DisplayMetrics()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -525,7 +406,7 @@ class AddTicketPage2: AppCompatActivity() {
             val document = PdfDocument()
 
             val viewWidth = 1080
-            val viewHeight = 1920
+            val viewHeight = 1980
 
             val pageInfo = PageInfo.Builder(viewWidth, viewHeight, 1).create()
 
@@ -551,6 +432,35 @@ class AddTicketPage2: AppCompatActivity() {
             } catch (e: IOException) {
                 e.printStackTrace()
             }
+        }
+
+        @SuppressLint("SetTextI18n")
+        fun setTicketDataInView(binding: TicketFragmentBinding, ticket: TicketModel){
+            if (ticket.fullName.length >= 32) {
+                binding.fullName.textSize = 14f;
+                if (ticket.fullName.length >= 36 && ticket.tripNumber.length >= 9) {
+                    binding.tripNumber.textSize = 13f;
+                }
+            }
+            binding.fullName.text = ticket.fullName
+            binding.tripNumber.text = ticket.tripNumber
+            binding.departureCity.text = ticket.departureAddress.city
+            binding.departureAddress.text =
+                ticket.departureAddress.street + " " +
+                        ticket.departureAddress.number
+            binding.departureDate.text = ticket.departureDateTime.date
+            binding.departureTime.text = ticket.departureDateTime.time
+            binding.destinationCity.text = ticket.destinationAddress.city
+            binding.destinationAddress.text =
+                ticket.destinationAddress.street + " " +
+                        ticket.destinationAddress.number
+            binding.destinationDate.text = ticket.destinationDateTime.date
+            binding.destinationTime.text = ticket.destinationDateTime.time
+            binding.price.text = ticket.price.toString()
+            binding.currency.text = ticket.currency.toString()
+            binding.seat.text = if (ticket.seat == -1) "При посадці" else ticket.seat.toString()
+            binding.purchaseDate.text = ticket.purchaseDateTime.time + " " +
+                    ticket.purchaseDateTime.date
         }
 
         fun transliterateToEnglish(input: String): String {

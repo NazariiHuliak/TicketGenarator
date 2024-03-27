@@ -1,67 +1,53 @@
 package com.example.ticketgeneratorproject
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.example.ticketgeneratorproject.Entities.TicketModel
-
+import com.example.ticketgeneratorproject.databinding.TicketPreviewBinding
 
 class TicketPreview : AppCompatActivity() {
-    private lateinit var goDetailedInformationPage: LinearLayout
     private var doubleClick = false
+    private lateinit var binding: TicketPreviewBinding
+
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.ticket_preview)
+        binding = TicketPreviewBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
-        //hide status bar
-        val windowInsetsController =
-            WindowCompat.getInsetsController(window, window.decorView) ?: return
+        val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
         windowInsetsController.systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         windowInsetsController.hide(WindowInsetsCompat.Type.statusBars())
 
-        var ticket =
-            intent.getSerializableExtra("DetailedInformationAboutTicket_TO_TicketPreview_ticketData")
-                    as TicketModel
+        Log.d("myLog", "TicketPreview works")
 
-        if(ticket.fullName.length >= 32){
-            findViewById<TextView>(R.id.ticket_fullName).textSize = 14f;
-            if(ticket.fullName.length >= 36 && ticket.tripNumber.length >= 9){
-                findViewById<TextView>(R.id.ticket_tripNumber).textSize = 13f;
+        if (intent.hasExtra(EXTRA_KEY)){
+            val ticket =
+                intent.getSerializableExtra(EXTRA_KEY)
+                        as TicketModel
+
+            val ticketFragment = TicketFragment()
+            val bundle = Bundle().apply {
+                putSerializable("Ticket", ticket)
+            }
+            ticketFragment.arguments = bundle
+            supportFragmentManager.beginTransaction().apply {
+                replace(R.id.ticketFragment, ticketFragment)
+                commit()
             }
         }
-        findViewById<TextView>(R.id.ticket_fullName).text = ticket.fullName
-        findViewById<TextView>(R.id.ticket_tripNumber).text = ticket.tripNumber
-        findViewById<TextView>(R.id.ticket_departureCity).text = ticket.departureAddress.city
-        findViewById<TextView>(R.id.ticket_departureAddress).text =
-            ticket.departureAddress.street + " " +
-                    ticket.departureAddress.number
-        findViewById<TextView>(R.id.ticket_departureDate).text = ticket.departureDateTime.date
-        findViewById<TextView>(R.id.ticket_departureTime).text = ticket.departureDateTime.time
-        findViewById<TextView>(R.id.ticket_destinationCity).text = ticket.destinationAddress.city
-        findViewById<TextView>(R.id.ticket_destinationAddress).text =
-            ticket.destinationAddress.street + " " +
-                    ticket.destinationAddress.number
-        findViewById<TextView>(R.id.ticket_destinationDate).text = ticket.destinationDateTime.date
-        findViewById<TextView>(R.id.ticket_destinationTime).text = ticket.destinationDateTime.time
-        findViewById<TextView>(R.id.ticket_price).text = ticket.price.toString()
-        findViewById<TextView>(R.id.ticket_currency).text = ticket.currency.toString()
-        findViewById<TextView>(R.id.ticket_seat).text =  if(ticket.seat == -1) "При посадці" else ticket.seat.toString()
-        findViewById<TextView>(R.id.ticket_purchaseDate).text = ticket.purchaseDateTime.time + " " +
-                ticket.purchaseDateTime.date
 
-        goDetailedInformationPage = findViewById(R.id.back_to_detailed_activity)
-        goDetailedInformationPage.setOnClickListener {
+
+        binding.ticketFragment.setOnClickListener {
             if (doubleClick) {
                 finish()
                 doubleClick = false
@@ -72,5 +58,9 @@ class TicketPreview : AppCompatActivity() {
                 }, DetailedInformationAboutTicket.DOUBLE_CLICK_DELAY.toLong())
             }
         }
+    }
+
+    companion object {
+        private const val EXTRA_KEY = "DetailedInformationAboutTicket_TO_TicketPreview_ticketData"
     }
 }
