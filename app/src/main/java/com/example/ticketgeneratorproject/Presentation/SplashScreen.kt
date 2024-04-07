@@ -1,10 +1,11 @@
-package com.example.ticketgeneratorproject
+package com.example.ticketgeneratorproject.Presentation
 
 import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import com.example.ticketgeneratorproject.R
 import com.google.firebase.auth.FirebaseAuth
 
 @SuppressLint("CustomSplashScreen")

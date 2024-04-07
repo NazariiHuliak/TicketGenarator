@@ -1,7 +1,6 @@
-package com.example.ticketgeneratorproject.Entities
+package com.example.ticketgeneratorproject.Data.Entities
 
-import android.util.Log
-import com.example.ticketgeneratorproject.AddTicketPage2
+import com.example.ticketgeneratorproject.Business.Controllers.TextController.transliterateToEnglish
 
 data class Address(
     val id: Int = 0,
@@ -10,17 +9,20 @@ data class Address(
     val street: String = "",
     val number: String = ""
 ): java.io.Serializable{
-
     override fun toString(): String {
-        return "$country, $city, $street, $number"
+        return if (number == ""){
+            "$country, $city, $street"
+        } else {
+            "$country, $city, $street, $number"
+        }
     }
 
     fun getUniqueId(): String{
-        return AddTicketPage2.transliterateToEnglish(this.country + this.city + this.street + this.number)
+        return transliterateToEnglish(this.country + this.city + this.street + this.number)
     }
 
     companion object{
-        fun parseAddress(address: String): Address{
+        fun parseAddress(address: String): Address {
             var formattedAddress = address.replace(Regex("[.,/:]"), "").
                 replace("вул", "").trimEnd()
             while("  " in formattedAddress){

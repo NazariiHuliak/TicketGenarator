@@ -1,15 +1,13 @@
-package com.example.ticketgeneratorproject.DataBase
+package com.example.ticketgeneratorproject.Data
 
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
-import android.provider.Telephony.Mms.Addr
-import com.example.ticketgeneratorproject.Entities.Address
-import com.example.ticketgeneratorproject.Entities.Currency
-import com.example.ticketgeneratorproject.Entities.DateTime
-import com.example.ticketgeneratorproject.Entities.TicketModel
-import java.io.Serializable
+import com.example.ticketgeneratorproject.Data.Entities.Address
+import com.example.ticketgeneratorproject.Data.Entities.Currency
+import com.example.ticketgeneratorproject.Data.Entities.DateTime
+import com.example.ticketgeneratorproject.Data.Entities.TicketModel
 
 class DataBaseAdapter(private val context: Context) {
     private var preLoadedListOfAddresses = listOf(
@@ -27,7 +25,8 @@ class DataBaseAdapter(private val context: Context) {
             country = "Україна",
             city = "Золочів",
             street = "Залізничний вокзал",
-            number = ""))
+            number = "")
+    )
 
     private val database: SQLiteDatabase by lazy {
         DataBaseHelper(context).writableDatabase
@@ -180,7 +179,7 @@ class DataBaseAdapter(private val context: Context) {
     }
 
     @SuppressLint("Range", "Recycle")
-    fun getAddressById(id: Int): Address{
+    fun getAddressById(id: Int): Address {
         val query = "SELECT * FROM ${DataBaseHelper.ADDRESSES_TABLE} WHERE ${DataBaseHelper.ADDRESS_ID} = ?"
         val cursor = database.rawQuery(query, arrayOf(id.toString()))
 

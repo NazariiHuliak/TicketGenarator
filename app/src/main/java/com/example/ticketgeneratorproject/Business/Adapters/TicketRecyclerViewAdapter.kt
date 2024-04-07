@@ -1,4 +1,4 @@
-package com.example.ticketgeneratorproject.Adapters
+package com.example.ticketgeneratorproject.Business.Adapters
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -7,10 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.ticketgeneratorproject.DetailedInformationAboutTicket
-import com.example.ticketgeneratorproject.Entities.TicketModel
+import com.example.ticketgeneratorproject.Presentation.DetailedInformationAboutTicket
+import com.example.ticketgeneratorproject.Data.Entities.TicketModel
 import com.example.ticketgeneratorproject.R
-
 
 class TicketRecyclerViewAdapter(private var ticketsList: MutableList<TicketModel>): RecyclerView.Adapter<TicketRecyclerViewAdapter.ViewHolder>(){
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddTicketPage1"
+    tools:context=".Presentation.AddTicketPage1"
     android:background="@color/light_green">
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,7 +13,7 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/back_to_main_menu"
+            android:id="@+id/goBackButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -42,7 +42,7 @@
             android:layout_marginLeft="10dp"
             android:textColor="@color/black"/>
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/fullName_layout"
+            android:id="@+id/fullNameLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:boxCornerRadiusBottomEnd="12dp"
@@ -85,7 +85,7 @@
                     android:layout_marginLeft="10dp"
                     android:textColor="@color/black"/>
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/trip_number_layout"
+                    android:id="@+id/tripNumberLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:boxCornerRadiusBottomEnd="12dp"
@@ -100,7 +100,7 @@
                     app:errorTextColor="@color/errorColor"
                     app:errorIconTint="@color/errorColor">
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/trip_number"
+                        android:id="@+id/tripNumber"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/rubik"
@@ -123,7 +123,7 @@
                     android:layout_marginLeft="10dp"
                     android:textColor="@color/black"/>
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/seat_layout"
+                    android:id="@+id/seatLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:boxCornerRadiusBottomEnd="12dp"
@@ -159,7 +159,7 @@
             android:layout_marginLeft="10dp"
             android:textColor="@color/black"/>
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/departure_layout"
+            android:id="@+id/departureLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:boxCornerRadiusBottomEnd="12dp"
@@ -195,7 +195,7 @@
             android:layout_marginLeft="10dp"
             android:textColor="@color/black"/>
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/destination_layout"
+            android:id="@+id/destinationLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:boxCornerRadiusBottomEnd="12dp"
@@ -223,7 +223,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/next_page"
+            android:id="@+id/continueButton"
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:layout_marginLeft="5dp"

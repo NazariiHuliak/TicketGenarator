@@ -1,4 +1,4 @@
-package com.example.ticketgeneratorproject
+package com.example.ticketgeneratorproject.Presentation
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -6,59 +6,40 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.*
 import androidx.core.widget.addTextChangedListener
-import com.example.ticketgeneratorproject.Adapters.AutoCompleteAddressAdapter
-import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
-import com.example.ticketgeneratorproject.Entities.Address
-import com.example.ticketgeneratorproject.Entities.Currency
-import com.example.ticketgeneratorproject.Entities.DateTime
-import com.example.ticketgeneratorproject.Entities.TicketModel
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
+import com.example.ticketgeneratorproject.Business.Adapters.AutoCompleteAddressAdapter
+import com.example.ticketgeneratorproject.Data.DataBaseAdapter
+import com.example.ticketgeneratorproject.Data.Entities.Address
+import com.example.ticketgeneratorproject.Data.Entities.Currency
+import com.example.ticketgeneratorproject.Data.Entities.DateTime
+import com.example.ticketgeneratorproject.Data.Entities.TicketModel
+import com.example.ticketgeneratorproject.R
+import com.example.ticketgeneratorproject.Business.Controllers.TextController.capitalizeWords
+import com.example.ticketgeneratorproject.databinding.AddTicketPage1Binding
 
 class AddTicketPage1 : AppCompatActivity() {
-    private lateinit var fullnameLayout: TextInputLayout
-    private lateinit var tripnumberLayout: TextInputLayout
-    private lateinit var seatLayout: TextInputLayout
-    private lateinit var departureLayout: TextInputLayout
-    private lateinit var destinationLayout: TextInputLayout
-
-    private lateinit var fullname: TextInputEditText
-    private lateinit var tripNumber: TextInputEditText
-    private lateinit var seat: TextInputEditText
-    private lateinit var departure: AutoCompleteTextView
-    private lateinit var destination: AutoCompleteTextView
-
     private lateinit var dbAdapter: DataBaseAdapter
     private lateinit var ticket: TicketModel
+    private lateinit var binding: AddTicketPage1Binding
+
     @SuppressLint("MissingInflatedId", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.add_ticket_page_1)
+        binding = AddTicketPage1Binding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         val intentHasExtraToUpdate = intent.hasExtra("DetailedInformationTicket_TO_EnterTicketData_TicketData_Update")
         val intentHasExtraToCreateSimilar = intent.hasExtra("DetailedInformationTicket_TO_EnterTicketData_TicketData_CreateSimilar")
-
-        fullnameLayout = findViewById(R.id.fullName_layout)
-        tripnumberLayout = findViewById(R.id.trip_number_layout)
-        seatLayout = findViewById(R.id.seat_layout)
-        departureLayout = findViewById(R.id.departure_layout)
-        destinationLayout = findViewById(R.id.destination_layout)
-
-        fullname = findViewById(R.id.fullname)
-        tripNumber = findViewById(R.id.trip_number)
-        seat = findViewById(R.id.seat)
-        departure = findViewById(R.id.departure)
-        destination = findViewById(R.id.destination)
 
         dbAdapter = DataBaseAdapter(this)
         val addresses = dbAdapter.getAllAddresses()
         val modifiedAddress = addresses.map{it.toString().replace(Regex("[.,/: ]"), "")}.map{it.lowercase()}
 
         val dropDownAdapter = AutoCompleteAddressAdapter(this, R.layout.currency_item, addresses)
-        departure.setAdapter(dropDownAdapter)
-        destination.setAdapter(dropDownAdapter)
-        departure.setMaxVisibleOptions(3, modifiedAddress)
-        destination.setMaxVisibleOptions(3, modifiedAddress)
+        binding.departure.setAdapter(dropDownAdapter)
+        binding.destination.setAdapter(dropDownAdapter)
+        binding.departure.setMaxVisibleOptions(3, modifiedAddress)
+        binding.destination.setMaxVisibleOptions(3, modifiedAddress)
 
         if(intentHasExtraToUpdate){
             ticket = intent.getSerializableExtra("DetailedInformationTicket_TO_EnterTicketData_TicketData_Update")
@@ -68,68 +49,68 @@ class AddTicketPage1 : AppCompatActivity() {
                     as TicketModel
         }
         if(intentHasExtraToUpdate || intentHasExtraToCreateSimilar){
-            fullname.setText(ticket.fullName)
-            tripNumber.setText(ticket.tripNumber)
-            seat.setText(ticket.seat.toString())
-            departure.setText(ticket.departureAddress.country + ", " + ticket.departureAddress.city + ", " +
+            binding.fullname.setText(ticket.fullName)
+            binding.tripNumber.setText(ticket.tripNumber)
+            binding.seat.setText(ticket.seat.toString())
+            binding.departure.setText(ticket.departureAddress.country + ", " + ticket.departureAddress.city + ", " +
                     ticket.departureAddress.street + ", " + ticket.departureAddress.number)
-            destination.setText(ticket.destinationAddress.country + ", " + ticket.destinationAddress.city + ", " +
+            binding.destination.setText(ticket.destinationAddress.country + ", " + ticket.destinationAddress.city + ", " +
                     ticket.destinationAddress.street + ", " + ticket.destinationAddress.number)
 
         }
 
         var hasErrors: Boolean = false
 
-        fullname.addTextChangedListener {
-            if(it!!.count()>0){
-                fullnameLayout.error = null
+        binding.fullname.addTextChangedListener {
+            if(binding.fullname.text!!.isNotEmpty()){
+                binding.fullNameLayout.error = null
                 hasErrors = false
             }
         }
-        tripNumber.addTextChangedListener {
-            if(it!!.count()>0){
-                tripnumberLayout.error = null
+        binding.tripNumber.addTextChangedListener {
+            if(binding.tripNumber.text!!.isNotEmpty()){
+                binding.tripNumberLayout.error = null
                 hasErrors = false
             }
         }
-        departure.addTextChangedListener {
-            if(it!!.count()>0){
-                departureLayout.error = null
+        binding.departure.addTextChangedListener {
+            if(binding.departure.text!!.isNotEmpty()){
+                binding.departureLayout.error = null
                 hasErrors = false
             }
         }
-        destination.addTextChangedListener {
-            if(it!!.count()>0){
-                destinationLayout.error = null
+        binding.destination.addTextChangedListener {
+            if(binding.destination.text!!.isNotEmpty()){
+                binding.destinationLayout.error = null
                 hasErrors = false
             }
         }
 
-        findViewById<LinearLayout>(R.id.back_to_main_menu).setOnClickListener {
+        binding.goBackButton.setOnClickListener {
             finish()
         }
 
-        findViewById<Button>(R.id.next_page).setOnClickListener {
-            val fullnameText = fullname.text.toString()
-            val tripNumberText = tripNumber.text.toString()
-            val seatText = seat.text.toString()
-            val departureText = departure.text.toString()
-            val destinationText = destination.text.toString()
+        binding.continueButton.setOnClickListener {
+            val fullNameText = binding.fullname.text.toString()
+            val tripNumberText = binding.tripNumber.text.toString()
+            val seatText = binding.seat.text.toString()
+            val departureText = binding.departure.text.toString()
+            val destinationText = binding.destination.text.toString()
 
-            if(fullnameText.isEmpty()){
-                fullnameLayout.error = "Введіть дані"
+            if(fullNameText.isEmpty()){
+                binding.fullNameLayout.error = "Введіть дані"
                 hasErrors=true
             }
             if(tripNumberText.isEmpty()){
-                tripnumberLayout.error = "Введіть дані"
+                binding.tripNumberLayout.error = "Введіть дані"
                 hasErrors=true
             }
             if(departureText.isEmpty()){
-                departureLayout.error = "Введіть дані"
+                binding.departureLayout.error = "Введіть дані"
                 hasErrors=true
             }
             if(destinationText.isEmpty()){
-                destinationLayout.error = "Введіть дані"
+                binding.destinationLayout.error = "Введіть дані"
                 hasErrors=true
             }
 
@@ -137,7 +118,7 @@ class AddTicketPage1 : AppCompatActivity() {
                 val intent = Intent(this, AddTicketPage2::class.java)
                 val ticketToPass = TicketModel(
                     0,
-                    capitalizeWords(fullnameText),
+                    capitalizeWords(fullNameText),
                     tripNumberText,
                     Address.parseAddress(departureText),
                     Address.parseAddress(destinationText),
@@ -152,7 +133,8 @@ class AddTicketPage1 : AppCompatActivity() {
                     intent.putExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_Update",
                         ticketToPass.
                         setId(ticket.id).
-                        setDepartureDestinationDateTime(DateTime.parseDateTime(ticket.departureDateTime.date+ " " + ticket.departureDateTime.time),
+                        setDepartureDestinationDateTime(
+                            DateTime.parseDateTime(ticket.departureDateTime.date+ " " + ticket.departureDateTime.time),
                             DateTime.parseDateTime(ticket.destinationDateTime.date+ " " + ticket.destinationDateTime.time)).
                         setPurchaseDateTime(ticket.purchaseDateTime).
                         setPrice(ticket.price).
@@ -160,7 +142,8 @@ class AddTicketPage1 : AppCompatActivity() {
                 } else if(intentHasExtraToCreateSimilar) {
                     intent.putExtra("EnterTicketData_TO_EnterTicketDataTime_TicketData_CreateSimilar",
                         ticketToPass.
-                        setDepartureDestinationDateTime(DateTime.parseDateTime(ticket.departureDateTime.date+ " " + ticket.departureDateTime.time),
+                        setDepartureDestinationDateTime(
+                            DateTime.parseDateTime(ticket.departureDateTime.date+ " " + ticket.departureDateTime.time),
                             DateTime.parseDateTime(ticket.destinationDateTime.date+ " " + ticket.destinationDateTime.time)).
                         setPrice(ticket.price).
                         setCurrency(ticket.currency))
@@ -184,10 +167,5 @@ class AddTicketPage1 : AppCompatActivity() {
                 this.dropDownHeight = 450
             }
         }
-    }
-    fun capitalizeWords(input: String): String {
-        val words = input.split(" ")
-        val capitalizedWords = words.map { it.capitalize() }
-        return capitalizedWords.joinToString(" ")
     }
 }

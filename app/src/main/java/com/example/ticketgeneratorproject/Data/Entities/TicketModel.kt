@@ -1,4 +1,4 @@
-package com.example.ticketgeneratorproject.Entities
+package com.example.ticketgeneratorproject.Data.Entities
 
 import java.util.HashMap
 
@@ -16,24 +16,24 @@ data class TicketModel(
     var purchaseDateTime: DateTime = DateTime("", "")
 ): java.io.Serializable{
 
-    fun setId(id: Int): TicketModel{
+    fun setId(id: Int): TicketModel {
         this.id = id
         return this
     }
-    fun setDepartureDestinationDateTime(departureDateTime: DateTime, destinationDateTime: DateTime):TicketModel{
+    fun setDepartureDestinationDateTime(departureDateTime: DateTime, destinationDateTime: DateTime): TicketModel {
         this.departureDateTime = departureDateTime
         this.destinationDateTime = destinationDateTime
         return this
     }
-    fun setPurchaseDateTime(purchaseDateTime: DateTime): TicketModel{
+    fun setPurchaseDateTime(purchaseDateTime: DateTime): TicketModel {
         this.purchaseDateTime = purchaseDateTime
         return this
     }
-    fun setPrice(price: Double): TicketModel{
+    fun setPrice(price: Double): TicketModel {
         this.price = price
         return this
     }
-    fun setCurrency(currency: Currency): TicketModel{
+    fun setCurrency(currency: Currency): TicketModel {
         this.currency = currency
         return this
     }

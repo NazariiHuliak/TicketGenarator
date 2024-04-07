@@ -1,4 +1,4 @@
-package com.example.ticketgeneratorproject
+package com.example.ticketgeneratorproject.Presentation
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,23 +9,18 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
-import com.example.ticketgeneratorproject.Adapters.TicketRecyclerViewAdapter
-import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
-import com.example.ticketgeneratorproject.Entities.Address
-import com.example.ticketgeneratorproject.additionalClasses.ApplicationSettings
-import com.example.ticketgeneratorproject.Entities.TicketModel
+import com.example.ticketgeneratorproject.Business.Adapters.TicketRecyclerViewAdapter
+import com.example.ticketgeneratorproject.Data.DataBaseAdapter
+import com.example.ticketgeneratorproject.Data.Entities.Address
+import com.example.ticketgeneratorproject.Business.Controllers.ProfileController
+import com.example.ticketgeneratorproject.Data.Entities.TicketModel
+import com.example.ticketgeneratorproject.databinding.HomePageLayoutBinding
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -36,55 +31,34 @@ import com.google.firebase.database.ValueEventListener
 import java.util.*
 
 class HomePage : AppCompatActivity() {
-
     private var lastBackPressTime: Long = 0
     private val BACK_PRESS_INTERVAL = 2000
     private val INITIAL_TICKETS_SYNCHRONIZATION = "initialTicketsSynchronization"
     private val INITIAL_ADDRESSES_SYNCHRONIZATION = "initialAddressesSynchronization"
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var ticketsArrayList: MutableList<TicketModel>
-    private lateinit var searchField: EditText
     private lateinit var layoutManager: LinearLayoutManager
+
     private lateinit var ticketRecyclerViewAdapter: TicketRecyclerViewAdapter
-    private lateinit var addButton: Button
-    private lateinit var logoutButton: Button
-    private lateinit var editProfile: RelativeLayout
-
-    private lateinit var usernameField: TextView
-    private lateinit var emailField: TextView
-
-    private lateinit var materialCardView: MaterialCardView
-    private lateinit var hiddenMaterialCardContent: LinearLayout
+    private lateinit var ticketsArrayList: MutableList<TicketModel>
 
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firebaseDatabaseRef: DatabaseReference
+    private lateinit var binding: HomePageLayoutBinding
 
     @SuppressLint("MissingInflatedId", "CommitPrefEdits")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.home_page_layout)
+        binding = HomePageLayoutBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         val dbAdapter = DataBaseAdapter(this)
-
-        searchField = findViewById(R.id.search_input)
 
         layoutManager = LinearLayoutManager(this)
         layoutManager.reverseLayout = true
         layoutManager.stackFromEnd = true
-        recyclerView = findViewById(R.id.recycler_view)
-        recyclerView.layoutManager = layoutManager
-        recyclerView.setHasFixedSize(true)
-
-        addButton = findViewById(R.id.create_new_ticket)
-        logoutButton = findViewById(R.id.logout)
-
-        usernameField = findViewById(R.id.username)
-        emailField = findViewById(R.id.email)
-        editProfile = findViewById(R.id.editProfile)
-
-        materialCardView = findViewById(R.id.main_menu)
-        hiddenMaterialCardContent = findViewById(R.id.hiden_card_content)
+        binding.ticketsList.layoutManager = layoutManager
+        binding.ticketsList.setHasFixedSize(true)
 
         firebaseAuth = FirebaseAuth.getInstance()
         firebaseDatabaseRef = FirebaseDatabase.getInstance().getReference("users")
@@ -101,20 +75,20 @@ class HomePage : AppCompatActivity() {
         } else {
             ticketsArrayList = dbAdapter.getAllTickets()
             ticketRecyclerViewAdapter = TicketRecyclerViewAdapter(ticketsArrayList)
-            recyclerView.adapter = ticketRecyclerViewAdapter
+            binding.ticketsList.adapter = ticketRecyclerViewAdapter
         }
-        if(!sharedPreferences.getBoolean(INITIAL_ADDRESSES_SYNCHRONIZATION, false)){
+        if (!sharedPreferences.getBoolean(INITIAL_ADDRESSES_SYNCHRONIZATION, false)) {
             loadAddressesDataFromFirebase(dbAdapter, addressReference, sharedPreferences)
         }
 
-        emailField.text = firebaseAuth.currentUser?.email.toString()
-        userReference.addValueEventListener(object: ValueEventListener{
+        binding.email.text = firebaseAuth.currentUser?.email.toString()
+        userReference.addValueEventListener(object : ValueEventListener {
             @SuppressLint("CommitPrefEdits")
             override fun onDataChange(snapshot: DataSnapshot) {
-                if(snapshot.exists()){
+                if (snapshot.exists()) {
                     val data = snapshot.getValue(String::class.java)
-                    usernameField.text = data
-                    ApplicationSettings.username = data!!
+                    binding.username.text = data
+                    ProfileController.username = data!!
                 }
             }
 
@@ -123,10 +97,29 @@ class HomePage : AppCompatActivity() {
             }
         })
 
-        materialCardView.setOnClickListener {
-            animateCardExpansion(materialCardView, hiddenMaterialCardContent)
+        binding.search.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filterRecyclerView(
+                    s.toString(),
+                    ticketRecyclerViewAdapter,
+                    ticketsArrayList,
+                    layoutManager
+                )
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                layoutManager.reverseLayout = true
+                layoutManager.stackFromEnd = true
+                layoutManager.scrollToPosition(ticketRecyclerViewAdapter.itemCount - 1)
+            }
+        })
+
+        binding.mainMenuButton.setOnClickListener {
+            animateCardExpansion(binding.mainMenuButton, binding.menuContent)
         }
-        logoutButton.setOnClickListener {
+
+        binding.logoutButton.setOnClickListener {
             dbAdapter.deleteAllTicket()
             dbAdapter.deleteAllAddresses()
 
@@ -138,23 +131,12 @@ class HomePage : AppCompatActivity() {
             startActivity(intent)
         }
 
-        editProfile.setOnClickListener {
+        binding.editProfileButton.setOnClickListener {
             val intent = Intent(this, ProfilePage::class.java)
             startActivity(intent)
         }
 
-        searchField.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                filterRecyclerView(s.toString(), ticketRecyclerViewAdapter, ticketsArrayList, layoutManager)
-            }
-            override fun afterTextChanged(s: Editable) {
-                layoutManager.reverseLayout = true
-                layoutManager.stackFromEnd = true
-                layoutManager.scrollToPosition(ticketRecyclerViewAdapter.itemCount-1)
-            }
-        })
-        addButton.setOnClickListener {
+        binding.createTicketButton.setOnClickListener {
             val intent = Intent(this, AddTicketPage1::class.java)
             startActivity(intent)
         }
@@ -166,18 +148,17 @@ class HomePage : AppCompatActivity() {
 
         ticketsArrayList = dbAdapter.getAllTickets()
         ticketRecyclerViewAdapter = TicketRecyclerViewAdapter(ticketsArrayList)
-        recyclerView.adapter = ticketRecyclerViewAdapter
+        binding.ticketsList.adapter = ticketRecyclerViewAdapter
     }
 
     private fun loadTicketsDataFromFirebase(
         dbAdapter: DataBaseAdapter,
         ticketsReference: DatabaseReference,
         sharedPreferences: SharedPreferences
-    ){
-        ticketsReference.addValueEventListener(object: ValueEventListener{
+    ) {
+        ticketsReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (!sharedPreferences.getBoolean(INITIAL_TICKETS_SYNCHRONIZATION, false)){
-                    Log.d("myLog", "Works2")
+                if (!sharedPreferences.getBoolean(INITIAL_TICKETS_SYNCHRONIZATION, false)) {
                     val ticketsList = mutableListOf<TicketModel>()
                     for (ticketSnapshot in snapshot.children) {
                         val ticket = ticketSnapshot.getValue(TicketModel::class.java)
@@ -190,9 +171,10 @@ class HomePage : AppCompatActivity() {
 
                     ticketsArrayList = ticketsList
                     ticketRecyclerViewAdapter = TicketRecyclerViewAdapter(ticketsArrayList)
-                    recyclerView.adapter = ticketRecyclerViewAdapter
+                    binding.ticketsList.adapter = ticketRecyclerViewAdapter
 
-                    sharedPreferences.edit().putBoolean(INITIAL_TICKETS_SYNCHRONIZATION, true).apply()
+                    sharedPreferences.edit().putBoolean(INITIAL_TICKETS_SYNCHRONIZATION, true)
+                        .apply()
                 }
             }
 
@@ -206,10 +188,10 @@ class HomePage : AppCompatActivity() {
         dbAdapter: DataBaseAdapter,
         addressReference: DatabaseReference,
         sharedPreferences: SharedPreferences
-    ){
-        addressReference.addValueEventListener(object: ValueEventListener{
+    ) {
+        addressReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (!sharedPreferences.getBoolean(INITIAL_ADDRESSES_SYNCHRONIZATION, false)){
+                if (!sharedPreferences.getBoolean(INITIAL_ADDRESSES_SYNCHRONIZATION, false)) {
                     val addressesList = mutableListOf<Address>()
                     for (addressSnapshot in snapshot.children) {
                         val address = addressSnapshot.getValue(Address::class.java)
@@ -219,7 +201,8 @@ class HomePage : AppCompatActivity() {
                     }
 
                     dbAdapter.addAllAddresses(addressesList)
-                    sharedPreferences.edit().putBoolean(INITIAL_ADDRESSES_SYNCHRONIZATION, true).apply()
+                    sharedPreferences.edit().putBoolean(INITIAL_ADDRESSES_SYNCHRONIZATION, true)
+                        .apply()
                 }
             }
 
@@ -249,10 +232,12 @@ class HomePage : AppCompatActivity() {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun filterRecyclerView(searchText: String,
-                                   ticketRecyclerViewAdapter: TicketRecyclerViewAdapter,
-                                   ticketsArrayList:MutableList<TicketModel>,
-                                   layoutManager: LinearLayoutManager) {
+    private fun filterRecyclerView(
+        searchText: String,
+        ticketRecyclerViewAdapter: TicketRecyclerViewAdapter,
+        ticketsArrayList: MutableList<TicketModel>,
+        layoutManager: LinearLayoutManager
+    ) {
         val filteredList = ticketsArrayList.filter { item ->
             item.fullName.lowercase().contains(searchText.lowercase())
         }

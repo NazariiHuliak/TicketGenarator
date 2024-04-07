@@ -1,21 +1,15 @@
-package com.example.ticketgeneratorproject.Adapters
+package com.example.ticketgeneratorproject.Business.Adapters
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.example.ticketgeneratorproject.Entities.Address
+import com.example.ticketgeneratorproject.Data.Entities.Address
 import com.example.ticketgeneratorproject.R
-import java.lang.StringBuilder
 
 class AddressRecyclerViewAdapter(private var addressesList: MutableList<Address>): RecyclerView.Adapter<AddressRecyclerViewAdapter.ViewHolder>() {
-
     private var checkedItems = mutableListOf<Int>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

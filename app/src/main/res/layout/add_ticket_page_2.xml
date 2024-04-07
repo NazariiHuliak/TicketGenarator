@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddTicketPage2"
+    tools:context=".Presentation.AddTicketPage2"
     android:background="@color/light_green">
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,7 +12,7 @@
         android:layout_margin="30dp"
         android:orientation="vertical">
         <LinearLayout
-            android:id="@+id/back_to_previous_page"
+            android:id="@+id/goBackButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -54,7 +54,7 @@
                         android:layout_marginLeft="10dp"
                         android:textColor="@color/black"/>
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/price_layout"
+                        android:id="@+id/priceLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:boxCornerRadiusBottomEnd="12dp"
@@ -93,7 +93,7 @@
                         android:layout_marginLeft="10dp"
                         android:textColor="@color/black"/>
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/currency_layout"
+                        android:id="@+id/currencyLayout"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -109,7 +109,7 @@
                         app:errorTextColor="@color/errorColor"
                         app:errorIconTint="@color/errorColor">
                         <AutoCompleteTextView
-                            android:id="@+id/auto_complete1"
+                            android:id="@+id/currency"
                             android:layout_width="match_parent"
                             android:layout_height="54sp"
                             android:hint="$/€/₴"
@@ -147,7 +147,7 @@
                         android:layout_marginLeft="10dp"
                         android:textColor="@color/black"/>
                     <RelativeLayout
-                        android:id="@+id/btn_departure_date"
+                        android:id="@+id/departureDateLayout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginTop="4dp"
@@ -159,7 +159,7 @@
                             android:layout_centerInParent="true"
                             android:background="@drawable/rounded_rectangle" />
                         <TextView
-                            android:id="@+id/departure_date"
+                            android:id="@+id/departureDate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
@@ -168,7 +168,7 @@
                             android:textColor="@color/black"
                             android:textSize="20dp" />
                         <ImageView
-                            android:id="@+id/error_icon_1"
+                            android:id="@+id/errorIcon1"
                             android:layout_width="30dp"
                             android:layout_height="30dp"
                             android:layout_centerVertical="true"
@@ -201,7 +201,7 @@
                         android:layout_marginLeft="10dp"
                         android:textColor="@color/black"/>
                     <RelativeLayout
-                        android:id="@+id/btn_departure_time"
+                        android:id="@+id/departureTimeLayout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginTop="4dp"
@@ -213,7 +213,7 @@
                             android:layout_centerInParent="true"
                             android:background="@drawable/rounded_rectangle" />
                         <TextView
-                            android:id="@+id/departure_time"
+                            android:id="@+id/departureTime"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
@@ -222,7 +222,7 @@
                             android:textColor="@color/black"
                             android:textSize="20dp" />
                         <ImageView
-                            android:id="@+id/error_icon_2"
+                            android:id="@+id/errorIcon2"
                             android:layout_width="30dp"
                             android:layout_height="30dp"
                             android:layout_centerVertical="true"
@@ -269,7 +269,7 @@
                         android:layout_marginLeft="10dp"
                         android:textColor="@color/black"/>
                     <RelativeLayout
-                        android:id="@+id/btn_destination_date"
+                        android:id="@+id/destinationDateLayout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginTop="4dp"
@@ -282,7 +282,7 @@
                             android:background="@drawable/rounded_rectangle" />
 
                         <TextView
-                            android:id="@+id/destination_date"
+                            android:id="@+id/destinationDate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
@@ -291,7 +291,7 @@
                             android:textColor="@color/black"
                             android:textSize="20dp" />
                         <ImageView
-                            android:id="@+id/error_icon_3"
+                            android:id="@+id/errorIcon3"
                             android:layout_width="30dp"
                             android:layout_height="30dp"
                             android:layout_centerVertical="true"
@@ -324,7 +324,7 @@
                         android:layout_marginLeft="10dp"
                         android:textColor="@color/black"/>
                     <RelativeLayout
-                        android:id="@+id/btn_destination_time"
+                        android:id="@+id/destinationTimeLayout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginTop="4dp"
@@ -336,7 +336,7 @@
                             android:layout_centerInParent="true"
                             android:background="@drawable/rounded_rectangle" />
                         <TextView
-                            android:id="@+id/destination_time"
+                            android:id="@+id/destinationTime"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
@@ -345,7 +345,7 @@
                             android:textColor="@color/black"
                             android:textSize="20dp" />
                         <ImageView
-                            android:id="@+id/error_icon_4"
+                            android:id="@+id/errorIcon4"
                             android:layout_width="30dp"
                             android:layout_height="30dp"
                             android:layout_centerVertical="true"
@@ -367,7 +367,7 @@
             </LinearLayout>
 
             <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                android:id="@+id/save_btn"
+                android:id="@+id/saveTicketButton"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:layout_marginTop="30dp"
@@ -382,7 +382,7 @@
                 app:iconSize="37dp"
                 app:iconTint="@color/white"/>
             <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                android:id="@+id/generate_ticket"
+                android:id="@+id/generateTicketButton"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:layout_marginTop="15dp"

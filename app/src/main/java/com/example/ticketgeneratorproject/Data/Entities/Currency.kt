@@ -1,9 +1,9 @@
-package com.example.ticketgeneratorproject.Entities
+package com.example.ticketgeneratorproject.Data.Entities
 
 enum class Currency: java.io.Serializable {
     UAH, EUR, USD, UNKNOWN;
     companion object{
-        fun parseToCurrency(currency: String): Currency{
+        fun parseToCurrency(currency: String): Currency {
             return when (currency) {
                 "₴ Гривня", "UAH" -> {
                     UAH

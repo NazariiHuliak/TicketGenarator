@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegisterPage"
+    tools:context=".Presentation.RegisterPage"
     android:background="@color/light_green">
     <RelativeLayout
         android:layout_width="match_parent"
@@ -72,7 +72,7 @@
                 app:startIconDrawable="@drawable/user_icon"
                 android:textColorHint="@color/black">
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/name_input"
+                    android:id="@+id/username"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/rubik"
@@ -93,7 +93,7 @@
                 app:startIconDrawable="@drawable/mail_icon"
                 android:textColorHint="@color/black">
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/email_input"
+                    android:id="@+id/email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/rubik"
@@ -116,7 +116,7 @@
                 app:passwordToggleEnabled="true"
                 app:passwordToggleTint="@color/grey">
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/password_input"
+                    android:id="@+id/password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/rubik"
@@ -140,7 +140,7 @@
                 app:passwordToggleEnabled="true"
                 app:passwordToggleTint="@color/grey">
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/password_confirm_input"
+                    android:id="@+id/passwordConfirmation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/rubik"
@@ -150,7 +150,7 @@
                     android:inputType="textPassword"/>
             </com.google.android.material.textfield.TextInputLayout>
             <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                android:id="@+id/register_btn"
+                android:id="@+id/registerButton"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:layout_gravity="bottom|center"
@@ -166,7 +166,7 @@
                 app:iconTint="@color/white" />
         </LinearLayout>
         <TextView
-            android:id="@+id/sign_in"
+            android:id="@+id/loginButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Вже маєте акаунт? Увійдіть!"

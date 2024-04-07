@@ -1,4 +1,4 @@
-package com.example.ticketgeneratorproject.additionalClasses
+package com.example.ticketgeneratorproject.Presentation
 
 import android.content.Context
 import android.graphics.Canvas

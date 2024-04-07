@@ -19,7 +19,7 @@
         android:theme="@style/Theme.TicketGeneratorProject"
         tools:targetApi="31">
         <activity
-            android:name=".ProfilePage"
+            android:name=".Presentation.ProfilePage"
             android:exported="false" />
 
         <provider
@@ -33,28 +33,28 @@
         </provider>
 
         <activity
-            android:name=".LoginPage"
+            android:name=".Presentation.LoginPage"
             android:exported="false" />
         <activity
-            android:name=".RegisterPage"
+            android:name=".Presentation.RegisterPage"
             android:exported="false" />
         <activity
-            android:name=".HomePage"
+            android:name=".Presentation.HomePage"
             android:exported="false" />
         <activity
-            android:name=".DetailedInformationAboutTicket"
+            android:name=".Presentation.DetailedInformationAboutTicket"
             android:exported="false" />
         <activity
-            android:name=".AddTicketPage2"
+            android:name=".Presentation.AddTicketPage2"
             android:exported="false" />
         <activity
-            android:name=".TicketPreview"
+            android:name=".Presentation.TicketPreview"
             android:exported="false" />
         <activity
-            android:name=".AddTicketPage1"
+            android:name=".Presentation.AddTicketPage1"
             android:exported="false" />
         <activity
-            android:name=".SplashScreen"
+            android:name=".Presentation.SplashScreen"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,4 +1,4 @@
-package com.example.ticketgeneratorproject
+package com.example.ticketgeneratorproject.Presentation
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
@@ -11,9 +11,10 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.ticketgeneratorproject.Adapters.AddressRecyclerViewAdapter
-import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
-import com.example.ticketgeneratorproject.additionalClasses.ApplicationSettings
+import com.example.ticketgeneratorproject.Business.Adapters.AddressRecyclerViewAdapter
+import com.example.ticketgeneratorproject.Data.DataBaseAdapter
+import com.example.ticketgeneratorproject.R
+import com.example.ticketgeneratorproject.Business.Controllers.ProfileController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -63,12 +64,12 @@ class ProfilePage : AppCompatActivity() {
         val adapter = AddressRecyclerViewAdapter(usersAddresses)
         savedAddressRecyclerView.adapter = adapter
 
-        nameInput.setText(ApplicationSettings.username)
-        checkBox.isChecked = ApplicationSettings.saveAddresses
+        nameInput.setText(ProfileController.username)
+        checkBox.isChecked = ProfileController.saveAddresses
         saveButton.setOnClickListener {
             val editedName = nameInput.text.toString()
-            ApplicationSettings.username = editedName
-            ApplicationSettings.saveAddresses = checkBox.isChecked
+            ProfileController.username = editedName
+            ProfileController.saveAddresses = checkBox.isChecked
 
             nameInput.clearFocus()
             val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager

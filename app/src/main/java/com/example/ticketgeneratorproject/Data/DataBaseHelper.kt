@@ -1,4 +1,4 @@
-package com.example.ticketgeneratorproject.DataBase
+package com.example.ticketgeneratorproject.Data
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase

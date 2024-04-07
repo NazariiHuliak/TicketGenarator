@@ -1,18 +1,20 @@
-package com.example.ticketgeneratorproject
+package com.example.ticketgeneratorproject.Presentation
 
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.example.ticketgeneratorproject.Entities.TicketModel
+import com.example.ticketgeneratorproject.Data.Entities.TicketModel
+import com.example.ticketgeneratorproject.R
+import com.example.ticketgeneratorproject.Business.Controllers.TimeController.DOUBLE_CLICK_DELAY
 import com.example.ticketgeneratorproject.databinding.TicketPreviewBinding
 
 class TicketPreview : AppCompatActivity() {
+    private val EXTRA_KEY = "DetailedInformationAboutTicket_TO_TicketPreview_ticketData"
     private var doubleClick = false
     private lateinit var binding: TicketPreviewBinding
 
@@ -27,8 +29,6 @@ class TicketPreview : AppCompatActivity() {
         windowInsetsController.systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         windowInsetsController.hide(WindowInsetsCompat.Type.statusBars())
-
-        Log.d("myLog", "TicketPreview works")
 
         if (intent.hasExtra(EXTRA_KEY)){
             val ticket =
@@ -55,12 +55,8 @@ class TicketPreview : AppCompatActivity() {
                 doubleClick = true
                 Handler(Looper.getMainLooper()).postDelayed({
                     doubleClick = false
-                }, DetailedInformationAboutTicket.DOUBLE_CLICK_DELAY.toLong())
+                }, DOUBLE_CLICK_DELAY.toLong())
             }
         }
-    }
-
-    companion object {
-        private const val EXTRA_KEY = "DetailedInformationAboutTicket_TO_TicketPreview_ticketData"
     }
 }

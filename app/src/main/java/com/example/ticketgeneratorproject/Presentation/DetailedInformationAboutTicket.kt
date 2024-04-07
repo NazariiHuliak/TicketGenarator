@@ -1,7 +1,6 @@
-package com.example.ticketgeneratorproject
+package com.example.ticketgeneratorproject.Presentation
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
@@ -9,13 +8,15 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
-import com.example.ticketgeneratorproject.AddTicketPage2.Companion.createPdfForTicket
-import com.example.ticketgeneratorproject.AddTicketPage2.Companion.getFileNameForTicket
-import com.example.ticketgeneratorproject.AddTicketPage2.Companion.getUniqueIdByTicket
-import com.example.ticketgeneratorproject.AddTicketPage2.Companion.writeFileToStorage
-import com.example.ticketgeneratorproject.DataBase.DataBaseAdapter
-import com.example.ticketgeneratorproject.Entities.TicketModel
+import com.example.ticketgeneratorproject.Data.DataBaseAdapter
+import com.example.ticketgeneratorproject.Data.Entities.TicketModel
+import com.example.ticketgeneratorproject.R
+import com.example.ticketgeneratorproject.Business.Controllers.TimeController.DOUBLE_CLICK_DELAY
+import com.example.ticketgeneratorproject.Business.Controllers.TicketController.createPdfForTicket
+import com.example.ticketgeneratorproject.Business.Controllers.TicketController.getFileNameForTicket
+import com.example.ticketgeneratorproject.Business.Controllers.TicketController.getUniqueIdByTicket
+import com.example.ticketgeneratorproject.Business.Controllers.FileController.sharePdf
+import com.example.ticketgeneratorproject.Business.Controllers.FileController.writeFileToStorage
 import com.example.ticketgeneratorproject.databinding.DetailedInformationAboutTicketLayoutBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -124,22 +125,6 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
                     wasDoubleClick = false
                 }, DOUBLE_CLICK_DELAY.toLong())
             }
-        }
-    }
-
-    companion object {
-        const val DOUBLE_CLICK_DELAY = 300
-
-        fun sharePdf(context: Context, file: File){
-            val fileUri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
-
-            val shareIntent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_STREAM, fileUri)
-                type = "application/pdf"
-            }
-            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            context.startActivity(Intent.createChooser(shareIntent, "Надіслати квиток"))
         }
     }
 }

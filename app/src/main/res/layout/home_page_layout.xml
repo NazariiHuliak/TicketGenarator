@@ -8,11 +8,11 @@
     android:layout_height="match_parent"
     android:background="@color/light_green"
     android:elevation="100dp"
-    tools:context=".HomePage"
+    tools:context=".Presentation.HomePage"
     android:orientation="vertical">
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/main_menu"
+        android:id="@+id/mainMenuButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
@@ -26,7 +26,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <LinearLayout
-                android:id="@+id/text"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:orientation="horizontal"
@@ -39,7 +38,6 @@
                     android:src="@drawable/menu_icon"
                     android:layout_marginEnd="15dp" />
                 <TextView
-                    android:id="@+id/textTicket"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
@@ -57,7 +55,7 @@
                     android:paddingEnd="15dp"/>
             </LinearLayout>
             <LinearLayout
-                android:id="@+id/hiden_card_content"
+                android:id="@+id/menuContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -131,7 +129,7 @@
                             </LinearLayout>
                         </RelativeLayout>
                         <RelativeLayout
-                            android:id="@+id/editProfile"
+                            android:id="@+id/editProfileButton"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent">
                             <com.google.android.material.divider.MaterialDivider
@@ -152,7 +150,7 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
                 <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                    android:id="@+id/logout"
+                    android:id="@+id/logoutButton"
                     android:layout_width="180dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="20dp"
@@ -178,7 +176,7 @@
         android:layout_marginTop="110sp"
         android:orientation="vertical">
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/create_new_ticket"
+            android:id="@+id/createTicketButton"
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:layout_gravity="bottom|center"
@@ -224,7 +222,7 @@
             app:startIconDrawable="@drawable/search_icon">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/search_input"
+                android:id="@+id/search"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/rubik"
@@ -234,7 +232,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
+            android:id="@+id/ticketsList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>

@@ -1,9 +1,9 @@
-package com.example.ticketgeneratorproject.Adapters
+package com.example.ticketgeneratorproject.Business.Adapters
 
 import android.content.Context
 import android.widget.ArrayAdapter
 import android.widget.Filter
-import com.example.ticketgeneratorproject.Entities.Address
+import com.example.ticketgeneratorproject.Data.Entities.Address
 import java.util.Locale
 
 
