@@ -21,6 +21,10 @@
         <item name="colorAccent">@color/dark_green</item>
     </style>
 
+    <style name="WhiteOutlineTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@android:color/white</item>
+    </style>
+
     <style name="Theme.TicketGeneratorProject.Fullscreen" parent="Theme.TicketGeneratorProject">
         <item name="android:actionBarStyle">
             @style/Widget.Theme.TicketGeneratorProject.ActionBar.Fullscreen

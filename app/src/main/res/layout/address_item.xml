@@ -38,7 +38,7 @@
                 android:fontFamily="@font/rubik"
                 android:paddingStart="10dp"/>
         </LinearLayout>
-        <com.example.ticketgeneratorproject.additionalClasses.DashedLineView
+        <com.example.ticketgeneratorproject.Presentation.DashedLineView
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginStart="20sp"
