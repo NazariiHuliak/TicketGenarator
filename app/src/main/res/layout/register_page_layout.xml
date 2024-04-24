@@ -19,7 +19,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fadingEdge="vertical"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal"
                 android:padding="10dp">
@@ -44,7 +43,6 @@
                 android:layout_height="wrap_content"
                 app:dividerColor="@color/black"/>
             <ImageView
-
                 android:layout_width="350sp"
                 android:layout_height="180sp"
                 android:layout_gravity="center_horizontal"

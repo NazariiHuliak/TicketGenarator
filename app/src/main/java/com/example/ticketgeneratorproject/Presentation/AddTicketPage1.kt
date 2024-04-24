@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.widget.*
 import androidx.core.widget.addTextChangedListener
 import com.example.ticketgeneratorproject.Business.Adapters.AutoCompleteAddressAdapter
-import com.example.ticketgeneratorproject.Data.DataBaseAdapter
+import com.example.ticketgeneratorproject.Data.SQLiteController
 import com.example.ticketgeneratorproject.Data.Entities.Address
 import com.example.ticketgeneratorproject.Data.Entities.Currency
 import com.example.ticketgeneratorproject.Data.Entities.DateTime
@@ -17,7 +17,7 @@ import com.example.ticketgeneratorproject.Business.Controllers.TextController.ca
 import com.example.ticketgeneratorproject.databinding.AddTicketPage1Binding
 
 class AddTicketPage1 : AppCompatActivity() {
-    private lateinit var dbAdapter: DataBaseAdapter
+    private lateinit var dbAdapter: SQLiteController
     private lateinit var ticket: TicketModel
     private lateinit var binding: AddTicketPage1Binding
 
@@ -31,7 +31,7 @@ class AddTicketPage1 : AppCompatActivity() {
         val intentHasExtraToUpdate = intent.hasExtra("DetailedInformationTicket_TO_EnterTicketData_TicketData_Update")
         val intentHasExtraToCreateSimilar = intent.hasExtra("DetailedInformationTicket_TO_EnterTicketData_TicketData_CreateSimilar")
 
-        dbAdapter = DataBaseAdapter(this)
+        dbAdapter = SQLiteController(this)
         val addresses = dbAdapter.getAllAddresses()
         val modifiedAddress = addresses.map{it.toString().replace(Regex("[.,/: ]"), "")}.map{it.lowercase()}
 
@@ -59,30 +59,30 @@ class AddTicketPage1 : AppCompatActivity() {
 
         }
 
-        var hasErrors: Boolean = false
+        var hasInputtingErrors: Boolean = false
 
         binding.fullname.addTextChangedListener {
             if(binding.fullname.text!!.isNotEmpty()){
                 binding.fullNameLayout.error = null
-                hasErrors = false
+                hasInputtingErrors = false
             }
         }
         binding.tripNumber.addTextChangedListener {
             if(binding.tripNumber.text!!.isNotEmpty()){
                 binding.tripNumberLayout.error = null
-                hasErrors = false
+                hasInputtingErrors = false
             }
         }
         binding.departure.addTextChangedListener {
             if(binding.departure.text!!.isNotEmpty()){
                 binding.departureLayout.error = null
-                hasErrors = false
+                hasInputtingErrors = false
             }
         }
         binding.destination.addTextChangedListener {
             if(binding.destination.text!!.isNotEmpty()){
                 binding.destinationLayout.error = null
-                hasErrors = false
+                hasInputtingErrors = false
             }
         }
 
@@ -99,22 +99,22 @@ class AddTicketPage1 : AppCompatActivity() {
 
             if(fullNameText.isEmpty()){
                 binding.fullNameLayout.error = "Введіть дані"
-                hasErrors=true
+                hasInputtingErrors=true
             }
             if(tripNumberText.isEmpty()){
                 binding.tripNumberLayout.error = "Введіть дані"
-                hasErrors=true
+                hasInputtingErrors=true
             }
             if(departureText.isEmpty()){
                 binding.departureLayout.error = "Введіть дані"
-                hasErrors=true
+                hasInputtingErrors=true
             }
             if(destinationText.isEmpty()){
                 binding.destinationLayout.error = "Введіть дані"
-                hasErrors=true
+                hasInputtingErrors=true
             }
 
-            if(!hasErrors){
+            if(!hasInputtingErrors){
                 val intent = Intent(this, AddTicketPage2::class.java)
                 val ticketToPass = TicketModel(
                     0,

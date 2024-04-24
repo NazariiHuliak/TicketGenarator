@@ -8,7 +8,7 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.ticketgeneratorproject.Data.DataBaseAdapter
+import com.example.ticketgeneratorproject.Data.SQLiteController
 import com.example.ticketgeneratorproject.Data.Entities.TicketModel
 import com.example.ticketgeneratorproject.R
 import com.example.ticketgeneratorproject.Business.Controllers.TimeController.DOUBLE_CLICK_DELAY
@@ -25,7 +25,7 @@ import java.io.File
 class DetailedInformationAboutTicket : AppCompatActivity() {
     private var wasDoubleClick = false
 
-    private lateinit var dbAdapter: DataBaseAdapter
+    private lateinit var dbAdapter: SQLiteController
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var ticket: TicketModel
@@ -47,7 +47,7 @@ class DetailedInformationAboutTicket : AppCompatActivity() {
                     as TicketModel
         }
 
-        dbAdapter = DataBaseAdapter(this)
+        dbAdapter = SQLiteController(this)
         firebaseAuth = FirebaseAuth.getInstance()
         firebaseDatabase = FirebaseDatabase.getInstance()
 

@@ -9,7 +9,7 @@ import com.example.ticketgeneratorproject.Data.Entities.Currency
 import com.example.ticketgeneratorproject.Data.Entities.DateTime
 import com.example.ticketgeneratorproject.Data.Entities.TicketModel
 
-class DataBaseAdapter(private val context: Context) {
+class SQLiteController(private val context: Context) {
     private var preLoadedListOfAddresses = listOf(
         Address(
             country = "Україна",

@@ -60,6 +60,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:visibility="gone">
+
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
@@ -176,20 +177,20 @@
         android:layout_marginTop="110sp"
         android:orientation="vertical">
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/createTicketButton"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_gravity="bottom|center"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginRight="5dp"
-            android:backgroundTint="@color/dark_green"
-            android:text="Створити квиток"
-            android:textColor="@color/white"
-            android:textSize="20dp"
-            app:icon="@drawable/plus"
-            app:iconSize="40dp"
-            app:iconTint="@color/white"/>
+        android:id="@+id/createTicketButton"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_gravity="bottom|center"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="5dp"
+        android:backgroundTint="@color/dark_green"
+        android:text="Створити квиток"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        app:icon="@drawable/plus"
+        app:iconSize="40dp"
+        app:iconTint="@color/white"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -200,14 +201,6 @@
             android:text="Історія"
             android:textColor="@color/black"
             android:textSize="25dp" />
-        <!--<androidx.appcompat.widget.SearchView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:queryHint="Введіть текст пошуку..."
-            android:hint="Введіть текст пошуку..."
-            app:queryHint="sefsef"
-            app:searchIcon="@drawable/search_icon"/>-->
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"

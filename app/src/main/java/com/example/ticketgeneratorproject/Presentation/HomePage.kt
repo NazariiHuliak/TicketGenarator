@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.example.ticketgeneratorproject.Business.Adapters.TicketRecyclerViewAdapter
-import com.example.ticketgeneratorproject.Data.DataBaseAdapter
+import com.example.ticketgeneratorproject.Data.SQLiteController
 import com.example.ticketgeneratorproject.Data.Entities.Address
 import com.example.ticketgeneratorproject.Business.Controllers.ProfileController
 import com.example.ticketgeneratorproject.Data.Entities.TicketModel
@@ -52,7 +52,7 @@ class HomePage : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        val dbAdapter = DataBaseAdapter(this)
+        val dbAdapter = SQLiteController(this)
 
         layoutManager = LinearLayoutManager(this)
         layoutManager.reverseLayout = true
@@ -144,7 +144,7 @@ class HomePage : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        val dbAdapter = DataBaseAdapter(this)
+        val dbAdapter = SQLiteController(this)
 
         ticketsArrayList = dbAdapter.getAllTickets()
         ticketRecyclerViewAdapter = TicketRecyclerViewAdapter(ticketsArrayList)
@@ -152,7 +152,7 @@ class HomePage : AppCompatActivity() {
     }
 
     private fun loadTicketsDataFromFirebase(
-        dbAdapter: DataBaseAdapter,
+        dbAdapter: SQLiteController,
         ticketsReference: DatabaseReference,
         sharedPreferences: SharedPreferences
     ) {
@@ -185,7 +185,7 @@ class HomePage : AppCompatActivity() {
     }
 
     private fun loadAddressesDataFromFirebase(
-        dbAdapter: DataBaseAdapter,
+        dbAdapter: SQLiteController,
         addressReference: DatabaseReference,
         sharedPreferences: SharedPreferences
     ) {

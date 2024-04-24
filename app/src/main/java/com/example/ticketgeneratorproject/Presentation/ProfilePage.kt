@@ -4,49 +4,28 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.ticketgeneratorproject.Business.Adapters.AddressRecyclerViewAdapter
-import com.example.ticketgeneratorproject.Data.DataBaseAdapter
-import com.example.ticketgeneratorproject.R
+import com.example.ticketgeneratorproject.Data.SQLiteController
 import com.example.ticketgeneratorproject.Business.Controllers.ProfileController
+import com.example.ticketgeneratorproject.databinding.ActivityProfilePageBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.coroutines.DelicateCoroutinesApi
 
 class ProfilePage : AppCompatActivity() {
-    private val ADDRESSESKEY = "saveAddresses"
-
-    private lateinit var backButton: LinearLayout
-    private lateinit var saveButton: Button
-    private lateinit var deleteSavedAddresses: Button
-
-    private lateinit var nameInput: EditText
-    private lateinit var checkBox: CheckBox
-    private lateinit var savedAddressRecyclerView: RecyclerView
-
-    private lateinit var dbAdapter: DataBaseAdapter
+    private lateinit var dbAdapter: SQLiteController
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firebaseDatabase: FirebaseDatabase
+    private lateinit var binding: ActivityProfilePageBinding
 
-    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_profile_page)
+        binding = ActivityProfilePageBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
-        backButton = findViewById(R.id.back_to_main_menu)
-        saveButton = findViewById(R.id.save_btn)
-        deleteSavedAddresses = findViewById(R.id.deleteSavedAddresses)
-        nameInput = findViewById(R.id.name_input)
-        checkBox = findViewById(R.id.checkBox)
-        savedAddressRecyclerView = findViewById(R.id.savedAddressRecyclerView)
-
-        dbAdapter = DataBaseAdapter(this)
+        dbAdapter = SQLiteController(this)
         firebaseAuth = FirebaseAuth.getInstance()
         firebaseDatabase = FirebaseDatabase.getInstance()
 
@@ -59,28 +38,28 @@ class ProfilePage : AppCompatActivity() {
         val usersAddresses = dbAdapter.getAllAddresses().toMutableList()
 
         val layoutManager = LinearLayoutManager(this)
-        savedAddressRecyclerView.layoutManager = layoutManager
-        savedAddressRecyclerView.setHasFixedSize(true)
+        binding.savedAddressRecyclerView.layoutManager = layoutManager
+        binding.savedAddressRecyclerView.setHasFixedSize(true)
         val adapter = AddressRecyclerViewAdapter(usersAddresses)
-        savedAddressRecyclerView.adapter = adapter
+        binding.savedAddressRecyclerView.adapter = adapter
 
-        nameInput.setText(ProfileController.username)
-        checkBox.isChecked = ProfileController.saveAddresses
-        saveButton.setOnClickListener {
-            val editedName = nameInput.text.toString()
+        binding.name.setText(ProfileController.username)
+        binding.saveAddresses.isChecked = ProfileController.saveAddresses
+        binding.saveButton.setOnClickListener {
+            val editedName = binding.name.text.toString()
             ProfileController.username = editedName
-            ProfileController.saveAddresses = checkBox.isChecked
+            ProfileController.saveAddresses = binding.saveAddresses.isChecked
 
-            nameInput.clearFocus()
+            binding.name.clearFocus()
             val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.hideSoftInputFromWindow(nameInput.windowToken, 0)
+            inputMethodManager.hideSoftInputFromWindow(binding.name.windowToken, 0)
 
             userReference.setValue(editedName).addOnSuccessListener {
                 Toast.makeText(this, "Успішно редаговано", Toast.LENGTH_SHORT).show()
             }
         }
 
-        deleteSavedAddresses.setOnClickListener {
+        binding.deleteSavedAddresses.setOnClickListener {
             val addressesToDelete = adapter.getSelectedItems()
 
             val iterator = addressesToDelete.iterator()
@@ -90,7 +69,7 @@ class ProfilePage : AppCompatActivity() {
                 addressesReference.child(address.getUniqueId()).removeValue()
             }
         }
-        backButton.setOnClickListener {
+        binding.goBackButton.setOnClickListener {
             finish()
         }
     }

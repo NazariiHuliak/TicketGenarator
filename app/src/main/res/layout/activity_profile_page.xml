@@ -14,7 +14,7 @@
         android:orientation="vertical"
         android:gravity="center_horizontal">
         <LinearLayout
-            android:id="@+id/back_to_main_menu"
+            android:id="@+id/goBackButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -52,7 +52,7 @@
             app:startIconDrawable="@drawable/user_icon"
             android:textColorHint="@color/black">
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/name_input"
+                android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/rubik"
@@ -71,7 +71,7 @@
                 android:background="@drawable/rounded_rectangle" />
 
             <CheckBox
-                android:id="@+id/checkBox"
+                android:id="@+id/saveAddresses"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -85,7 +85,7 @@
                 android:textSize="17dp" />
         </RelativeLayout>
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/save_btn"
+            android:id="@+id/saveButton"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginTop="20dp"

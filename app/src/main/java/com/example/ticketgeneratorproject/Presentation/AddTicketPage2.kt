@@ -15,8 +15,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.addTextChangedListener
-import com.example.ticketgeneratorproject.Data.DataBaseAdapter
+import com.example.ticketgeneratorproject.Data.SQLiteController
 import com.example.ticketgeneratorproject.Business.Controllers.ProfileController
 import com.example.ticketgeneratorproject.Data.Entities.Currency
 import com.example.ticketgeneratorproject.Data.Entities.DateTime
@@ -27,8 +26,10 @@ import com.example.ticketgeneratorproject.Business.Controllers.TimeController.ge
 import com.example.ticketgeneratorproject.Business.Controllers.TicketController.getUniqueIdByTicket
 import com.example.ticketgeneratorproject.Business.Controllers.FileController.writeFileToStorage
 import com.example.ticketgeneratorproject.Business.Controllers.TicketController
+import com.example.ticketgeneratorproject.Data.Entities.Address
 import com.example.ticketgeneratorproject.databinding.AddTicketPage2Binding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import java.io.File
 import java.util.*
@@ -36,12 +37,10 @@ import java.util.*
 class AddTicketPage2: AppCompatActivity() {
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var firebaseAuth: FirebaseAuth
-
-    private lateinit var dbAdapter: DataBaseAdapter
-
+    private lateinit var localDatabaseController: SQLiteController
     private lateinit var binding: AddTicketPage2Binding
-
     private lateinit var ticket: TicketModel
+
     @SuppressLint("MissingInflatedId", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +50,7 @@ class AddTicketPage2: AppCompatActivity() {
 
         firebaseAuth = FirebaseAuth.getInstance()
         firebaseDatabase = FirebaseDatabase.getInstance()
-        dbAdapter = DataBaseAdapter(this)
+        localDatabaseController = SQLiteController(this)
 
         val uid = firebaseAuth.currentUser!!.uid
         val ticketsReference = firebaseDatabase.getReference("users").child(uid).child("tickets")
@@ -82,176 +81,70 @@ class AddTicketPage2: AppCompatActivity() {
             binding.currency.setText(Currency.parseToString(ticket.currency), false)
         }
 
-        var hasInputtingErrors = false
         var datePickerState = -1
         var timePickerState = -1
-        val myCalendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance()
 
         val datePicker = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
-            myCalendar.set(Calendar.YEAR, year)
-            myCalendar.set(Calendar.MONTH, month)
-            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+            calendar.set(Calendar.YEAR, year)
+            calendar.set(Calendar.MONTH, month)
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             when (datePickerState){
-                1->updateDateText(myCalendar, binding.departureDate)
-                2->updateDateText(myCalendar, binding.destinationDate)
+                1->updateDateText(calendar, binding.departureDate)
+                2->updateDateText(calendar, binding.destinationDate)
                 else->Log.e("DatePicker", "Illegal argument was set")
             }
         }
         val timePicker = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
-            myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-            myCalendar.set(Calendar.MINUTE, minute)
+            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+            calendar.set(Calendar.MINUTE, minute)
             when (timePickerState){
-                1->updateTimeText(myCalendar, binding.departureTime)
-                2->updateTimeText(myCalendar, binding.destinationTime)
+                1->updateTimeText(calendar, binding.departureTime)
+                2->updateTimeText(calendar, binding.destinationTime)
                 else->Log.e("TimePicker", "Illegal argument was set")
-            }
-        }
-
-        binding.price.addTextChangedListener {
-            if(it!!.count()>0){
-                binding.priceLayout.error = null
-                hasInputtingErrors = false
-            }
-        }
-        binding.currency.addTextChangedListener {
-            if(it!!.count()>0){
-                binding.currencyLayout.error = null
-                hasInputtingErrors = false
-            }
-        }
-        binding.departureDate.addOnLayoutChangeListener { view, i, i2, i3, i4, i5, i6, i7, i8 ->
-            if(binding.departureDate.text!!.isNotEmpty()){
-                binding.errorText1.visibility = View.INVISIBLE
-                binding.errorIcon1.visibility = View.INVISIBLE
-                hasInputtingErrors = false
-            }
-        }
-        binding.departureTime.addOnLayoutChangeListener { view, i, i2, i3, i4, i5, i6, i7, i8 ->
-            if(binding.departureDate.text!!.isNotEmpty()){
-                binding.errorText2.visibility = View.INVISIBLE
-                binding.errorIcon2.visibility = View.INVISIBLE
-                hasInputtingErrors = false
-            }
-        }
-        binding.destinationDate.addOnLayoutChangeListener { view, i, i2, i3, i4, i5, i6, i7, i8 ->
-            if(binding.destinationDate.text!!.isNotEmpty()){
-                binding.errorText3.visibility = View.INVISIBLE
-                binding.errorIcon3.visibility = View.INVISIBLE
-                hasInputtingErrors = false
-            }
-        }
-        binding.destinationTime.addOnLayoutChangeListener { view, i, i2, i3, i4, i5, i6, i7, i8 ->
-            if(binding.destinationTime.text!!.isNotEmpty()){
-                binding.errorText4.visibility = View.INVISIBLE
-                binding.errorIcon4.visibility = View.INVISIBLE
-                hasInputtingErrors = false
             }
         }
 
         binding.departureDateLayout.setOnClickListener {
             DatePickerDialog( this,
-                R.style.CustomDatePickerDialogTheme, datePicker, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                myCalendar.get(Calendar.DAY_OF_MONTH)).show()
+                R.style.CustomDatePickerDialogTheme, datePicker, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)).show()
             datePickerState = 1
         }
         binding.destinationDateLayout.setOnClickListener {
             DatePickerDialog( this,
-                R.style.CustomDatePickerDialogTheme, datePicker, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                myCalendar.get(Calendar.DAY_OF_MONTH)).show()
+                R.style.CustomDatePickerDialogTheme, datePicker, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)).show()
             datePickerState = 2
         }
         binding.departureTimeLayout.setOnClickListener {
-            TimePickerDialog(this, R.style.CustomDatePickerDialogTheme, timePicker, myCalendar.get(Calendar.HOUR_OF_DAY),
-                myCalendar.get(Calendar.MINUTE), true).show()
+            TimePickerDialog(this, R.style.CustomDatePickerDialogTheme, timePicker, calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE), true).show()
             timePickerState = 1
         }
         binding.destinationTimeLayout.setOnClickListener {
-            TimePickerDialog(this, R.style.CustomDatePickerDialogTheme, timePicker, myCalendar.get(Calendar.HOUR_OF_DAY),
-                myCalendar.get(Calendar.MINUTE), true).show()
+            TimePickerDialog(this, R.style.CustomDatePickerDialogTheme, timePicker, calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE), true).show()
             timePickerState = 2
         }
         binding.currency.setOnClickListener {
             val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(binding.currencyLayout.windowToken, 0)
         }
+
         binding.goBackButton.setOnClickListener{
             finish()
         }
-
-        binding.saveTicketButton.setOnClickListener {
-            val priceText = binding.price.text.toString()
-            val currencyText = binding.currency.text.toString()
-
-            hasInputtingErrors = checkForEmptyFields(binding)
-
-            if (!hasInputtingErrors) {
-                ticket.price = priceText.toDouble()
-                ticket.currency = Currency.parseToCurrency(currencyText)
-
-                ticket.departureDateTime =
-                    DateTime.parseDateTime("${binding.departureDate.text} ${binding.departureTime.text}")
-                ticket.destinationDateTime =
-                    DateTime.parseDateTime("${binding.destinationDate.text} ${binding.destinationTime.text}")
-
-                if (intentHasExtraToUpdate) {
-                    dbAdapter.updateTicket(ticket)
-                    ticketsReference.child(getUniqueIdByTicket(ticket)).updateChildren(ticket.getHashMap())
-                } else {
-                    ticket.purchaseDateTime = DateTime.parseDateTime(getCurrentDateTime())
-
-                    dbAdapter.addTicket(ticket)
-                    ticketsReference.child(getUniqueIdByTicket(ticket)).setValue(ticket.getHashMap())
-
-                    if(ProfileController.saveAddresses){
-                        if(dbAdapter.isUniqueAddress(ticket.departureAddress)){
-                            dbAdapter.addAddress(ticket.departureAddress)
-                            addressesReference.child(ticket.departureAddress.getUniqueId()).setValue(ticket.departureAddress)
-                        }
-                        if(dbAdapter.isUniqueAddress(ticket.destinationAddress)){
-                            dbAdapter.addAddress(ticket.destinationAddress)
-                            addressesReference.child(ticket.destinationAddress.getUniqueId()).setValue(ticket.destinationAddress)
-                        }
-                    }
-                }
-
-                Toast.makeText(this, "Квиток був успішно збережений", Toast.LENGTH_LONG).show()
-
+        binding.saveTicketButton.setOnClickListener{
+            if(!checkForEmptyFields(binding)){
+                saveOrUpdateTicket(binding, ticketsReference, addressesReference, intentHasExtraToUpdate)
                 val intent = Intent(this, HomePage::class.java)
                 startActivity(intent)
             }
         }
         binding.generateTicketButton.setOnClickListener {
-            val priceText = binding.price.text.toString()
-            val currencyText = binding.currency.text.toString()
-            hasInputtingErrors = checkForEmptyFields(binding)
-
-            if(!hasInputtingErrors){
-                ticket.price = priceText.toDouble()
-                ticket.currency = Currency.parseToCurrency(currencyText)
-
-                ticket.departureDateTime =
-                    DateTime.parseDateTime("${binding.departureDate.text} ${binding.departureTime.text}")
-                ticket.destinationDateTime =
-                    DateTime.parseDateTime("${binding.destinationDate.text} ${binding.destinationTime.text}")
-
-                if (intentHasExtraToUpdate) {
-                    dbAdapter.updateTicket(ticket)
-                    ticketsReference.child(getUniqueIdByTicket(ticket)).updateChildren(ticket.getHashMap())
-                } else {
-                    ticket.purchaseDateTime = DateTime.parseDateTime(getCurrentDateTime())
-
-                    dbAdapter.addTicket(ticket)
-                    ticketsReference.child(getUniqueIdByTicket(ticket)).setValue(ticket.getHashMap())
-
-                    if(dbAdapter.isUniqueAddress(ticket.departureAddress)){
-                        dbAdapter.addAddress(ticket.departureAddress)
-                        addressesReference.child(ticket.departureAddress.getUniqueId()).setValue(ticket.departureAddress)
-                    }
-                    if(dbAdapter.isUniqueAddress(ticket.destinationAddress)){
-                        dbAdapter.addAddress(ticket.destinationAddress)
-                        addressesReference.child(ticket.destinationAddress.getUniqueId()).setValue(ticket.destinationAddress)
-                    }
-                }
+            if(!checkForEmptyFields(binding)){
+                saveOrUpdateTicket(binding, ticketsReference, addressesReference, intentHasExtraToUpdate)
 
                 val downloadsDir =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
@@ -298,7 +191,44 @@ class AddTicketPage2: AppCompatActivity() {
             binding.errorIcon4.visibility = View.VISIBLE
             hasInputtingErrors = true
         }
+
         return hasInputtingErrors
+    }
+
+    private fun saveOrUpdateTicket(
+        binding: AddTicketPage2Binding,
+        ticketsReference: DatabaseReference,
+        addressesReference: DatabaseReference,
+        intentHasExtraToUpdate: Boolean
+    ) {
+        ticket.price = binding.price.text.toString().toDouble()
+        ticket.currency = Currency.parseToCurrency(binding.currency.text.toString())
+        ticket.departureDateTime =
+            DateTime.parseDateTime("${binding.departureDate.text} ${binding.departureTime.text}")
+        ticket.destinationDateTime =
+            DateTime.parseDateTime("${binding.destinationDate.text} ${binding.destinationTime.text}")
+
+        if(intentHasExtraToUpdate){
+            localDatabaseController.updateTicket(ticket)
+            ticketsReference.child(getUniqueIdByTicket(ticket)).updateChildren(ticket.getHashMap())
+        } else {
+            ticket.purchaseDateTime = DateTime.parseDateTime(getCurrentDateTime())
+
+            localDatabaseController.addTicket(ticket)
+            ticketsReference.child(getUniqueIdByTicket(ticket)).setValue(ticket.getHashMap())
+
+            if (ProfileController.saveAddresses) {
+                saveUniqueAddress(ticket.departureAddress, addressesReference)
+                saveUniqueAddress(ticket.destinationAddress, addressesReference)
+            }
+        }
+    }
+
+    private fun saveUniqueAddress(address: Address, addressesReference: DatabaseReference) {
+        if (localDatabaseController.isUniqueAddress(address)) {
+            localDatabaseController.addAddress(address)
+            addressesReference.child(address.getUniqueId()).setValue(address)
+        }
     }
 
     private fun updateDateText (myCalendar: Calendar, view: TextView) {
